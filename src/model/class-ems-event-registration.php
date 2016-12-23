@@ -139,13 +139,14 @@ class Ems_Event_Registration
                 $message =
                     'Liebe/r ' . $user->user_firstname . "." . PHP_EOL .
                     'Schade, dass du nicht mehr auf das Event "' . $event_title . '" möchtest.' . PHP_EOL .
-                    'Vielleicht schaust du nochmal auf www.dhv-jugend.de/events/ nach einem anderen Event.' . PHP_EOL .
+                    'Wir würden uns freuen wenn wir dich auf einem anderen Event sehen würden.' . PHP_EOL .
+                    'Vielleicht schaust du nochmal auf www.dhv-jugend.de/events/ vorbei und schaust dir unseren andere Events an?' . PHP_EOL .
                     'Viele Grüße,' . PHP_EOL .
                     'Das DHV-Jugendteam';
 
                 if ($send_leader_email && false !== $leader_email) {
-                    $leader_subject = 'Es gibt eine neue Abmeldung für das "' . $event_title . '" Event';
-                    $leader_message = $user->user_firstname . ' ' . $user->lastname . ' hat sich für dein Event "' . $event_title . '" abgemeldet.' . "\n";
+                    $leader_subject = 'Es gibt eine Abmeldung vom "' . $event_title . '" Event';
+                    $leader_message = $user->user_firstname . ' ' . $user->lastname . ' hat sich von deinem Event "' . $event_title . '" abgemeldet.' . "\n";
                     $leader_message .= 'Du kannst die Details zur Abmeldung auf ' . get_permalink(get_option('ems_partcipant_list_page')) . '?select_event=ID_' . $registration->get_event_post_id() . ' einsehen';
                 }
                 break;
