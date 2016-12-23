@@ -72,7 +72,7 @@ class Ems_Event_Registration
     {
         $registrations = self::get_event_registrations();
         if (self::is_already_registered($registration)) {
-            throw new Exception("User is alredy registered for this event");
+            throw new Exception("User is already registered for this event");
         }
         $registrations[] = $registration;
         static::send_registration_mail($registration, static::MAIL_TYPE_REGISTRATION);
