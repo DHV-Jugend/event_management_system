@@ -101,9 +101,6 @@ class Add_Descendants_As_Submenu_Items {
 			add_action( 'wp_ajax_' . $this->ajax_action, array( &$this, 'ajax_get_menu_status' ) );
 			add_action( 'wp_update_nav_menu', array( &$this, 'save_nav_menu_custom_fields' ) );
 		}
-		else {
-			add_filter( 'wp_get_nav_menu_items', array( &$this, 'add_children_to_menu' ) );
-		}
 	}
 
 	/**

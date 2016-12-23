@@ -44,6 +44,9 @@ class Ems_Dhv_Jugend_Widget extends WP_Widget {
 				<li>
 					<a href="<?php echo get_permalink( get_option( Ems_Conf::EMS_NAME_PREFIX . 'event_statistic_page' ) ); ?>">Eventstatistiken</a>
 				</li>
+				<li>
+					<a target="_blank" href="https://drive.google.com/folderview?id=0B6sRvq58A9UtQVpqbTZkbTE3eUE&usp=sharing">Google Drive</a>
+				</li>
 			<?php endif; ?>
 			<!--			--><?php //if ( is_user_logged_in() && ( current_user_can( 'read_event' ) || current_user_can( "read_" . Ems_Conf::EMS_NAME_PREFIX . "event" ) ) ): ?>
 			<!--				<li>-->
