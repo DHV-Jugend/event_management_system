@@ -6,6 +6,11 @@
  */
 class Ems_Event_Registration
 {
+
+    const MAIL_TYPE_REGISTRATION = 1;
+    const MAIL_TYPE_DELETE_REGISTRATION = 2;
+
+
     private static $option_name = 'ems_event_registration';
 
     private $event_post_id;
@@ -63,55 +68,14 @@ class Ems_Event_Registration
         return false;
     }
 
-    public static function add_event_registration(Ems_Event_Registration $registration, $sendMail = true)
+    public static function add_event_registration(Ems_Event_Registration $registration)
     {
         $registrations = self::get_event_registrations();
         if (self::is_already_registered($registration)) {
-            throw new Exception("User is already registered for this event");
+            throw new Exception("User is alredy registered for this event");
         }
         $registrations[] = $registration;
-        $title = htmlspecialchars_decode(get_post($registration->get_event_post_id())->post_title);
-        $user = get_userdata($registration->get_user_id());
-        $subject = 'Erfolgreich für "' . $title . '" registriert';
-        $message =
-            'Liebe/r ' . $user->user_firstname . "\n" .
-            'du hast dich erfolgreich für das Event "' . $title . '" registriert.' . "\n" .
-            'Du bekommst spätestens 14 Tage vor dem Event weitere Informationen vom Eventleiter zugeschickt.' . "\n" .
-            'Viele Grüße,' . "\n" .
-            'Das DHV-Jugendteam';
-
-        $leader_id = get_post_meta($registration->get_event_post_id(), 'ems_event_leader', true);
-        $leader = get_userdata($leader_id);
-
-        if (false === $leader) {
-            $leader_email = get_post_meta($registration->get_event_post_id(), 'ems_event_leader_mail', true);
-        } else {
-            $leader_email = $leader->user_email;
-        }
-
-        if ($sendMail) {
-            self::send_mail_via_smtp($user->user_email, $subject, $message, $leader_email);
-        }
-
-
-        if (1 == get_post_meta($registration->get_event_post_id(), 'ems_inform_via_mail', true)) {
-            //TODO Use Ems_Event object
-            $leader_id = get_post_meta($registration->get_event_post_id(), 'ems_event_leader', true);
-            $leader = get_userdata($leader_id);
-
-            if (false === $leader) {
-                $leader_email = get_post_meta($registration->get_event_post_id(), 'ems_event_leader_mail', true);
-            } else {
-                $leader_email = $leader->user_email;
-            }
-
-            if ($sendMail && false !== $leader_email) {
-                $subject = 'Es gibt eine neue Anmeldung für das "' . $title . '" Event';
-                $message = $user->user_firstname . ' ' . $user->lastname . ' hat sich für dein Event "' . $title . '" angemeldet.' . "\n";
-                $message .= 'Du kannst die Details zur Anmeldung auf ' . get_permalink(get_option('ems_partcipant_list_page')) . '?select_event=ID_' . $registration->get_event_post_id() . ' einsehen';
-                self::send_mail_via_smtp($leader_email, $subject, $message);
-            }
-        }
+        static::send_registration_mail($registration, static::MAIL_TYPE_REGISTRATION);
         update_option(self::$option_name, $registrations);
     }
 
@@ -124,13 +88,88 @@ class Ems_Event_Registration
                 unset($registrations[$key]);
             }
         }
+        $registrations[] = $registration;
+        static::send_registration_mail($registration, static::MAIL_TYPE_DELETE_REGISTRATION);
         update_option(self::$option_name, $registrations);
+    }
+
+    /**
+     * Notify leader and participant about registration / delete registration
+     * @param \Ems_Event_Registration $registration
+     * @param $mail_type
+     */
+    protected static function send_registration_mail(Ems_Event_Registration $registration, $mail_type)
+    {
+        // Common variables
+        $event_title = htmlspecialchars_decode(get_post($registration->get_event_post_id())->post_title);
+        $user = get_userdata($registration->get_user_id());
+
+        $leader_id = get_post_meta($registration->get_event_post_id(), 'ems_event_leader', true);
+        $leader = get_userdata($leader_id);
+
+        if (false === $leader) {
+            $leader_email = get_post_meta($registration->get_event_post_id(), 'ems_event_leader_mail', true);
+        } else {
+            $leader_email = $leader->user_email;
+        }
+
+        $send_leader_email = 1 == get_post_meta($registration->get_event_post_id(), 'ems_inform_via_mail', true);
+
+        switch ($mail_type) {
+            case static::MAIL_TYPE_REGISTRATION:
+                $subject = 'Erfolgreich für "' . $event_title . '" registriert';
+                $message =
+                    'Liebe/r ' . $user->user_firstname . "," . PHP_EOL .
+                    'du hast dich erfolgreich für das Event "' . $event_title . '" registriert.' . PHP_EOL .
+                    'Du bekommst spätestens 14 Tage vor dem Event weitere Informationen vom Eventleiter zugeschickt.' . PHP_EOL .
+                    'Viele Grüße,' . "\n" .
+                    'Das DHV-Jugendteam';
+
+                if ($send_leader_email && false !== $leader_email) {
+                    $leader_subject = 'Es gibt eine neue Anmeldung für das "' . $event_title . '" Event';
+                    $leader_message = $user->user_firstname . ' ' . $user->lastname . ' hat sich für dein Event "' . $event_title . '" angemeldet.' . PHP_EOL;
+                    $leader_message .= 'Du kannst die Details zur Anmeldung auf ' . get_permalink(get_option('ems_partcipant_list_page')) . '?select_event=ID_' . $registration->get_event_post_id() . ' einsehen';
+                    self::send_mail_via_smtp($leader_email, $subject, $message);
+                }
+
+                break;
+
+            case static::MAIL_TYPE_DELETE_REGISTRATION:
+                $subject = 'Erfolgreich von "' . $event_title . '" abgemeldet';
+                $message =
+                    'Liebe/r ' . $user->user_firstname . "." . PHP_EOL .
+                    'Schade, dass du nicht mehr auf das Event "' . $event_title . '" möchtest.' . PHP_EOL .
+                    'Vielleicht schaust du nochmal auf www.dhv-jugend.de/events/ nach einem anderen Event.' . PHP_EOL .
+                    'Viele Grüße,' . PHP_EOL .
+                    'Das DHV-Jugendteam';
+
+                if ($send_leader_email && false !== $leader_email) {
+                    $leader_subject = 'Es gibt eine neue Abmeldung für das "' . $event_title . '" Event';
+                    $leader_message = $user->user_firstname . ' ' . $user->lastname . ' hat sich für dein Event "' . $event_title . '" abgemeldet.' . "\n";
+                    $leader_message .= 'Du kannst die Details zur Abmeldung auf ' . get_permalink(get_option('ems_partcipant_list_page')) . '?select_event=ID_' . $registration->get_event_post_id() . ' einsehen';
+                }
+                break;
+        }
+
+        // Send mail to participant
+        if (!empty($subject) && !empty($message)) {
+            self::send_mail_via_smtp($user->user_email, $subject, $message, $leader_email);
+        }
+
+        // Send mail to event leader
+        if ($send_leader_email && false !== $leader_email && !empty($leader_subject) && !empty($leader_message)) {
+            //TODO Use Ems_Event object
+            $leader_id = get_post_meta($registration->get_event_post_id(), 'ems_event_leader', true);
+            $leader = get_userdata($leader_id);
+
+            self::send_mail_via_smtp($leader_email, $leader_subject, $leader_message);
+        }
     }
 
     /**
      * @return Ems_Event_Registration[]
      */
-    protected static function get_event_registrations()
+    private static function get_event_registrations()
     {
         $registrations = get_option(self::$option_name);
         if (is_array($registrations)) {
@@ -138,7 +177,6 @@ class Ems_Event_Registration
         }
         return array();
     }
-
 
     /**
      * @param $event_post_id
@@ -172,17 +210,6 @@ class Ems_Event_Registration
             }
         }
         return $event_registrations;
-    }
-
-    public static function get_registration($event_id, $user_id)
-    {
-        $registrations = self::get_event_registrations();
-        foreach ($registrations as $registration) {
-            if ($registration->get_user_id() == $user_id && $event_id == $registration->get_event_post_id()) {
-                return $registration;
-            }
-        }
-        return null;
     }
 
     public static function is_already_registered(Ems_Event_Registration $registration)
@@ -234,7 +261,6 @@ class Ems_Event_Registration
         $mail->Body = $message;
 
         if (!$mail->send()) {
-            echo "Unser Mailserver scheint im Moment überlastet zu sein, bitte versuche es später nochmal!";
             throw new Exception("Could not sent mail, maybe your server has a problem? " . $mail->ErrorInfo);
         }
 
