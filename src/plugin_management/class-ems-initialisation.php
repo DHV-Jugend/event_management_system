@@ -8,14 +8,9 @@ class Ems_Initialisation
 {
     public static function initiate_plugin()
     {
-        //TODO Add Shortcode For "Register here" Link
-
         self::addShortCode();
         self::add_action();
         self::add_filter();
-
-//        $role = get_role( 'eventleiter' );
-//        $role->add_cap( 'upload_files' );
     }
 
 
