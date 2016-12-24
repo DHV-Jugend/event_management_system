@@ -1,3 +1,4 @@
 # Created by .gitignore support plugin (hsz.mobi)
 src/*.xlsx
+src/downloads/*.xlsx
 event-management-system-updater.php
