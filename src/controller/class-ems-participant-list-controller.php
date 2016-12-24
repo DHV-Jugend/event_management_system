@@ -381,10 +381,17 @@ class Ems_Participant_List_Controller
 
             $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
 
-            // TODO This is not cryptographic save. Replace with dyamic file download with php access check.
+            $downloadDir = Event_Management_System::get_plugin_path() . 'downloads/';
+            $downloadUrl = Event_Management_System::get_plugin_url() . 'downloads/';
+            if (!file_exists($downloadDir)) {
+                mkdir($downloadDir);
+            }
+
+            // TODO This is not cryptographic save. Replace with dynamic file download with php access check.
             $filename = sha1(uniqid('participant_list', true)) . "_" . $id . '.xlsx';
-            $objWriter->save(Event_Management_System::get_plugin_path() . $filename);
-            echo '<p><a href="' . Event_Management_System::get_plugin_url() . $filename . '">Teilnehmerliste für Eventleiter als Excelfile downloaden</a></p>';
+
+            $objWriter->save($downloadDir . $filename);
+            echo '<p><a href="' . $downloadUrl . $filename . '">Teilnehmerliste für Eventleiter als Excelfile downloaden</a></p>';
 
             //Public participant list excel table
             $objPHPExcel = new PHPExcel();
@@ -403,9 +410,11 @@ class Ems_Participant_List_Controller
             $objPHPExcel->getActiveSheet()->fromArray($excel_array_public);
 
             $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-            $filename = $id . "_public" . '.xlsx';
-            $objWriter->save(Event_Management_System::get_plugin_path() . $filename);
-            echo '<p><a href="' . Event_Management_System::get_plugin_url() . $filename . '">Teilnehmerliste für Teilnehmer als Excelfile downloaden</a></p>';
+            // TODO This is not cryptographic save. Replace with dynamic file download with php access check.
+            $filename = sha1(uniqid('participant_list', true)) . "_" . $id . '.xlsx';
+
+            $objWriter->save($downloadDir . $filename);
+            echo '<p><a href="' . $downloadUrl . $filename . '">Teilnehmerliste für Teilnehmer als Excelfile downloaden</a></p>';
         }
     }
 }
