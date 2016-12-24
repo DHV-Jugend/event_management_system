@@ -279,7 +279,7 @@ class Ems_Participant_List_Controller
                 <?php foreach ($participant_list as $participant): ?>
                     <div class="toggle-container">
                         <div
-                            class="toggle-header">
+                                class="toggle-header">
                             <strong><?= $participant["first_name"] ?> <?= $participant["last_name"] ?></strong>
                             - <?= $participant["fum_city"] ?>
                             <span class="action-container"><a href="#"
@@ -380,7 +380,9 @@ class Ems_Participant_List_Controller
             $objPHPExcel->getActiveSheet()->fromArray($excel_array_private);
 
             $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-            $filename = $id . '.xlsx';
+
+            // TODO This is not cryptographic save. Replace with dyamic file download with php access check.
+            $filename = sha1(uniqid('participant_list', true)) . "_" . $id . '.xlsx';
             $objWriter->save(Event_Management_System::get_plugin_path() . $filename);
             echo '<p><a href="' . Event_Management_System::get_plugin_url() . $filename . '">Teilnehmerliste für Eventleiter als Excelfile downloaden</a></p>';
 
