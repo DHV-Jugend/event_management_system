@@ -271,7 +271,6 @@ class Ems_Event_Registration extends Ems_Log
 
     public static function send_mail_via_smtp($email, $subject, $message, $reply_to = 'info@dhv-jugend.de')
     {
-
         $mail = new PHPMailer();
         $mail->IsSMTP(); //1 und 1 doesn't support isSMTP from webshosting packages
         $mail->CharSet = 'utf-8';
