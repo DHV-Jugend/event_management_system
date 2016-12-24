@@ -388,7 +388,7 @@ class Ems_Participant_List_Controller
             }
 
             // TODO This is not cryptographic save. Replace with dynamic file download with php access check.
-            $filename = sha1(uniqid('participant_list', true)) . "_" . $id . '.xlsx';
+            $filename = sha1($id) . "_" . $id . '.xlsx';
 
             $objWriter->save($downloadDir . $filename);
             echo '<p><a href="' . $downloadUrl . $filename . '">Teilnehmerliste für Eventleiter als Excelfile downloaden</a></p>';
@@ -411,7 +411,7 @@ class Ems_Participant_List_Controller
 
             $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
             // TODO This is not cryptographic save. Replace with dynamic file download with php access check.
-            $filename = sha1(uniqid('participant_list', true)) . "_" . $id . '.xlsx';
+            $filename = sha1($id) . "_" . $id . '.xlsx';
 
             $objWriter->save($downloadDir . $filename);
             echo '<p><a href="' . $downloadUrl . $filename . '">Teilnehmerliste für Teilnehmer als Excelfile downloaden</a></p>';
