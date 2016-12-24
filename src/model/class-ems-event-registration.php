@@ -84,11 +84,14 @@ class Ems_Event_Registration extends Ems_Log
         }
         $registrations[] = $registration;
 
-        update_option(self::$option_name, $registrations);
-        static::logEventRegistration('Added event registration.', $registration);
+        if (update_option(self::$option_name, $registrations)) {
+            static::logEventRegistration('Added event registration.', $registration);
 
-        static::send_registration_mail($registration, static::MAIL_TYPE_REGISTRATION);
-        static::logEventRegistration('Sent add event registration mail.', $registration);
+            static::send_registration_mail($registration, static::MAIL_TYPE_REGISTRATION);
+            static::logEventRegistration('Sent add event registration mail.', $registration);
+        } else {
+            static::logEventRegistration("Couldn't add event registration.", $registration);
+        }
     }
 
 
@@ -105,11 +108,15 @@ class Ems_Event_Registration extends Ems_Log
             }
         }
 
-        update_option(self::$option_name, $registrations);
-        static::logEventRegistration('Deleted event registration.', $registration);
+        if (update_option(self::$option_name, $registrations)) {
+            static::logEventRegistration('Deleted event registration.', $registration);
 
-        static::logEventRegistration('Sent delete event registration mail.', $registration);
-        static::send_registration_mail($registration, static::MAIL_TYPE_DELETE_REGISTRATION);
+            static::logEventRegistration('Sent delete event registration mail.', $registration);
+            static::send_registration_mail($registration, static::MAIL_TYPE_DELETE_REGISTRATION);
+        } else {
+            static::logEventRegistration("Couldn't delete event registration.", $registration);
+        }
+
     }
 
     /**
