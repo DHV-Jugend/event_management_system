@@ -158,9 +158,7 @@ class Ems_Event_Registration extends Ems_Log
                     $leader_message .= 'Du kannst die Details zur Anmeldung auf ' . get_permalink(get_option('ems_partcipant_list_page')) . '?select_event=ID_' . $registration->get_event_post_id() . ' einsehen';
                     self::send_mail_via_smtp($leader_email, $subject, $message);
                 }
-
                 break;
-
             case static::MAIL_TYPE_DELETE_REGISTRATION:
                 $subject = 'Erfolgreich von "' . $event_title . '" abgemeldet';
                 $message =
@@ -187,10 +185,6 @@ class Ems_Event_Registration extends Ems_Log
 
             // Send mail to event leader
             if ($send_leader_email && false !== $leader_email && !empty($leader_subject) && !empty($leader_message)) {
-                //TODO Use Ems_Event object
-                $leader_id = get_post_meta($registration->get_event_post_id(), 'ems_event_leader', true);
-                $leader = get_userdata($leader_id);
-
                 self::send_mail_via_smtp($leader_email, $leader_subject, $leader_message);
             }
         } catch (Exception $e) {
