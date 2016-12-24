@@ -4,14 +4,18 @@
  * @author Christoph Bessei
  * @version
  */
-class Ems_Event_Registration
+class Ems_Event_Registration extends Ems_Log
 {
-
     const MAIL_TYPE_REGISTRATION = 1;
     const MAIL_TYPE_DELETE_REGISTRATION = 2;
 
 
-    private static $option_name = 'ems_event_registration';
+    protected static $additionalLogFields = [
+        'event' => 'int(11)',
+        'user' => 'int(11)'
+    ];
+
+    protected static $option_name = 'ems_event_registration';
 
     private $event_post_id;
     private $user_id;
@@ -68,6 +72,10 @@ class Ems_Event_Registration
         return false;
     }
 
+    /**
+     * @param \Ems_Event_Registration $registration
+     * @throws \Exception
+     */
     public static function add_event_registration(Ems_Event_Registration $registration)
     {
         $registrations = self::get_event_registrations();
@@ -75,28 +83,40 @@ class Ems_Event_Registration
             throw new Exception("User is already registered for this event");
         }
         $registrations[] = $registration;
-        static::send_registration_mail($registration, static::MAIL_TYPE_REGISTRATION);
+
         update_option(self::$option_name, $registrations);
+        static::logEventRegistration('Added event registration.', $registration);
+
+        static::send_registration_mail($registration, static::MAIL_TYPE_REGISTRATION);
+        static::logEventRegistration('Sent add event registration mail.', $registration);
     }
 
 
+    /**
+     * @param \Ems_Event_Registration $registration
+     */
     public static function delete_event_registration(Ems_Event_Registration $registration)
     {
         $registrations = self::get_event_registrations();
         foreach ($registrations as $key => $cur_registration) {
             if ($registration->equals($cur_registration)) {
                 unset($registrations[$key]);
+                break;
             }
         }
-        $registrations[] = $registration;
-        static::send_registration_mail($registration, static::MAIL_TYPE_DELETE_REGISTRATION);
+
         update_option(self::$option_name, $registrations);
+        static::logEventRegistration('Deleted event registration.', $registration);
+
+        static::logEventRegistration('Sent delete event registration mail.', $registration);
+        static::send_registration_mail($registration, static::MAIL_TYPE_DELETE_REGISTRATION);
     }
 
     /**
      * Notify leader and participant about registration / delete registration
      * @param \Ems_Event_Registration $registration
      * @param $mail_type
+     * @throws \Exception
      */
     protected static function send_registration_mail(Ems_Event_Registration $registration, $mail_type)
     {
@@ -152,18 +172,23 @@ class Ems_Event_Registration
                 break;
         }
 
-        // Send mail to participant
-        if (!empty($subject) && !empty($message)) {
-            self::send_mail_via_smtp($user->user_email, $subject, $message, $leader_email);
-        }
+        try {
+            // Send mail to participant
+            if (!empty($subject) && !empty($message)) {
+                self::send_mail_via_smtp($user->user_email, $subject, $message, $leader_email);
+            }
 
-        // Send mail to event leader
-        if ($send_leader_email && false !== $leader_email && !empty($leader_subject) && !empty($leader_message)) {
-            //TODO Use Ems_Event object
-            $leader_id = get_post_meta($registration->get_event_post_id(), 'ems_event_leader', true);
-            $leader = get_userdata($leader_id);
+            // Send mail to event leader
+            if ($send_leader_email && false !== $leader_email && !empty($leader_subject) && !empty($leader_message)) {
+                //TODO Use Ems_Event object
+                $leader_id = get_post_meta($registration->get_event_post_id(), 'ems_event_leader', true);
+                $leader = get_userdata($leader_id);
 
-            self::send_mail_via_smtp($leader_email, $leader_subject, $leader_message);
+                self::send_mail_via_smtp($leader_email, $leader_subject, $leader_message);
+            }
+        } catch (Exception $e) {
+            echo "Konnte Bestätitungsmail nicht versenden. Bitte versuche es später nochmal.";
+            throw $e;
         }
     }
 
@@ -227,6 +252,15 @@ class Ems_Event_Registration
     }
 
     /**
+     * @param $msg
+     * @param \Ems_Event_Registration $registration
+     */
+    public static function logEventRegistration($msg, Ems_Event_Registration $registration)
+    {
+        static::log($msg, ['user' => $registration->get_user_id(), 'event' => $registration->get_event_post_id()]);
+    }
+
+    /**
      * @return string
      */
     public static function get_option_name()
@@ -253,7 +287,7 @@ class Ems_Event_Registration
         $mail->FromName = get_option('fum_smtp_sender_name');
         $mail->addAddress($email); // Add a recipient
         $mail->Sender = $reply_to;
-        $mail->addCC('anmeldungen@test.dhv-jugend.de');
+        $mail->addBCC('anmeldungen@test.dhv-jugend.de');
 
         $mail->WordWrap = 50; // Set word wrap to 50 characters
         $mail->isHTML(false); // Set email format to HTML
@@ -264,27 +298,5 @@ class Ems_Event_Registration
         if (!$mail->send()) {
             throw new Exception("Could not sent mail, maybe your server has a problem? " . $mail->ErrorInfo);
         }
-
-
-        //Check if imap extension is installed
-        if (function_exists("imap_open")) {
-            $stream = imap_open("{imap.1und1.de:143}Gesendete Objekte", get_option('fum_smtp_username'), get_option('fum_smtp_password'));
-            if (false === $stream) {
-                throw new Exception("Could not copy mail to sent directory, please check your IMAP server and IMAP directory configuration");
-            }
-
-            imap_append($stream, "{imap.1und1.de:143}Gesendete Objekte"
-                , "From: " . get_option('fum_smtp_sender') . "\r\n"
-                . "To: " . $email . "\r\n"
-                . "Subject: " . $subject . "\r\n"
-                . "\r\n"
-                . $message . "\r\n"
-            );
-
-            $check = imap_check($stream);
-            imap_close($stream);
-        }
     }
-
-
 }

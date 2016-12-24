@@ -12,6 +12,9 @@ class Ems_Activation
         //Setup frontend user management first (must be called here, because a second 'register_activation_hook' didn't work
         Fum_Activation::activate_plugin();
 
+        // Create tables
+        Ems_Event_Registration::createTables();
+
 
         $admin_role = get_role('administrator');
         //TODO Because performance is not important here, maybe it would be nice if we just include all classes from the autoloader and the call get_admin_capabilities on each child of Ems_Post
