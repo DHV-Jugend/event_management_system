@@ -269,6 +269,14 @@ class Ems_Event_Registration extends Ems_Log
         return self::$option_name;
     }
 
+    /**
+     * @param $email
+     * @param $subject
+     * @param $message
+     * @param string $reply_to
+     * @throws \Exception
+     * @todo Move to FUM plugin
+     */
     public static function send_mail_via_smtp($email, $subject, $message, $reply_to = 'info@dhv-jugend.de')
     {
         $mail = new PHPMailer();
