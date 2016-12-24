@@ -3,9 +3,9 @@
 class Event_Management_System
 {
 
-    private static $plugin_path = null;
-    private static $plugin_url = null;
-    private static $src_directories = array(
+    protected static $plugin_path = null;
+    protected static $plugin_url = null;
+    protected static $src_directories = array(
         'controller',
         '../lib',
         'model',
@@ -19,14 +19,34 @@ class Event_Management_System
 
     public function __construct($plugin_path = null, $plugin_url = null)
     {
-        //TODO Use composer autoload
-        spl_autoload_register(array($this, 'autoload'));
+        // Check if frontend_user_management is loaded
+        if (class_exists("Frontend_User_Management")) {
+            //TODO Use composer autoload
+            spl_autoload_register(array($this, 'autoload'));
 
+            Event_Management_System::$plugin_path = plugin_dir_path(__FILE__);
+            Event_Management_System::$plugin_url = plugin_dir_url(__FILE__);
 
-        Event_Management_System::$plugin_path = plugin_dir_path(__FILE__);
-        Event_Management_System::$plugin_url = plugin_dir_url(__FILE__);
-
-        Ems_Initialisation::initiate_plugin();
+            Ems_Initialisation::initiate_plugin();
+        } else {
+            // Normally not loaded during plugin init
+            if (!function_exists('is_plugin_active')) {
+                require_once(ABSPATH . '/wp-admin/includes/plugin.php');
+            }
+            if (is_plugin_active('frontend-user-management/frontend-user-management.php')) {
+                // Wait till plugin is loaded
+                add_action('frontend_user_management_plugin_loaded', function () {
+                    new Event_Management_System();
+                });
+            } else {
+                // Deactivate ems if fum isn't loaded
+                deactivate_plugins(realpath(plugin_dir_path(__FILE__) . "../" . basename(__FILE__)));
+                // Show error message
+                add_action('admin_notices', function () {
+                    echo '<div class="error"><p>Could not load "Event management system" since "Frontend user management is not active.</p></div>';
+                });
+            }
+        }
     }
 
     public function autoload($class_name)
