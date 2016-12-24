@@ -20,7 +20,6 @@ class Ems_Initialisation
             add_filter('manage_pages_columns', array('Ems_Initialisation', 'add_custom_column'));
             add_filter('manage_posts_columns', array('Ems_Initialisation', 'add_custom_column'));
         }
-
     }
 
     protected static function addShortCode()
