@@ -32,6 +32,7 @@ class Ems_Activation
                 'publish_posts' => true,
                 'read_private_posts' => true,
                 'read' => true,
+                'upload_files' => true,
             ]
         );
         foreach ($caps as $cap => $value) {
