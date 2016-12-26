@@ -2,3 +2,4 @@
 src/*.xlsx
 src/downloads/*.xlsx
 event-management-system-updater.php
+/lib/vendor/
