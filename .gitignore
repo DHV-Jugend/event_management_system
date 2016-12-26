@@ -1,3 +1,4 @@
 # Created by .gitignore support plugin (hsz.mobi)
 src/downloads/*.xlsx
 /lib/vendor/
+/lib/composer.lock

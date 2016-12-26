@@ -21,7 +21,7 @@ class Ems_Activation
         //This avoids the explicit call of each class
         $caps = array_merge(
             Ems_Event::get_admin_capabilities(),
-            //TODO Implement events daily news
+            //TODO Implement event daily news?
 //            Ems_Event_Daily_News::get_admin_capabilities(),
 //            Ems_Event_Daily_news::get_admin_capabilities(),
             [

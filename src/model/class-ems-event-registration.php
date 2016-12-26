@@ -156,6 +156,7 @@ class Ems_Event_Registration extends Ems_Log
                     $leader_subject = 'Es gibt eine neue Anmeldung für das "' . $event_title . '" Event';
                     $leader_message = $user->user_firstname . ' ' . $user->lastname . ' hat sich für dein Event "' . $event_title . '" angemeldet.' . PHP_EOL;
                     $leader_message .= 'Du kannst die Details zur Anmeldung auf ' . get_permalink(get_option('ems_partcipant_list_page')) . '?select_event=ID_' . $registration->get_event_post_id() . ' einsehen';
+                    // TODO Remove duplicate e-mail to leader and participant (was needed as backup)
                     self::send_mail_via_smtp($leader_email, $subject, $message);
                 }
                 break;
