@@ -1,0 +1,7 @@
+{
+  "name": "bit/event-management-system",
+  "description": "Event management system plugin for wordpress",
+  "require": {
+    "phpoffice/phpexcel": "^1.8"
+  }
+}
