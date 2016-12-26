@@ -3,8 +3,8 @@
 class Event_Management_System
 {
 
-    protected static $plugin_path = null;
-    protected static $plugin_url = null;
+    protected static $plugin_path;
+    protected static $plugin_url;
     protected static $src_directories = array(
         'controller',
         '../lib',
@@ -21,7 +21,11 @@ class Event_Management_System
     {
         // Check if frontend_user_management is loaded
         if (class_exists("Frontend_User_Management")) {
-            //TODO Use composer autoload
+
+            // Include composer autoload
+            require_once(__DIR__ . '../lib/vendor/autoload.php');
+
+            // TODO Use always composer autoload
             spl_autoload_register(array($this, 'autoload'));
 
             Event_Management_System::$plugin_path = plugin_dir_path(__FILE__);
@@ -71,13 +75,16 @@ class Event_Management_System
         }
     }
 
+    /**
+     * @return string
+     */
     public static function get_plugin_path()
     {
         return self::$plugin_path;
     }
 
     /**
-     * @return null
+     * @return string
      */
     public static function get_plugin_url()
     {
