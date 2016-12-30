@@ -157,7 +157,7 @@ class Ems_Event_Registration extends Ems_Log
                     $leader_message = $user->user_firstname . ' ' . $user->lastname . ' hat sich für dein Event "' . $event_title . '" angemeldet.' . PHP_EOL;
                     $leader_message .= 'Du kannst die Details zur Anmeldung auf ' . get_permalink(get_option('ems_partcipant_list_page')) . '?select_event=ID_' . $registration->get_event_post_id() . ' einsehen';
                     // TODO Remove duplicate e-mail to leader and participant (was needed as backup)
-                    self::send_mail_via_smtp($leader_email, $subject, $message);
+                    Fum_Mail::sendMail($leader_email, $subject, $message);
                 }
                 break;
             case static::MAIL_TYPE_DELETE_REGISTRATION:
@@ -181,12 +181,12 @@ class Ems_Event_Registration extends Ems_Log
         try {
             // Send mail to participant
             if (!empty($subject) && !empty($message)) {
-                self::send_mail_via_smtp($user->user_email, $subject, $message, $leader_email);
+                Fum_Mail::sendMail($user->user_email, $subject, $message, $leader_email);
             }
 
             // Send mail to event leader
             if ($send_leader_email && false !== $leader_email && !empty($leader_subject) && !empty($leader_message)) {
-                self::send_mail_via_smtp($leader_email, $leader_subject, $leader_message);
+                Fum_Mail::sendMail($leader_email, $leader_subject, $leader_message);
             }
         } catch (Exception $e) {
             echo "Konnte Bestätitungsmail nicht versenden. Bitte versuche es später nochmal.";
@@ -240,6 +240,22 @@ class Ems_Event_Registration extends Ems_Log
         return $event_registrations;
     }
 
+    /**
+     * @param $event_id
+     * @param $user_id
+     * @return \Ems_Event_Registration|null
+     */
+    public static function get_registration($event_id, $user_id)
+    {
+        $registrations = self::get_event_registrations();
+        foreach ($registrations as $registration) {
+            if ($registration->get_user_id() == $user_id && $event_id == $registration->get_event_post_id()) {
+                return $registration;
+            }
+        }
+        return null;
+    }
+
     public static function is_already_registered(Ems_Event_Registration $registration)
     {
         $registrations = self::get_event_registrations();
@@ -268,44 +284,5 @@ class Ems_Event_Registration extends Ems_Log
     public static function get_option_name()
     {
         return self::$option_name;
-    }
-
-    /**
-     * @param $email
-     * @param $subject
-     * @param $message
-     * @param string $reply_to
-     * @throws \Exception
-     * @todo Move to FUM plugin
-     */
-    public static function send_mail_via_smtp($email, $subject, $message, $reply_to = 'info@dhv-jugend.de')
-    {
-        $mail = new PHPMailer();
-        $mail->IsSMTP(); //1 und 1 doesn't support isSMTP from webshosting packages
-        $mail->CharSet = 'utf-8';
-        $mail->Host = get_option('fum_smtp_host'); // Specify main and backup server
-        $mail->SMTPAuth = true; // Enable SMTP authentication
-        $mail->Username = get_option('fum_smtp_username'); // SMTP username
-        $mail->Password = get_option('fum_smtp_password'); // SMTP password
-        $mail->SMTPSecure = 'tls'; // Enable encryption, 'ssl' also accepted
-        $mail->Port = 587;
-
-        $mail->AddReplyTo($reply_to);
-
-        $mail->From = get_option('fum_smtp_sender');
-        $mail->FromName = get_option('fum_smtp_sender_name');
-        $mail->addAddress($email); // Add a recipient
-        $mail->Sender = $reply_to;
-        $mail->addBCC('anmeldungen@test.dhv-jugend.de');
-
-        $mail->WordWrap = 50; // Set word wrap to 50 characters
-        $mail->isHTML(false); // Set email format to HTML
-
-        $mail->Subject = $subject;
-        $mail->Body = $message;
-
-        if (!$mail->send()) {
-            throw new Exception("Could not sent mail, maybe your server has a problem? " . $mail->ErrorInfo);
-        }
     }
 }
