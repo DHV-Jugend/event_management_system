@@ -1,19 +1,36 @@
 <?php
-
 /**
  * @author Christoph Bessei
  * @version
  */
-class Ems_Event_Statistic_Controller
+
+namespace BIT\EMS\Controller\Shortcode;
+
+
+use BIT\EMS\Controller\Base\Shortcode;
+use BIT\EMS\Utility\General;
+use DateTime;
+use Ems_Date_Period;
+use Ems_Event;
+use Ems_Event_Registration;
+use Event_Management_System;
+use Fum_User;
+use Point;
+use VerticalBarChart;
+use XYDataSet;
+
+class EventStatistic extends Shortcode
 {
-    public static function get_event_statistic()
+    protected $aliases = [\Ems_Conf::PREFIX . 'event_statistic'];
+
+    public function printContent($atts = [], $content = null)
     {
         //If user has no access, redirect to home
         if (!current_user_can(Ems_Event::get_edit_capability())) {
             wp_redirect(home_url());
             exit;
         }
-        require_once(Event_Management_System::get_plugin_path() . "../lib/libchart/classes/libchart.php");
+        require_once(Event_Management_System::get_plugin_path() . "lib/libchart/classes/libchart.php");
         $events = Ems_Event::get_events();
         if (!empty($events)) {
             $startdate_oldest_event = null;
@@ -73,13 +90,13 @@ class Ems_Event_Statistic_Controller
                 }
                 $participant_chart->setDataSet($participant_data);
                 $participant_chart->setTitle("Anzahl Teilnehmer pro Jahr");
-                $path = "images/participant_count.png";
+                $path = "tempDownloads/participant_count_" . General::getUrlSafeUid(__FILE__) . ".png";
                 $participant_chart->render(Event_Management_System::get_plugin_path() . $path);
                 echo '<img src="' . Event_Management_System::get_plugin_url() . $path . '">';
 
                 $registration_chart->setDataSet($registration_data);
                 $registration_chart->setTitle("Anzahl Anmeldungen pro Jahr");
-                $path = "images/registration_count.png";
+                $path = "tempDownloads/registration_count_" . General::getUrlSafeUid(__FILE__) . ".png";
                 $registration_chart->render(Event_Management_System::get_plugin_path() . $path);
                 echo '<img src="' . Event_Management_System::get_plugin_url() . $path . '">';
 

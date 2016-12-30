@@ -1,29 +1,24 @@
 <?php
+namespace BIT\EMS\View;
+
+use BIT\EMS\View\Base\Base;
+use Ems_Participant_Utility;
 
 /**
- * @author  Christoph Bessei
- * @version 0.04
+ * @author Christoph Bessei
+ * @version
  */
-class Ems_Event_List_Controller
+class EventList extends Base
 {
-
-    public static function get_event_list()
+    public function printContent()
     {
-        wp_enqueue_style('ems-general', Event_Management_System::get_plugin_url() . "css/ems_general.css");
-        wp_enqueue_script('ems-tooltip', Event_Management_System::get_plugin_url() . "js/ems-tooltip.js");
-
-        $allowed_event_time_start = new DateTime();
-        $allowed_event_time_start->setTimestamp(Ems_Date_Helper::get_timestamp(get_option("date_format"), get_option("ems_start_date_period")));
-        $allowed_event_time_end = new DateTime();
-        $allowed_event_time_end->setTimestamp(Ems_Date_Helper::get_timestamp(get_option("date_format"), get_option("ems_end_date_period")));
-        $allowed_event_time_period = new Ems_Date_Period($allowed_event_time_start, $allowed_event_time_end);
-        $events = Ems_Event::get_events(-1, true, false, null, array(), $allowed_event_time_period);
-
+        /** @var \Ems_Event[] $events */
+        $events = $this->arguments["events"];
         ?>
         <div class="ems_event_wrapper">
             <?php
             foreach ($events as $event) {
-                if(is_object($event->get_end_date_time()) && $event->get_end_date_time()->getTimestamp() < time()) {
+                if (is_object($event->get_end_date_time()) && $event->get_end_date_time()->getTimestamp() < time()) {
                     continue;
                 }
                 $dateFormat = "d.m.y";
@@ -67,4 +62,4 @@ class Ems_Event_List_Controller
         </div>
         <?php
     }
-} 
+}

@@ -1,18 +1,39 @@
 <?php
 
+namespace BIT\EMS\Controller\Shortcode;
+
+use BIT\EMS\Controller\Base\Shortcode;
+use BIT\EMS\Utility\General;
+use BIT\EMS\Utility\PHPExcel\Value_Binder;
+use Ems_Event;
+use Ems_Event_Registration;
+use Event_Management_System;
+use Fum_Conf;
+use Fum_Form_View;
+use Fum_Html_Form;
+use Fum_Html_Input_Field;
+use Fum_User;
+use Html_Input_Type_Enum;
+use PHPExcel;
+use PHPExcel_Cell;
+use PHPExcel_Worksheet;
+use PHPExcel_Writer_Excel2007;
+
 /**
+ * Shortcode: ems_participant_list
  * @author Christoph Bessei
  * @version
  */
-class Ems_Participant_List_Controller
+class ParticipantList extends Shortcode
 {
-    public static $parent_slug = 'ems_participant_list';
-    /** @var  Fum_Option_Page[] $pages */
-    public static $pages;
+    /**
+     * Register shortcode alias for backward compatibility
+     * @var array
+     */
+    protected $aliases = [\Ems_Conf::PREFIX . 'teilnehmerlisten'];
 
-    public static function get_participant_lists()
+    public function printContent($atts = [], $content = null)
     {
-
         if (!current_user_can(Ems_Event::get_edit_capability())) {
             global $wp;
             ?>
@@ -56,7 +77,6 @@ class Ems_Participant_List_Controller
 
         $form = new Fum_Html_Form('fum_parctipant_list_form', 'fum_participant_list_form', '#');
         $form->add_input_field(new Fum_Html_Input_Field('select_event', 'select_event', new Html_Input_Type_Enum(Html_Input_Type_Enum::SELECT), 'Eventauswahl', 'select_event', false));
-
 
         foreach ($events as $event) {
 
@@ -153,128 +173,8 @@ class Ems_Participant_List_Controller
                 }
             }
 
-            /**
-             *
-             *             <div style="overflow:auto;">
-             * <table>
-             * <thead>
-             * <tr>
-             * <?php foreach ($order as $title => $value): ?>
-             * <th><?php echo Fum_Html_Input_Field::get_input_field($title)->get_title(); ?></th>
-             * <?php endforeach; ?>
-             * </tr>
-             *
-             * </thead>
-             * <tbody>
-             * <?php foreach ($participant_list as $participant): ?>
-             * <tr>
-             * <?php foreach ($order as $title => $unused): ?>
-             * <td><?php echo(0 === $participant[$title] ? 'Nein' : ("1" === $participant[$title] ? 'Ja' : $participant[$title])); ?></td>
-             * <?php endforeach; ?>
-             * </tr>
-             * <?php endforeach; ?>
-             * </tbody>
-             * </table>
-             * </div>
-             */
-
             //TODO Should be in view
-            //Print html table
-
-            $dropDownUrl = Event_Management_System::get_plugin_url() . "images/drop_down.png";
-            $dropUpUrl = Event_Management_System::get_plugin_url() . "images/drop_up.png";
-
             ?>
-
-            <style type="text/css">
-
-                .toggle-container .toggle-header {
-                    background-color: #efefef;
-                    border-bottom: 1px solid #aaa;
-                    cursor: pointer;
-                    padding: 15px 15px 15px 30px;
-                    position: relative;
-                }
-
-                .toggle-container .toggle-header:before {
-                    content: ' ';
-                    position: absolute;
-                    width: 30px;
-                    height: 30px;
-                    display: inline-block;
-                    background-size: contain;
-                    left: 0;
-                    top: 12px;
-                    background-image: url('<?=$dropDownUrl?>');
-                }
-
-                .toggle-container.active .toggle-header:before {
-                    background-image: url('<?=$dropUpUrl?>');
-                }
-
-                .toggle-container:last-of-type .toggle-header {
-                    border-bottom: none;
-                }
-
-                .toggle-container .toggle-content {
-                    padding-left: 45px;
-                    margin-bottom: 15px;
-                    margin-top: 5px;
-                }
-
-                .toggle-container:last-of-type .toggle-content {
-                    margin-bottom: 0;
-                }
-
-                .toggle-container .action-container {
-                    float: right;
-                }
-
-                .table-container .table {
-                    display: table;
-                }
-
-                .table-container .table .row {
-                    display: table-row;
-                    margin-bottom: 15px;
-                }
-
-                .table-container .table .row:last-of-type {
-                    margin-bottom: 0;
-                }
-
-                .table-container .table .row .col {
-                    display: table-cell;
-                    padding: 0 5px;
-                }
-
-                @media (max-width: 700px) {
-                    .toggle-container .action-container {
-                        display: block;
-                        float: none;
-                    }
-
-                    .table-container .table {
-                        display: block;
-                    }
-
-                    .table-container .table .row {
-                        display: block;
-                        margin-bottom:;: 5 px;
-                    }
-
-                    .table-container .table .row:last-of-type {
-                        margin-bottom: 0;
-                    }
-
-                    .table-container .table .row .col {
-                        display: block;
-                    }
-                }
-
-            </style>
-
-
             <div style="overflow:auto;">
                 <?php foreach ($participant_list as $participant): ?>
                     <div class="toggle-container">
@@ -322,46 +222,6 @@ class Ems_Participant_List_Controller
                     </div>
                 <?php endforeach; ?>
             </div>
-
-            <script>
-                jQuery(".toggle-header").on('click', function (e) {
-                    if (jQuery(e.target).is('a')) {
-                        return;
-                    }
-                    var $container = jQuery(this).closest(".toggle-container");
-                    var $content = $container.find(".toggle-content");
-                    $content.slideToggle(200, function () {
-                        $container.toggleClass('active');
-                    });
-                });
-
-                jQuery('.action').on('click', function (e) {
-                    e.preventDefault();
-
-                    var r = confirm("Wirklich löschen?");
-                    if (r == true) {
-                        var self = this;
-
-                        var eventID = jQuery(this).data('event-id');
-                        var participantID = jQuery(this).data('participant-id');
-                        var action = jQuery(this).data('action');
-                        var data = {ajax: 'true', eventID: eventID, participantID: participantID, action: action};
-                        jQuery.ajax({
-                            type: "POST",
-                            data: data,
-
-                            success: function (data) {
-                                if ('OK' == jQuery.trim(data)) {
-                                    alert("Gelöscht");
-                                    self.closest(".toggle-container").remove();
-                                } else {
-                                    alert("Fehlgeschlagen.");
-                                }
-                            }
-                        });
-                    }
-                });
-            </script>
             <?php
             //Create excel table
             $objPHPExcel = new PHPExcel();
@@ -369,7 +229,7 @@ class Ems_Participant_List_Controller
             $myWorkSheet = new PHPExcel_Worksheet($objPHPExcel, 'Teilnehmerliste');
 
             //Use customized value binder so phone numbers with leading zeros are preserved
-            PHPExcel_Cell::setValueBinder(new PHPExcel_Value_Binder());
+            PHPExcel_Cell::setValueBinder(new Value_Binder());
 
             //Remove default worksheet named "Worksheet"
             $objPHPExcel->removeSheetByIndex(0);
@@ -381,14 +241,13 @@ class Ems_Participant_List_Controller
 
             $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
 
-            $downloadDir = Event_Management_System::get_plugin_path() . 'downloads/';
-            $downloadUrl = Event_Management_System::get_plugin_url() . 'downloads/';
+            $downloadDir = Event_Management_System::get_plugin_path() . 'tempDownloads/';
+            $downloadUrl = Event_Management_System::get_plugin_url() . 'tempDownloads/';
             if (!file_exists($downloadDir)) {
                 mkdir($downloadDir);
             }
 
-            // TODO This is not cryptographic save. Replace with dynamic file download with php access check.
-            $filename = sha1($id) . "_" . $id . '.xlsx';
+            $filename = General::getUrlSafeUid($id) . "_" . $id . '.xlsx';
 
             $objWriter->save($downloadDir . $filename);
             echo '<p><a href="' . $downloadUrl . $filename . '">Teilnehmerliste für Eventleiter als Excelfile downloaden</a></p>';
@@ -399,7 +258,7 @@ class Ems_Participant_List_Controller
             $myWorkSheet = new PHPExcel_Worksheet($objPHPExcel, 'Teilnehmerliste');
 
             //Use customized value binder so phone numbers with leading zeros are preserved
-            PHPExcel_Cell::setValueBinder(new PHPExcel_Value_Binder());
+            PHPExcel_Cell::setValueBinder(new Value_Binder());
 
             //Remove default worksheet named "Worksheet"
             $objPHPExcel->removeSheetByIndex(0);
@@ -410,11 +269,21 @@ class Ems_Participant_List_Controller
             $objPHPExcel->getActiveSheet()->fromArray($excel_array_public);
 
             $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-            // TODO This is not cryptographic save. Replace with dynamic file download with php access check.
-            $filename = sha1($id) . "_" . $id . '.xlsx';
+            $filename = General::getUrlSafeUid($id) . "_" . $id . '.xlsx';
 
             $objWriter->save($downloadDir . $filename);
             echo '<p><a href="' . $downloadUrl . $filename . '">Teilnehmerliste für Teilnehmer als Excelfile downloaden</a></p>';
         }
+    }
+
+    protected function addCss()
+    {
+        wp_enqueue_style('ems_participant_list', $this->getCssUrl("ems_participant_list"));
+    }
+
+    protected function addJs()
+    {
+        wp_enqueue_script('jquery');
+        wp_enqueue_script('ems_participant_list', $this->getJsUrl("ems_participant_list"));
     }
 }

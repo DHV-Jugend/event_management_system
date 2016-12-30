@@ -1,23 +1,20 @@
 <?php
-
 /**
  * @author Christoph Bessei
  * @version
  */
-class Ems_Event_Shortcode_Icon_Legend_Controller implements Ems_Shortcode_Controller_Interface
-{
-    public static function addShortcode()
-    {
-        add_shortcode(Ems_Conf::EMS_NAME_PREFIX . 'event_icon_legend', array(
-            self::class,
-            'replaceShortcode'
-        ));
-    }
 
-    public static function replaceShortcode($atts)
+namespace BIT\EMS\Controller\Shortcode;
+
+
+use BIT\EMS\Controller\Base\Shortcode;
+use Event_Management_System;
+
+class EventIconLegend extends Shortcode
+{
+    public function printContent($atts = [], $content = null)
     {
-        $imagePath = Event_Management_System::get_plugin_url() . "images/";
-        ob_start();
+        $imagePath = Event_Management_System::get_plugin_url() . "assets/img/";
         ?>
         <div id="ems_event_icon_legend" class="ems_event_icon_legend_wrapper">
             <h2>Legende</h2>
@@ -52,6 +49,5 @@ class Ems_Event_Shortcode_Icon_Legend_Controller implements Ems_Shortcode_Contro
             </div>
         </div>
         <?php
-        return ob_get_clean();
     }
 }
