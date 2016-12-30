@@ -6,32 +6,35 @@ class Event_Management_System
     protected static $plugin_path;
     protected static $plugin_url;
     protected static $src_directories = array(
-        'controller',
-        '../lib',
-        'model',
-        'view',
-        'utility',
-        'plugin_management',
-        '../../../../wp-includes',
-        'abstract',
-        'interface',
+        'src/',
+        'src/controller',
+        'src/model',
+        'src/view',
+        'src/utility',
+        'src/plugin_management',
+        '../../../wp-includes',
+        'src/abstract',
+        'src/interface',
     );
 
     public function __construct($plugin_path = null, $plugin_url = null)
     {
+        if (!is_null($plugin_path)) {
+            Event_Management_System::$plugin_path = $plugin_path;
+        }
+        if (!is_null($plugin_url)) {
+            Event_Management_System::$plugin_url = $plugin_url;
+        }
+
         // Check if frontend_user_management is loaded
         if (class_exists("Frontend_User_Management")) {
-
             // Include composer autoload
-            require_once(__DIR__ . '../lib/vendor/autoload.php');
+            require_once(static::get_plugin_path() . 'vendor/autoload.php');
 
             // TODO Use always composer autoload
             spl_autoload_register(array($this, 'autoload'));
 
-            Event_Management_System::$plugin_path = plugin_dir_path(__FILE__);
-            Event_Management_System::$plugin_url = plugin_dir_url(__FILE__);
-
-            Ems_Initialisation::initiate_plugin();
+            Ems_Initialisation::initPlugin();
         } else {
             // Normally not loaded during plugin init
             if (!function_exists('is_plugin_active')) {
@@ -47,7 +50,7 @@ class Event_Management_System
                 deactivate_plugins(realpath(plugin_dir_path(__FILE__) . "../" . basename(__FILE__)));
                 // Show error message
                 add_action('admin_notices', function () {
-                    echo '<div class="error"><p>Could not load "Event management system" since "Frontend user management is not active.</p></div>';
+                    echo '<div class="error"><p>Could not load "Event management system" since "Frontend user management" is not active.</p></div>';
                 });
             }
         }
@@ -55,7 +58,6 @@ class Event_Management_System
 
     public function autoload($class_name)
     {
-
         //Because of sucking wordpress name conventions class name != file name, convert it manually
         $class_name = 'class-' . strtolower(str_replace('_', '-', $class_name) . '.php');
         if (file_exists(Event_Management_System::$plugin_path . $class_name)) {

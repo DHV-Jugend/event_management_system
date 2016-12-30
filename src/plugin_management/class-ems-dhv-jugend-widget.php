@@ -32,28 +32,28 @@ class Ems_Dhv_Jugend_Widget extends WP_Widget {
 		<ul>
 			<?php if ( is_user_logged_in() ): ?>
 				<li>
-					<a href="<?php echo get_permalink( get_option( Ems_Conf::EMS_NAME_PREFIX . 'eventmanagement_page' ) ); ?>">Eventverwaltung</a>
+					<a href="<?php echo get_permalink( get_option( Ems_Conf::PREFIX . 'eventmanagement_page' ) ); ?>">Eventverwaltung</a>
 				</li>
 			<?php endif; ?>
-			<?php if ( is_user_logged_in() && ( current_user_can( 'read_event' ) || current_user_can( "read_" . Ems_Conf::EMS_NAME_PREFIX . "event" ) ) ): ?>
+			<?php if ( is_user_logged_in() && ( current_user_can( 'read_event' ) || current_user_can( "read_" . Ems_Conf::PREFIX . "event" ) ) ): ?>
 				<li>
-					<a href="<?php echo get_permalink( get_option( Ems_Conf::EMS_NAME_PREFIX . 'partcipant_list_page' ) ); ?>">Teilnehmerlisten</a>
+					<a href="<?php echo get_permalink( get_option( Ems_Conf::PREFIX . 'partcipant_list_page' ) ); ?>">Teilnehmerlisten</a>
 				</li>
 			<?php endif; ?>
-			<?php if ( is_user_logged_in() && ( current_user_can( 'read_event' ) || current_user_can( "read_" . Ems_Conf::EMS_NAME_PREFIX . "event" ) ) ): ?>
+			<?php if ( is_user_logged_in() && ( current_user_can( 'read_event' ) || current_user_can( "read_" . Ems_Conf::PREFIX . "event" ) ) ): ?>
 				<li>
-					<a href="<?php echo get_permalink( get_option( Ems_Conf::EMS_NAME_PREFIX . 'event_statistic_page' ) ); ?>">Eventstatistiken</a>
+					<a href="<?php echo get_permalink( get_option( Ems_Conf::PREFIX . 'event_statistic_page' ) ); ?>">Eventstatistiken</a>
 				</li>
 				<li>
 					<a target="_blank" href="https://drive.google.com/folderview?id=0B6sRvq58A9UtQVpqbTZkbTE3eUE&usp=sharing">Google Drive</a>
 				</li>
 			<?php endif; ?>
-			<!--			--><?php //if ( is_user_logged_in() && ( current_user_can( 'read_event' ) || current_user_can( "read_" . Ems_Conf::EMS_NAME_PREFIX . "event" ) ) ): ?>
+			<!--			--><?php //if ( is_user_logged_in() && ( current_user_can( 'read_event' ) || current_user_can( "read_" . Ems_Conf::PREFIX . "event" ) ) ): ?>
 			<!--				<li>-->
 			<!--					<a href="--><?php //echo get_permalink( 1153 ); ?><!--">Leitlinien/Protokolle</a>-->
 			<!--				</li>-->
 			<!--			--><?php //endif; ?>
-			<?php if ( ! is_user_logged_in() || current_user_can( 'manage_options' ) || ( current_user_can( 'read_event' ) || current_user_can( "read_" . Ems_Conf::EMS_NAME_PREFIX . "event" ) ) ): ?>
+			<?php if ( ! is_user_logged_in() || current_user_can( 'manage_options' ) || ( current_user_can( 'read_event' ) || current_user_can( "read_" . Ems_Conf::PREFIX . "event" ) ) ): ?>
 				<?php wp_register(); ?>
 			<?php endif; ?>
 			<?php if ( is_user_logged_in() ): ?>
