@@ -1,0 +1,3 @@
+# Prevent git from deleting folder and ignore everything
+*
+!.gitignore
