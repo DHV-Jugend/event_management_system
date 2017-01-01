@@ -6,7 +6,7 @@ namespace BIT\EMS\Utility;
  * @author Christoph Bessei
  * @version
  */
-class General
+class GeneralUtility
 {
     /**
      * Generate a url safe uid. Can be used for unique/secure file names.

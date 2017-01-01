@@ -1,7 +1,7 @@
 <?php
 namespace BIT\EMS\Schedule;
 
-use BIT\EMS\Utility\General;
+use BIT\EMS\Utility\GeneralUtility;
 use DirectoryIterator;
 use Event_Management_System;
 
@@ -17,7 +17,7 @@ class CleanTempFilesSchedule extends AbstractSchedule
         if (file_exists($tempDownloads)) {
             foreach (new DirectoryIterator($tempDownloads) as $fileInfo) {
                 // Ignore special files and hidden files (.htaccess, .gitignore etc)
-                if ($fileInfo->isDot() || General::startsWith($fileInfo->getFilename(), '.')) {
+                if ($fileInfo->isDot() || GeneralUtility::startsWith($fileInfo->getFilename(), '.')) {
                     continue;
                 }
                 if (time() - $fileInfo->getMTime() >= DAY_IN_SECONDS) {

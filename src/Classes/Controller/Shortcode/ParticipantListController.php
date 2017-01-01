@@ -2,7 +2,7 @@
 
 namespace BIT\EMS\Controller\Shortcode;
 
-use BIT\EMS\Utility\General;
+use BIT\EMS\Utility\GeneralUtility;
 use BIT\EMS\Utility\PHPExcel\Value_Binder;
 use Ems_Event;
 use Ems_Event_Registration;
@@ -246,7 +246,7 @@ class ParticipantListController extends AbstractShortcodeController
                 mkdir($downloadDir);
             }
 
-            $filename = General::getUrlSafeUid($id) . "_" . $id . '.xlsx';
+            $filename = GeneralUtility::getUrlSafeUid($id) . "_" . $id . '.xlsx';
 
             $objWriter->save($downloadDir . $filename);
             echo '<p><a href="' . $downloadUrl . $filename . '">Teilnehmerliste für Eventleiter als Excelfile downloaden</a></p>';
@@ -268,7 +268,7 @@ class ParticipantListController extends AbstractShortcodeController
             $objPHPExcel->getActiveSheet()->fromArray($excel_array_public);
 
             $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-            $filename = General::getUrlSafeUid($id) . "_" . $id . '.xlsx';
+            $filename = GeneralUtility::getUrlSafeUid($id) . "_" . $id . '.xlsx';
 
             $objWriter->save($downloadDir . $filename);
             echo '<p><a href="' . $downloadUrl . $filename . '">Teilnehmerliste für Teilnehmer als Excelfile downloaden</a></p>';

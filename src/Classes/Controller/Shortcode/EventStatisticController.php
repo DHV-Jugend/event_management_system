@@ -6,7 +6,7 @@
 
 namespace BIT\EMS\Controller\Shortcode;
 
-use BIT\EMS\Utility\General;
+use BIT\EMS\Utility\GeneralUtility;
 use DateTime;
 use Ems_Date_Period;
 use Ems_Event;
@@ -88,13 +88,13 @@ class EventStatisticController extends AbstractShortcodeController
                 }
                 $participant_chart->setDataSet($participant_data);
                 $participant_chart->setTitle("Anzahl Teilnehmer pro Jahr");
-                $path = "tempDownloads/participant_count_" . General::getUrlSafeUid(__FILE__) . ".png";
+                $path = "tempDownloads/participant_count_" . GeneralUtility::getUrlSafeUid(__FILE__) . ".png";
                 $participant_chart->render(Event_Management_System::get_plugin_path() . $path);
                 echo '<img src="' . Event_Management_System::get_plugin_url() . $path . '">';
 
                 $registration_chart->setDataSet($registration_data);
                 $registration_chart->setTitle("Anzahl Anmeldungen pro Jahr");
-                $path = "tempDownloads/registration_count_" . General::getUrlSafeUid(__FILE__) . ".png";
+                $path = "tempDownloads/registration_count_" . GeneralUtility::getUrlSafeUid(__FILE__) . ".png";
                 $registration_chart->render(Event_Management_System::get_plugin_path() . $path);
                 echo '<img src="' . Event_Management_System::get_plugin_url() . $path . '">';
 
