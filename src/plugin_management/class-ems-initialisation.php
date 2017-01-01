@@ -5,7 +5,7 @@ use BIT\EMS\Controller\Shortcode\EventListController;
 use BIT\EMS\Controller\Shortcode\EventRegistrationLinkController;
 use BIT\EMS\Controller\Shortcode\EventStatisticController;
 use BIT\EMS\Controller\Shortcode\ParticipantListController;
-use BIT\EMS\Schedule\CleanTempFiles;
+use BIT\EMS\Schedule\CleanTempFilesSchedule;
 
 /**
  * @author Christoph Bessei
@@ -79,7 +79,7 @@ class Ems_Initialisation
      */
     protected static function registerScheduler()
     {
-        (new CleanTempFiles())->register();
+        (new CleanTempFilesSchedule())->register();
     }
 
     /**

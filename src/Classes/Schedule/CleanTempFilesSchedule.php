@@ -1,7 +1,7 @@
 <?php
 namespace BIT\EMS\Schedule;
 
-use BIT\EMS\Schedule\Base\Base;
+use BIT\EMS\Utility\General;
 use DirectoryIterator;
 use Event_Management_System;
 
@@ -9,32 +9,18 @@ use Event_Management_System;
  * @author Christoph Bessei
  * @version
  */
-class CleanTempFiles extends Base
+class CleanTempFilesSchedule extends AbstractSchedule
 {
-    /**
-     * @var array
-     */
-    protected static $additionalIntervals = [
-        '5min' => [
-            'interval' => 5,
-            'display' => 'Every 5 minutes'
-        ]
-    ];
-
-    /**
-     * @var string
-     */
-    protected $recurrence = '5min';
-
     public function run()
     {
         $tempDownloads = Event_Management_System::get_plugin_path() . "tempDownloads/";
         if (file_exists($tempDownloads)) {
             foreach (new DirectoryIterator($tempDownloads) as $fileInfo) {
-                if ($fileInfo->isDot()) {
+                // Ignore special files and hidden files (.htaccess, .gitignore etc)
+                if ($fileInfo->isDot() || General::startsWith($fileInfo->getFilename(), '.')) {
                     continue;
                 }
-                if (time() - $fileInfo->getCTime() >= WEEK_IN_SECONDS) {
+                if (time() - $fileInfo->getMTime() >= DAY_IN_SECONDS) {
                     unlink($fileInfo->getRealPath());
                 }
             }
