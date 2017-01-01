@@ -1,14 +1,13 @@
 <?php
 namespace BIT\EMS\View;
 
-use BIT\EMS\View\Base\Base;
 use Ems_Participant_Utility;
 
 /**
  * @author Christoph Bessei
  * @version
  */
-class EventList extends Base
+class EventListView extends BaseView
 {
     public function printContent()
     {

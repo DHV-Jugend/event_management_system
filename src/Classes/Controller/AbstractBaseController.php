@@ -1,6 +1,6 @@
 <?php
 
-namespace BIT\EMS\Controller\Base;
+namespace BIT\EMS\Controller;
 
 use Event_Management_System;
 
@@ -8,7 +8,7 @@ use Event_Management_System;
  * @author Christoph Bessei
  * @version
  */
-abstract class Base
+abstract class AbstractBaseController
 {
     /**
      * Add wp_enqueue_scripts a

@@ -6,12 +6,11 @@
 
 namespace BIT\EMS\Controller\Shortcode;
 
-
-use BIT\EMS\Controller\Base\Shortcode;
+use BIT\EMS\View\EventHeaderView;
 use Ems_Event;
 use Ems_Participant_Utility;
 
-class EventHeader extends Shortcode
+class EventHeaderController extends AbstractShortcodeController
 {
     protected function addCss()
     {
@@ -36,9 +35,9 @@ class EventHeader extends Shortcode
             "dateString" => $dateString
         ];
 
-        (new \BIT\EMS\View\EventHeader($arguments))->printContent();
+        (new EventHeaderView($arguments))->printContent();
 
         // Add registration link
-        (new EventRegistrationLink())->printContent();
+        (new EventRegistrationLinkController())->printContent();
     }
 }

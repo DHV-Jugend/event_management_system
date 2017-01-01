@@ -1,10 +1,11 @@
 <?php
-use BIT\EMS\Controller\Shortcode\EventHeader;
-use BIT\EMS\Controller\Shortcode\EventIconLegend;
-use BIT\EMS\Controller\Shortcode\EventList;
-use BIT\EMS\Controller\Shortcode\EventRegistrationLink;
-use BIT\EMS\Controller\Shortcode\EventStatistic;
-use BIT\EMS\Controller\Shortcode\ParticipantList;
+use BIT\EMS\Controller\Shortcode\EventHeaderController;
+use BIT\EMS\Controller\Shortcode\EventIconLegendController;
+use BIT\EMS\Controller\Shortcode\EventListController;
+use BIT\EMS\Controller\Shortcode\EventRegistrationLinkController;
+use BIT\EMS\Controller\Shortcode\EventStatisticController;
+use BIT\EMS\Controller\Shortcode\ParticipantListController;
+use BIT\EMS\Schedule\CleanTempFiles;
 
 /**
  * @author Christoph Bessei
@@ -18,9 +19,10 @@ class Ems_Initialisation
      */
     public static function initPlugin()
     {
-        self::registerShortcodes();
-        self::addAction();
-        self::addFilter();
+        static::registerShortcodes();
+        static::addAction();
+        static::addFilter();
+        static::registerScheduler();
     }
 
 
@@ -40,12 +42,12 @@ class Ems_Initialisation
      */
     protected static function registerShortcodes()
     {
-        (new ParticipantList())->register();
-        (new EventStatistic())->register();
-        (new EventList())->register();
-        (new EventHeader())->register();
-        (new EventRegistrationLink())->register();
-        (new EventIconLegend())->register();
+        (new ParticipantListController())->register();
+        (new EventStatisticController())->register();
+        (new EventListController())->register();
+        (new EventHeaderController())->register();
+        (new EventRegistrationLinkController())->register();
+        (new EventIconLegendController())->register();
     }
 
     protected static function addAction()
@@ -70,7 +72,14 @@ class Ems_Initialisation
         add_action('do_meta_boxes', array('Ems_Dhv_Jugend', 'remove_metabox_layout'));
         add_action('widgets_init', create_function('', 'return register_widget("Ems_Dhv_Jugend_Widget");'));
         add_action('admin_enqueue_scripts', array('Ems_Script_Enqueue', 'admin_enqueue_script'));
-        add_action('wp_enqueue_scripts', array('Ems_Script_Enqueue', 'enqueue_script'));
+    }
+
+    /**
+     *
+     */
+    protected static function registerScheduler()
+    {
+        (new CleanTempFiles())->register();
     }
 
     /**

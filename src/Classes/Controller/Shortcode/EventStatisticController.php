@@ -6,8 +6,6 @@
 
 namespace BIT\EMS\Controller\Shortcode;
 
-
-use BIT\EMS\Controller\Base\Shortcode;
 use BIT\EMS\Utility\General;
 use DateTime;
 use Ems_Date_Period;
@@ -19,7 +17,7 @@ use Point;
 use VerticalBarChart;
 use XYDataSet;
 
-class EventStatistic extends Shortcode
+class EventStatisticController extends AbstractShortcodeController
 {
     protected $aliases = [\Ems_Conf::PREFIX . 'event_statistic'];
 

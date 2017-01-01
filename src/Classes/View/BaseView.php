@@ -1,12 +1,12 @@
 <?php
 
-namespace BIT\EMS\View\Base;
+namespace BIT\EMS\View;
 
 /**
  * @author Christoph Bessei
  * @version
  */
-abstract class Base
+abstract class BaseView
 {
     /**
      * @var array

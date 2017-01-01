@@ -7,13 +7,13 @@
 namespace BIT\EMS\Controller\Shortcode;
 
 
-use BIT\EMS\Controller\Base\Shortcode;
+use BIT\EMS\View\EventListView;
 use DateTime;
 use Ems_Date_Helper;
 use Ems_Date_Period;
 use Ems_Event;
 
-class EventList extends Shortcode
+class EventListController extends AbstractShortcodeController
 {
     protected function addCss()
     {
@@ -34,6 +34,6 @@ class EventList extends Shortcode
         $allowed_event_time_period = new Ems_Date_Period($allowed_event_time_start, $allowed_event_time_end);
         $events = Ems_Event::get_events(-1, true, false, null, array(), $allowed_event_time_period);
 
-        (new \BIT\EMS\View\EventList(["events" => $events]))->printContent();
+        (new EventListView(["events" => $events]))->printContent();
     }
 }

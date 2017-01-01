@@ -4,10 +4,12 @@
  * @version
  */
 
-namespace BIT\EMS\Controller\Base;
+namespace BIT\EMS\Controller\Shortcode;
 
 
-abstract class Shortcode extends Base
+use BIT\EMS\Controller\AbstractBaseController;
+
+abstract class AbstractShortcodeController extends AbstractBaseController
 {
     /**
      * Shortcode aliases. Normally the class name (TestClass => [ems_test_class]) is used.
@@ -82,7 +84,7 @@ abstract class Shortcode extends Base
 
     /**
      * Converts class name to short code
-     * Example: Class name ParticipantList Return value: ems_participant_list
+     * Example: Class name ParticipantListController Return value: ems_participant_list
      * @return string
      */
     protected function getShortcode()

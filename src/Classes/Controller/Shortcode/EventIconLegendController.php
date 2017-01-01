@@ -7,10 +7,9 @@
 namespace BIT\EMS\Controller\Shortcode;
 
 
-use BIT\EMS\Controller\Base\Shortcode;
 use Event_Management_System;
 
-class EventIconLegend extends Shortcode
+class EventIconLegendController extends AbstractShortcodeController
 {
     public function printContent($atts = [], $content = null)
     {

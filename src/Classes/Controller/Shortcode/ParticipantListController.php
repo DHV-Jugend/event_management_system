@@ -2,7 +2,6 @@
 
 namespace BIT\EMS\Controller\Shortcode;
 
-use BIT\EMS\Controller\Base\Shortcode;
 use BIT\EMS\Utility\General;
 use BIT\EMS\Utility\PHPExcel\Value_Binder;
 use Ems_Event;
@@ -24,7 +23,7 @@ use PHPExcel_Writer_Excel2007;
  * @author Christoph Bessei
  * @version
  */
-class ParticipantList extends Shortcode
+class ParticipantListController extends AbstractShortcodeController
 {
     /**
      * Register shortcode alias for backward compatibility

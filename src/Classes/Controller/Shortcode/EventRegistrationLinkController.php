@@ -6,11 +6,9 @@
 
 namespace BIT\EMS\Controller\Shortcode;
 
-
-use BIT\EMS\Controller\Base\Shortcode;
 use Fum_Conf;
 
-class EventRegistrationLink extends Shortcode
+class EventRegistrationLinkController extends AbstractShortcodeController
 {
     public function printContent($atts = [], $content = null)
     {

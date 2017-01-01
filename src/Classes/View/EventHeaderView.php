@@ -1,13 +1,13 @@
 <?php
 namespace BIT\EMS\View;
 
-use BIT\EMS\View\Base\Base;
+use BIT\EMS\View\Base\BaseView;
 
 /**
  * @author Christoph Bessei
  * @version
  */
-class EventHeader extends Base
+class EventHeaderView extends BaseView
 {
     public function printContent()
     {
