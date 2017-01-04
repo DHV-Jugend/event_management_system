@@ -1,0 +1,22 @@
+{
+  "name": "@bessei-it/event-management-system",
+  "description": "Event management system for WordPress",
+  "version": "1.0.0",
+  "devDependencies": {
+    "autoprefixer": "latest",
+    "grunt": "latest",
+    "grunt-contrib-clean": "latest",
+    "grunt-contrib-concat": "latest",
+    "grunt-contrib-copy": "latest",
+    "grunt-contrib-cssmin": "latest",
+    "grunt-contrib-sass": "latest",
+    "grunt-contrib-uglify": "latest",
+    "grunt-contrib-watch": "latest",
+    "grunt-postcss": "latest",
+    "load-grunt-config": "^0.19.2",
+    "load-grunt-tasks": "^3.5.2"
+  },
+  "dependencies": {
+    "chart.js": "^2.4.0"
+  }
+}
