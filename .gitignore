@@ -3,3 +3,4 @@ src/downloads/*.xlsx
 /composer.lock
 /vendor/
 /node_modules/
+/assets/dist/
