@@ -59,6 +59,6 @@ abstract class AbstractBaseController
      */
     protected function getAssetsUrl()
     {
-        return Event_Management_System::get_plugin_url() . "assets/";
+        return Event_Management_System::get_plugin_url() . "assets/dist/";
     }
 }

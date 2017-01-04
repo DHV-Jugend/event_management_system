@@ -17,7 +17,7 @@ class Ems_Participant_Utility
             return array();
         }
 
-        $imagePath = Event_Management_System::get_plugin_url() . "assets/img/";
+        $imagePath = Event_Management_System::get_plugin_url() . "assets/dist/img/";
         $participantIcons = array();
 
         foreach ($participantLevels as $participantLevel) {
@@ -71,7 +71,7 @@ class Ems_Participant_Utility
         if (!is_array($participantTypes)) {
             return array();
         }
-        $imagePath = Event_Management_System::get_plugin_url() . "assets/img/";
+        $imagePath = Event_Management_System::get_plugin_url() . "assets/dist/img/";
         $participantIcons = array();
 
         foreach ($participantTypes as $participantType) {

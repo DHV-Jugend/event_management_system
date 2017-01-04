@@ -13,7 +13,7 @@ class EventIconLegendController extends AbstractShortcodeController
 {
     public function printContent($atts = [], $content = null)
     {
-        $imagePath = Event_Management_System::get_plugin_url() . "assets/img/";
+        $imagePath = $this->getAssetsUrl() . "img/";
         ?>
         <div id="ems_event_icon_legend" class="ems_event_icon_legend_wrapper">
             <h2>Legende</h2>
