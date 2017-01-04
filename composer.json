@@ -14,5 +14,10 @@
   },
   "require": {
     "phpoffice/phpexcel": "^1.8"
+  },
+  "scripts": {
+    "build": [
+      "BIT\\EMS\\Composer\\Build::run"
+    ]
   }
 }
