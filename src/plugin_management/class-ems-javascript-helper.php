@@ -19,7 +19,7 @@ class Ems_Javascript_Helper
             'dayNamesShort' => array_values($wp_locale->weekday_abbrev),
             'dayNamesMin' => array_values($wp_locale->weekday_initial),
             // the date format must be converted from PHP date tokens to js date tokens
-            'dateFormat' => self::date_format_to_jquery_datepicker_format(get_option('date_format')),
+            'dateFormat' => static::date_format_to_jquery_datepicker_format(get_option('date_format')),
 
             // First day of the week from WordPress general settings
             'firstDay' => get_option('start_of_week'),
