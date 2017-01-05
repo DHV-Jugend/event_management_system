@@ -7,8 +7,14 @@ module.exports = {
             {
                 expand: true,
                 cwd: 'assets/src/',
-                src: ['fonts/**', 'img/**'],
+                src: ['fonts/**'],
                 dest: 'assets/dist/'
+            },
+            {
+                expand: true,
+                cwd: 'assets/src/optimizedImg/',
+                src: ['**'],
+                dest: 'assets/dist/img/'
             }
         ]
     }

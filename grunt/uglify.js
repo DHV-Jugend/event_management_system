@@ -3,10 +3,12 @@
  */
 module.exports = {
     dist: {
-        files: {
-            'assets/dist/js/header.js': ['assets/dist/js/header.js'],
-            'assets/dist/js/footer.js': ['assets/dist/js/footer.js']
-        }
+        files: [{
+            expand: true,
+            cwd: 'assets/dist/js',
+            src: '**/*.js',
+            dest: 'assets/dist/js'
+        }]
     },
     options: {
         report: 'min',
