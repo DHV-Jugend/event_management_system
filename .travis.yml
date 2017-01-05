@@ -29,4 +29,4 @@ before_script:
   - composer update
 
 script:
-  - vendor/bin/phpunit
+  - vendor/bin/phpunit  -c tests/phpunit.xml
