@@ -16,7 +16,7 @@ class Ems_Activation
         Ems_Event_Registration::createTables();
 
         $admin_role = get_role('administrator');
-        //TODO Because performance is not important here, maybe it would be nice if we just include all classes from the autoloader and the call get_admin_capabilities on each child of Ems_Post
+        //TODO Because performance is not important here, maybe it would be nice if we just include all classes from the autoloader and the call get_admin_capabilities on each child of AbstractPost
         //This avoids the explicit call of each class
         $caps = array_merge(
             Ems_Event::get_admin_capabilities(),

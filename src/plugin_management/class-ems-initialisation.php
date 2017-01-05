@@ -5,6 +5,7 @@ use BIT\EMS\Controller\Shortcode\EventListController;
 use BIT\EMS\Controller\Shortcode\EventRegistrationLinkController;
 use BIT\EMS\Controller\Shortcode\EventStatisticController;
 use BIT\EMS\Controller\Shortcode\ParticipantListController;
+use BIT\EMS\Model\AbstractPost;
 use BIT\EMS\Schedule\CleanTempFilesSchedule;
 
 /**
@@ -93,8 +94,8 @@ class Ems_Initialisation
     {
         $type = get_post_type($post_id);
         $class = str_replace(' ', '_', ucwords(str_replace('_', ' ', $type)));
-        if (is_subclass_of($class, 'Ems_Post')) {
-            /* @var $object Ems_Post */
+        if (is_subclass_of($class, AbstractPost::class)) {
+            /** @var $object AbstractPost */
             $object = new $class($post_id);
             $object->save_post();
         }
@@ -104,10 +105,10 @@ class Ems_Initialisation
 
     public static function manage_custom_column($column, $post_id)
     {
-        /** @var Ems_Post $class */
+        /** @var AbstractPost $class */
         $class = Ems_Name_Conversion::convert_post_type_to_class_name(get_post_type());
-        if (is_subclass_of($class, 'Ems_Post')) {
-            /** @var Ems_Post $object */
+        if (is_subclass_of($class, AbstractPost::class)) {
+            /** @var AbstractPost $object */
             $object = new $class($post_id);
             _e($object->get_meta_value_printable($column));
         }
@@ -119,9 +120,9 @@ class Ems_Initialisation
      */
     public static function add_custom_column($columns)
     {
-        /** @var Ems_Post $class */
+        /** @var AbstractPost $class */
         $class = Ems_Name_Conversion::convert_post_type_to_class_name(get_post_type());
-        if (is_subclass_of($class, 'Ems_Post')) {
+        if (is_subclass_of($class, AbstractPost::class)) {
             $custom_columns = $class::get_custom_columns();
             if (count($custom_columns) > 0) {
                 //TODO Make column sortable

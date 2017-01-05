@@ -8,7 +8,7 @@
  * Class Ems_Event quasi(!) extends WP_Post, because WP_Post is final it fake the extends via __get and __set method
  * e.g you can access the WP_Post variable $post_title via $event->post_title
  */
-class Ems_Event extends Ems_Post
+class Ems_Event extends \BIT\EMS\Model\AbstractPost
 {
 
     protected static $post_type = 'ems_event';

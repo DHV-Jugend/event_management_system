@@ -9,7 +9,7 @@
  * @author  Christoph Bessei
  * @version 0.04
  */
-class Ems_Event_Report extends Ems_Post {
+class Ems_Event_Report extends \BIT\EMS\Model\AbstractPost {
 	protected static $post_type = 'ems_event_report';
 	protected static $capability_type = array( 'ems_event_report', 'ems_event_reports' );
 	private static $connected_event_meta_key = 'ems_connected_event';

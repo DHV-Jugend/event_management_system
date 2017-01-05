@@ -4,7 +4,7 @@
  * @author Christoph Bessei
  * @version
  */
-class Ems_Event_Daily_news extends Ems_Post {
+class Ems_Event_Daily_news extends \BIT\EMS\Model\AbstractPost {
 	protected static $post_type = 'ems_event_daily_news';
 	protected static $capability_type = array( 'ems_event_daily_news', 'ems_event_daily_news' );
 	private static $connected_event_meta_key = 'ems_connected_event';

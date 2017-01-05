@@ -1,17 +1,25 @@
 <?php
+namespace BIT\EMS\Model;
+
+use Exception;
+use Fum_Observer;
+use Fum_Observable;
+
+use WP_Post;
+use Ems_Post_Interface;
 
 /**
- * @author  Christoph Bessei
- * @version 0.04
+ * @author Christoph Bessei
+ * @version
  */
-abstract class Ems_Post extends Fum_Observable implements Fum_Observer, Ems_Post_Interface
+abstract class AbstractPost extends Fum_Observable implements Fum_Observer, Ems_Post_Interface
 {
     protected $post;
     protected static $post_type;
     protected static $capability_type;
 
     /**
-     * With __get you can access Ems_Post like an WP_Post e.g. $event->ID returns the post ID
+     * With __get you can access AbstractPost like an WP_Post e.g. $event->ID returns the post ID
      * For consistency also the event member variables are accessible like this e.g. $event->end_date_time
      *
      * Be careful: If WP_Post and Ems_Event have a variable with the same name, Ems_Event variable is used
