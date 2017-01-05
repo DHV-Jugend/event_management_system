@@ -5,7 +5,7 @@
  * Description: Manage your events with WordPress (create, edit, delete, get list of participants, show some event statistics,...)
  * Version: 0.09
  * Text Domain: event-management-system
- * Domain Path: /Languages
+ * Domain Path: /languages
  * Author: Christoph Bessei
  * Author URI: https://www.schwarzwald-falke.de
  * License: GPLv2

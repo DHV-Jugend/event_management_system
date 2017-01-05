@@ -53,6 +53,10 @@ class Ems_Initialisation
 
     protected static function addAction()
     {
+        add_action('plugins_loaded', function () {
+            load_plugin_textdomain('event-management-system', Event_Management_System::getPluginUrl() . 'languages');
+        });
+
         //Register plugin settings
         add_action('admin_init', array('Ems_Option_Page_Controller', 'register_settings'));
         //Create plugin admin menu page

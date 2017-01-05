@@ -101,7 +101,7 @@ class Event_Management_System
     {
         return static::getPluginUrl() . "assets/dist/";
     }
-    
+
     /**
      * @return string
      */
@@ -110,6 +110,3 @@ class Event_Management_System
         return static::getPluginPath() . "assets/dist/";
     }
 }
-
-new Event_Management_System(); //start plugin
-

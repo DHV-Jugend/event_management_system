@@ -1,5 +1,4 @@
 # Created by .gitignore support plugin (hsz.mobi)
-src/downloads/*.xlsx
 /composer.lock
 /vendor/
 /node_modules/
