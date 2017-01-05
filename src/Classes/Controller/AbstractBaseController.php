@@ -42,7 +42,7 @@ abstract class AbstractBaseController
      */
     protected function getCssUrl($fileName)
     {
-        return $this->getAssetsUrl() . "/css/" . $fileName . ".css";
+        return Event_Management_System::getAssetsBaseUrl() . "css/" . $fileName . ".css";
     }
 
     /**
@@ -51,14 +51,6 @@ abstract class AbstractBaseController
      */
     protected function getJsUrl($fileName)
     {
-        return $this->getAssetsUrl() . "/js/" . $fileName . ".js";
-    }
-
-    /**
-     * @return string
-     */
-    protected function getAssetsUrl()
-    {
-        return Event_Management_System::get_plugin_url() . "assets/dist/";
+        return Event_Management_System::getAssetsBaseUrl() . "js/" . $fileName . ".js";
     }
 }

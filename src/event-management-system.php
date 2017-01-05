@@ -29,7 +29,7 @@ class Event_Management_System
         // Check if frontend_user_management is loaded
         if (class_exists("Frontend_User_Management")) {
             // Include composer autoload
-            require_once(static::get_plugin_path() . 'vendor/autoload.php');
+            require_once(static::getPluginPath() . 'vendor/autoload.php');
 
             // TODO Use always composer autoload
             spl_autoload_register(array($this, 'autoload'));
@@ -80,7 +80,7 @@ class Event_Management_System
     /**
      * @return string
      */
-    public static function get_plugin_path()
+    public static function getPluginPath()
     {
         return self::$plugin_path;
     }
@@ -88,11 +88,27 @@ class Event_Management_System
     /**
      * @return string
      */
-    public static function get_plugin_url()
+    public static function getPluginUrl()
     {
         return self::$plugin_url;
     }
 
+    /**
+     *
+     * @return string
+     */
+    public static function getAssetsBaseUrl()
+    {
+        return static::getPluginUrl() . "assets/dist/";
+    }
+    
+    /**
+     * @return string
+     */
+    public static function getAssetsBasePath()
+    {
+        return static::getPluginPath() . "assets/dist/";
+    }
 }
 
 new Event_Management_System(); //start plugin

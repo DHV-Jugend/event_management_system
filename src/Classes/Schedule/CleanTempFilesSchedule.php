@@ -13,7 +13,7 @@ class CleanTempFilesSchedule extends AbstractSchedule
 {
     public function run()
     {
-        $tempDownloads = Event_Management_System::get_plugin_path() . "tempDownloads/";
+        $tempDownloads = Event_Management_System::getPluginPath() . "tempDownloads/";
         if (file_exists($tempDownloads)) {
             foreach (new DirectoryIterator($tempDownloads) as $fileInfo) {
                 // Ignore special files and hidden files (.htaccess, .gitignore etc)

@@ -13,7 +13,7 @@ class EventIconLegendController extends AbstractShortcodeController
 {
     public function printContent($atts = [], $content = null)
     {
-        $imagePath = $this->getAssetsUrl() . "img/";
+        $imageBaseUrl = Event_Management_System::getAssetsBaseUrl() . "img/";
         ?>
         <div id="ems_event_icon_legend" class="ems_event_icon_legend_wrapper">
             <h2>Legende</h2>
@@ -21,29 +21,29 @@ class EventIconLegendController extends AbstractShortcodeController
             <div class="ems_event_icon_legend_column">
                 <div class="ems_event_icon_legend_entry">
                     <span class="ems_event_icon_legend_entry_text">Einsteiger:</span>
-                    <img src="<?php echo $imagePath ?>participant_level_beginner_yes.png">
+                    <img src="<?php echo $imageBaseUrl ?>participant_level_beginner_yes.png">
                 </div>
                 <div class="ems_event_icon_legend_entry">
                     <span class="ems_event_icon_legend_entry_text">Genussflieger:</span>
-                    <img src="<?php echo $imagePath ?>participant_level_intermediate_yes.png">
+                    <img src="<?php echo $imageBaseUrl ?>participant_level_intermediate_yes.png">
                 </div>
                 <div class="ems_event_icon_legend_entry">
                     <span class="ems_event_icon_legend_entry_text">Ambitionierte:</span>
-                    <img src="<?php echo $imagePath ?>participant_level_pro_yes.png">
+                    <img src="<?php echo $imageBaseUrl ?>participant_level_pro_yes.png">
                 </div>
             </div>
             <div class="ems_event_icon_legend_column">
                 <div class="ems_event_icon_legend_entry">
                     <span class="ems_event_icon_legend_entry_text">Geeignet:</span>
-                    <img src="<?php echo $imagePath ?>participant_level_beginner_yes.png">
+                    <img src="<?php echo $imageBaseUrl ?>participant_level_beginner_yes.png">
                 </div>
                 <div class="ems_event_icon_legend_entry">
                     <span class="ems_event_icon_legend_entry_text">Teilweise geeignet:</span>
-                    <img src="<?php echo $imagePath ?>participant_level_beginner_partly.png">
+                    <img src="<?php echo $imageBaseUrl ?>participant_level_beginner_partly.png">
                 </div>
                 <div class="ems_event_icon_legend_entry">
                     <span class="ems_event_icon_legend_entry_text">Nicht geeignet:</span>
-                    <img src="<?php echo $imagePath ?>participant_level_beginner_no.png">
+                    <img src="<?php echo $imageBaseUrl ?>participant_level_beginner_no.png">
                 </div>
             </div>
         </div>

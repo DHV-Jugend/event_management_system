@@ -15,12 +15,12 @@ class Ems_Option_Page_Controller {
 		//Load jquery, datepicker and register styles
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		$path = Event_Management_System::get_plugin_url() . 'css/jquery.ui.datepicker.min.css';
+		$path = Event_Management_System::getPluginUrl() . 'css/jquery.ui.datepicker.min.css';
 		wp_register_style( 'ems_smoothness_jquery_css', $path );
 
 		wp_enqueue_style( 'ems_smoothness_jquery_css' );
 
-		wp_enqueue_script( 'ems_datepicker_period', Event_Management_System::get_plugin_url() . "js/datepicker_period.js", array( 'jquery-ui-datepicker' ) );
+		wp_enqueue_script( 'ems_datepicker_period', Event_Management_System::getPluginUrl() . "js/datepicker_period.js", array( 'jquery-ui-datepicker' ) );
 		$localized = Ems_Javascript_Helper::get_localized_datepicker_options();
 		wp_localize_script( 'ems_datepicker_period', 'objectL10n', $localized );
 

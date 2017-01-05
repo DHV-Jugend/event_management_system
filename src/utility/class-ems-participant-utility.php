@@ -17,7 +17,7 @@ class Ems_Participant_Utility
             return array();
         }
 
-        $imagePath = Event_Management_System::get_plugin_url() . "assets/dist/img/";
+        $imageBaseUrl = Event_Management_System::getAssetsBaseUrl() . "img/";
         $participantIcons = array();
 
         foreach ($participantLevels as $participantLevel) {
@@ -34,7 +34,7 @@ class Ems_Participant_Utility
                     break;
 
             }
-            $path = $imagePath . "participant_level_" . $participantLevel->getKey() . "_";
+            $path = $imageBaseUrl . "participant_level_" . $participantLevel->getKey() . "_";
             switch ($participantLevel->getValue()) {
                 case 0:
                     $path .= "no";
@@ -71,7 +71,7 @@ class Ems_Participant_Utility
         if (!is_array($participantTypes)) {
             return array();
         }
-        $imagePath = Event_Management_System::get_plugin_url() . "assets/dist/img/";
+        $imageBaseUrl = Event_Management_System::getAssetsBaseUrl() . "img/";
         $participantIcons = array();
 
         foreach ($participantTypes as $participantType) {
@@ -87,7 +87,7 @@ class Ems_Participant_Utility
                     $title .= "Fußgänger ";
                     break;
             }
-            $path = $imagePath . "participant_type_" . $participantType->getKey() . "_";
+            $path = $imageBaseUrl . "participant_type_" . $participantType->getKey() . "_";
             if ($participantType->getValue()) {
                 $path .= "yes";
                 $title .= "geeignet.";

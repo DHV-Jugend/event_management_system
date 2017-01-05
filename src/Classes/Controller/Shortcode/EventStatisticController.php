@@ -28,7 +28,7 @@ class EventStatisticController extends AbstractShortcodeController
             wp_redirect(home_url());
             exit;
         }
-        require_once(Event_Management_System::get_plugin_path() . "lib/libchart/classes/libchart.php");
+        require_once(Event_Management_System::getPluginPath() . "lib/libchart/classes/libchart.php");
         $events = Ems_Event::get_events();
         if (!empty($events)) {
             $startdate_oldest_event = null;
@@ -89,14 +89,14 @@ class EventStatisticController extends AbstractShortcodeController
                 $participant_chart->setDataSet($participant_data);
                 $participant_chart->setTitle("Anzahl Teilnehmer pro Jahr");
                 $path = "tempDownloads/participant_count_" . GeneralUtility::getUrlSafeUid(__FILE__) . ".png";
-                $participant_chart->render(Event_Management_System::get_plugin_path() . $path);
-                echo '<img src="' . Event_Management_System::get_plugin_url() . $path . '">';
+                $participant_chart->render(Event_Management_System::getPluginPath() . $path);
+                echo '<img src="' . Event_Management_System::getPluginUrl() . $path . '">';
 
                 $registration_chart->setDataSet($registration_data);
                 $registration_chart->setTitle("Anzahl Anmeldungen pro Jahr");
                 $path = "tempDownloads/registration_count_" . GeneralUtility::getUrlSafeUid(__FILE__) . ".png";
-                $registration_chart->render(Event_Management_System::get_plugin_path() . $path);
-                echo '<img src="' . Event_Management_System::get_plugin_url() . $path . '">';
+                $registration_chart->render(Event_Management_System::getPluginPath() . $path);
+                echo '<img src="' . Event_Management_System::getPluginUrl() . $path . '">';
 
                 $content = '';
                 ?>

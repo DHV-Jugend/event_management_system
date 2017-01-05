@@ -240,8 +240,8 @@ class ParticipantListController extends AbstractShortcodeController
 
             $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
 
-            $downloadDir = Event_Management_System::get_plugin_path() . 'tempDownloads/';
-            $downloadUrl = Event_Management_System::get_plugin_url() . 'tempDownloads/';
+            $downloadDir = Event_Management_System::getPluginPath() . 'tempDownloads/';
+            $downloadUrl = Event_Management_System::getPluginUrl() . 'tempDownloads/';
             if (!file_exists($downloadDir)) {
                 mkdir($downloadDir);
             }
