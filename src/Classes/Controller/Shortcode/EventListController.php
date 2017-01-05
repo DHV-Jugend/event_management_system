@@ -22,7 +22,7 @@ class EventListController extends AbstractShortcodeController
 
     protected function addJs()
     {
-        wp_enqueue_script('ems-tooltip', $this->getJsUrl("ems-tooltip"));
+        wp_enqueue_script('ems-tooltip', $this->getJsUrl("ems_tooltip"));
     }
 
     public function printContent($atts = [], $content = null)
