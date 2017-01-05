@@ -54,7 +54,7 @@ class Ems_Initialisation
     protected static function addAction()
     {
         add_action('plugins_loaded', function () {
-            load_plugin_textdomain('event-management-system', Event_Management_System::getPluginUrl() . 'languages');
+            load_plugin_textdomain('event-management-system', false, 'event-management-system/languages');
         });
 
         //Register plugin settings
