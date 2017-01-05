@@ -1,5 +1,8 @@
 language: php
 
+cache:
+  apt: true
+
 notifications:
   email:
     on_success: never
