@@ -1,10 +1,16 @@
 <?php
-
 /**
  * @author Christoph Bessei
  * @version
  */
-class Ems_Participant_Utility
+
+namespace BIT\EMS\Utility;
+
+
+use Ems_Event;
+use Event_Management_System;
+
+class ParticipantUtility
 {
     /**
      * @param Ems_Event $event

@@ -1,7 +1,7 @@
 <?php
 namespace BIT\EMS\View;
 
-use Ems_Participant_Utility;
+use BIT\EMS\Utility\ParticipantUtility;
 
 /**
  * @author Christoph Bessei
@@ -23,8 +23,8 @@ class EventListView extends BaseView
                 $dateFormat = "d.m.y";
                 $date_string = $event->getFormattedDateString($dateFormat);
 
-                $participantLevelIcons = Ems_Participant_Utility::getParticipantLevelIcons($event);
-                $participantTypeIcons = Ems_Participant_Utility::getParticipantTypeIcons($event);
+                $participantLevelIcons = ParticipantUtility::getParticipantLevelIcons($event);
+                $participantTypeIcons = ParticipantUtility::getParticipantTypeIcons($event);
                 ?>
                 <div class="ems_event_entry">
                     <a href="<?php echo get_permalink($event->ID); ?>"><?php echo $event->post_title; ?></a>

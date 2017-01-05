@@ -6,9 +6,9 @@
 
 namespace BIT\EMS\Controller\Shortcode;
 
+use BIT\EMS\Utility\ParticipantUtility;
 use BIT\EMS\View\EventHeaderView;
 use Ems_Event;
-use Ems_Participant_Utility;
 
 class EventHeaderController extends AbstractShortcodeController
 {
@@ -25,8 +25,8 @@ class EventHeaderController extends AbstractShortcodeController
     public function printContent($atts = [], $content = null)
     {
         $event = Ems_Event::get_event(get_the_ID());
-        $participantLevelIcons = Ems_Participant_Utility::getParticipantLevelIcons($event);
-        $participantTypeIcons = Ems_Participant_Utility::getParticipantTypeIcons($event);
+        $participantLevelIcons = ParticipantUtility::getParticipantLevelIcons($event);
+        $participantTypeIcons = ParticipantUtility::getParticipantTypeIcons($event);
         $dateString = $event->getFormattedDateString(get_option("date_format"));
 
         $arguments = [
