@@ -16,8 +16,9 @@
     "phpoffice/phpexcel": "^1.8"
   },
   "require-dev": {
-    "wp-cli/wp-cli" : "*",
-    "psy/psysh" : "*"
+    "phpunit/phpunit": "5.*.*",
+    "phpunit/php-invoker": "*",
+    "phpunit/dbunit": ">=1.2"
   },
   "scripts": {
     "build": [
