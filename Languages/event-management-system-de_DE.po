@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Event Management System\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-05 13:27+0000\n"
+"PO-Revision-Date: 2017-01-05 13:32+0000\n"
+"Last-Translator: Chris <chrisbessei@schwarzwald-falke.de>\n"
+"Language-Team: German\n"
+"Language: de-DE\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco - https://localise.biz/"
+
+#. URI of the plugin
+msgid "https://github.com/SchwarzwaldFalke/event_management_system"
+msgstr "https://github.com/SchwarzwaldFalke/event_management_system"
+
+#. Author of the plugin
+msgid "Christoph Bessei"
+msgstr "Christoph Bessei"
+
+#. Author URI of the plugin
+msgid "https://www.schwarzwald-falke.de"
+msgstr "https://www.schwarzwald-falke.de"
+
+#: src/plugin_management/class-ems-javascript-helper.php:14
+msgid "Close"
+msgstr "Schließen"
+
+#: src/plugin_management/class-ems-javascript-helper.php:15
+msgid "Today"
+msgstr "Heute"
+
+#. Name of the plugin
+msgid "Event Management System"
+msgstr "Event Management System"
+
+#. Description of the plugin
+msgid ""
+"Manage your events with WordPress (create, edit, delete, get list of "
+"participants, show some event statistics,...)"
+msgstr ""
+"Verwalte deine Events mit WordPress. Erstelle, editiere oder lösche Events, "
+"lass dir eine Liste aller Teilnehmer anzeigen, analysiere Eventstatistiken "
+"uvm."
