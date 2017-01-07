@@ -7,13 +7,18 @@
 namespace BIT\EMS\Composer;
 
 
+use Composer\Config;
+use Composer\Script\Event;
+
 class InstallTests
 {
-    public static function run()
+    public static function run(Event $event)
     {
-        $pluginDir = realpath(__DIR__ . "/../../../..");
-        
-        $eventManagementSystemDir = realpath(__DIR__ . "/../../..");
+        /** @var Config $config */
+        $config = $event->getComposer()->getConfig();
+        $pluginDir = dirname(dirname($config->get('vendor-dir')));
+
+        $eventManagementSystemDir = dirname($config->get('vendor-dir'));
         // Install wp tests
         passthru('bash ' . $eventManagementSystemDir . '/tests/bin/install-wp-tests.sh wordpress_test root "" localhost $WP_VERSION');
 
