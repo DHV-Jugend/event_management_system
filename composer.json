@@ -1,6 +1,7 @@
 {
   "name": "bit/event-management-system",
   "description": "Event management system plugin for wordpress",
+  "license": "GPL-2.0",
   "authors": [
     {
       "name": "Christoph Bessei",
