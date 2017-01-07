@@ -21,11 +21,11 @@ class Build
 
     public function runDev(Event $event)
     {
-        passthru("grunt");
+        passthru('grunt');
     }
 
     public function runProd(Event $event)
     {
-        passthru("grunt dist");
+        passthru('grunt dist');
     }
 }
