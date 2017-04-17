@@ -3,7 +3,7 @@
  * Plugin Name: Event Management System
  * Plugin URI: https://github.com/SchwarzwaldFalke/event_management_system
  * Description: Manage your events with WordPress (create, edit, delete, get list of participants, show some event statistics,...)
- * Version: 0.1.1
+ * Version: 0.1.2
  * Text Domain: event-management-system
  * Domain Path: /languages
  * Author: Christoph Bessei
