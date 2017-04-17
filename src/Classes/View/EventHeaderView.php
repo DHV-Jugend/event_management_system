@@ -1,7 +1,6 @@
 <?php
-namespace BIT\EMS\View;
 
-use BIT\EMS\View\Base\BaseView;
+namespace BIT\EMS\View;
 
 /**
  * @author Christoph Bessei
