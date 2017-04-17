@@ -39,7 +39,7 @@ class ParticipantListController extends AbstractShortcodeController
             <p><strong>Du hast keinen Zugriff auf diese Seite.</strong></p>
             <?php
             if (!is_user_logged_in()) {
-                $redirect_url = add_query_arg(array('select_event' => $_REQUEST['select_event']), get_permalink());
+                $redirect_url = add_query_arg(['select_event' => $_REQUEST['select_event']], get_permalink());
                 ?>
                 <p>
                     <a href="<?php echo wp_login_url($redirect_url); ?>">Anmelden</a>
@@ -89,7 +89,7 @@ class ParticipantListController extends AbstractShortcodeController
             $title = $event->post_title . ' ' . $year . ' (' . count(Ems_Event_Registration::get_registrations_of_event($event->ID)) . ')';
             $value = 'ID_' . $event->ID;
             $possible_values = $form->get_input_field('select_event')->get_possible_values();
-            $possible_values[] = array('title' => $title, 'value' => $value, 'ID' => $event->ID);
+            $possible_values[] = ['title' => $title, 'value' => $value, 'ID' => $event->ID];
             $form->get_input_field('select_event')->set_possible_values($possible_values);
         }
         if (isset($_REQUEST[Fum_Conf::$fum_input_field_select_event])) {
@@ -110,23 +110,23 @@ class ParticipantListController extends AbstractShortcodeController
             }
 
             //Create array with all relevant data
-            $participant_list = array();
+            $participant_list = [];
 
             foreach ($registrations as $registration) {
-                $user_data = array_intersect_key(Fum_User::get_user_data($registration->get_user_id()), array_merge(Fum_Html_Form::get_form(Fum_Conf::$fum_event_register_form_unique_name)->get_unique_names_of_input_fields(), array("fum_premium_participant" => "fum_premium_participant")));
+                $user_data = array_intersect_key(Fum_User::get_user_data($registration->get_user_id()), array_merge(Fum_Html_Form::get_form(Fum_Conf::$fum_event_register_form_unique_name)->get_unique_names_of_input_fields(), ["fum_premium_participant" => "fum_premium_participant"]));
                 if (empty($user_data)) {
                     continue;
                 }
                 unset($user_data[Fum_Conf::$fum_input_field_submit]);
                 unset($user_data[Fum_Conf::$fum_input_field_accept_agb]);
-                $merged_array = array_merge($user_data, $registration->get_data(), array('id' => $registration->get_user_id()));
+                $merged_array = array_merge($user_data, $registration->get_data(), ['id' => $registration->get_user_id()]);
                 $participant_list[] = $merged_array;
             }
 
-            $excel_array_private = array();
-            $excel_array_public = array();
+            $excel_array_private = [];
+            $excel_array_public = [];
 
-            $public_fields = array(
+            $public_fields = [
                 "Vorname",
                 "Nachname",
                 "E-Mail",
@@ -137,7 +137,7 @@ class ParticipantListController extends AbstractShortcodeController
                 "Handynummer",
                 "Suche Mitfahrgelegenheit",
                 "Biete Mitfahrgelgenheit",
-            );
+            ];
 
 
             $order = $participant_list[0];
@@ -246,7 +246,7 @@ class ParticipantListController extends AbstractShortcodeController
                 mkdir($downloadDir);
             }
 
-            $filename = GeneralUtility::getUrlSafeUid($id) . "_" . $id . '.xlsx';
+            $filename = 'private_' . GeneralUtility::getUrlSafeUid($id) . '_' . $id . '.xlsx';
 
             $objWriter->save($downloadDir . $filename);
             echo '<p><a href="' . $downloadUrl . $filename . '">Teilnehmerliste für Eventleiter als Excelfile downloaden</a></p>';
@@ -268,7 +268,7 @@ class ParticipantListController extends AbstractShortcodeController
             $objPHPExcel->getActiveSheet()->fromArray($excel_array_public);
 
             $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-            $filename = GeneralUtility::getUrlSafeUid($id) . "_" . $id . '.xlsx';
+            $filename = 'public_' . GeneralUtility::getUrlSafeUid($id) . '_' . $id . '.xlsx';
 
             $objWriter->save($downloadDir . $filename);
             echo '<p><a href="' . $downloadUrl . $filename . '">Teilnehmerliste für Teilnehmer als Excelfile downloaden</a></p>';
