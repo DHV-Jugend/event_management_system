@@ -3,7 +3,7 @@
  * Plugin Name: Event Management System
  * Plugin URI: https://github.com/SchwarzwaldFalke/event_management_system
  * Description: Manage your events with WordPress (create, edit, delete, get list of participants, show some event statistics,...)
- * Version: 0.1.0
+ * Version: 0.1.1
  * Text Domain: event-management-system
  * Domain Path: /languages
  * Author: Christoph Bessei
@@ -12,7 +12,7 @@
  */
 
 //Load plugin
-require_once(__DIR__ . "src/event-management-system.php");
+require_once(__DIR__ . "/src/event-management-system.php");
 new Event_Management_System(plugin_dir_path(__FILE__), plugin_dir_url(__FILE__));
 
 //Have to be called from main plugin file? Couldn't get it working in other places
