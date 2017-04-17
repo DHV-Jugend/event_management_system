@@ -48,7 +48,7 @@ abstract class AbstractShortcodeController extends AbstractBaseController
         foreach ($shortcodes as $shortcode) {
             add_shortcode($shortcode, [
                 $this,
-                'getContent'
+                'getContent',
             ]);
         }
 
@@ -90,6 +90,9 @@ abstract class AbstractShortcodeController extends AbstractBaseController
     protected function getShortcode()
     {
         $shortClassName = (new \ReflectionClass($this))->getShortName();
-        return \Ems_Conf::PREFIX . strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $shortClassName));
+        $shortcode = \Ems_Conf::PREFIX . strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $shortClassName));
+        // Remove trailing _controller
+        $shortcode = substr($shortcode, 0, -1 * (strlen('_controller')));
+        return $shortcode;
     }
 }
