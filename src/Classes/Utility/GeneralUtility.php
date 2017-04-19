@@ -13,10 +13,10 @@ class GeneralUtility
      * @param string|null $salt
      * @return string
      */
-    public static function getUrlSafeUid($salt = null)
+    public static function getUrlSafeUid(string $salt = null)
     {
         if (is_null($salt)) {
-            $salt = uniqid(strval(microtime(true)), true);
+            $salt = bin2hex(random_bytes(50));
         }
         return urlencode(wp_create_nonce($salt));
     }
