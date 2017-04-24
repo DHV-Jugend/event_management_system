@@ -1,4 +1,5 @@
 <?php
+
 namespace BIT\EMS\Model;
 
 use Exception;
@@ -14,8 +15,19 @@ use Ems_Post_Interface;
  */
 abstract class AbstractPost extends Fum_Observable implements Fum_Observer, Ems_Post_Interface
 {
+    /**
+     * @var WP_Post
+     */
     protected $post;
+
+    /**
+     * @var string
+     */
     protected static $post_type;
+
+    /**
+     * @var string
+     */
     protected static $capability_type;
 
     /**
@@ -51,10 +63,18 @@ abstract class AbstractPost extends Fum_Observable implements Fum_Observer, Ems_
     public function __call($method, $args)
     {
         //__call is not called if the function exists in Ems_Event, so we just have to check if the function exists in WP_Post
-        if (is_callable(array($this->get_post(), $method))) {
-            return call_user_func_array(array($this->get_post(), $method), $args);
+        if (is_callable([$this->get_post(), $method])) {
+            return call_user_func_array([$this->get_post(), $method], $args);
         }
         throw new Exception("Tried to call function: " . print_r($method, true) . " which does not exist in WP_Post and Ems_Event");
+    }
+
+    /**
+     * @return int
+     */
+    public function getID()
+    {
+        return $this->post->ID;
     }
 
 
@@ -83,7 +103,7 @@ abstract class AbstractPost extends Fum_Observable implements Fum_Observer, Ems_
             $single = $cap_type[0];
             $plural = $cap_type[1];
         }
-        $caps = array(
+        $caps = [
             'edit_' . $single => true,
             'read_' . $single => true,
             'delete_' . $single => true,
@@ -92,7 +112,7 @@ abstract class AbstractPost extends Fum_Observable implements Fum_Observer, Ems_
             'publish_' . $plural => true,
             'read_private_' . $plural => true,
             'read' => true,
-        );
+        ];
 
         return $caps;
     }
