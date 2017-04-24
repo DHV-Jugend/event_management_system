@@ -2,8 +2,8 @@
 
 namespace BIT\EMS\Controller\Shortcode;
 
-use BIT\EMS\Utility\GeneralUtility;
-use BIT\EMS\Utility\PHPExcel\Value_Binder;
+use BIT\EMS\Domain\Repository\EventRepository;
+use BIT\EMS\Service\ParticipantListService;
 use Ems_Event;
 use Ems_Event_Registration;
 use Event_Management_System;
@@ -13,10 +13,6 @@ use Fum_Html_Form;
 use Fum_Html_Input_Field;
 use Fum_User;
 use Html_Input_Type_Enum;
-use PHPExcel;
-use PHPExcel_Cell;
-use PHPExcel_Worksheet;
-use PHPExcel_Writer_Excel2007;
 
 /**
  * Shortcode: ems_participant_list
@@ -30,6 +26,22 @@ class ParticipantListController extends AbstractShortcodeController
      * @var array
      */
     protected $aliases = [\Ems_Conf::PREFIX . 'teilnehmerlisten'];
+
+    /**
+     * @var \BIT\EMS\Service\ParticipantListService
+     */
+    protected $participantListService;
+
+    /**
+     * @var \BIT\EMS\Domain\Repository\EventRepository
+     */
+    protected $eventRepository;
+
+    public function __construct()
+    {
+        $this->participantListService = new ParticipantListService();
+        $this->eventRepository = new EventRepository();
+    }
 
     public function printContent($atts = [], $content = null)
     {
@@ -105,7 +117,6 @@ class ParticipantListController extends AbstractShortcodeController
 
             if (empty($registrations)) {
                 echo '<p><strong>Bisher gibt es keine Anmeldungen für dieses Event</strong></p>';
-
                 return;
             }
 
@@ -121,55 +132,6 @@ class ParticipantListController extends AbstractShortcodeController
                 unset($user_data[Fum_Conf::$fum_input_field_accept_agb]);
                 $merged_array = array_merge($user_data, $registration->get_data(), ['id' => $registration->get_user_id()]);
                 $participant_list[] = $merged_array;
-            }
-
-            $excel_array_private = [];
-            $excel_array_public = [];
-
-            $public_fields = [
-                "Vorname",
-                "Nachname",
-                "E-Mail",
-                "Stadt",
-                "Postleitzahl",
-                "Bundesland",
-                "Telefonnummer",
-                "Handynummer",
-                "Suche Mitfahrgelegenheit",
-                "Biete Mitfahrgelgenheit",
-            ];
-
-
-            $order = $participant_list[0];
-
-            //Generate title row
-            foreach ($order as $title => $value) {
-                $field = Fum_Html_Input_Field::get_input_field($title);
-                if (is_object($field)) {
-                    $excel_array_private[0][] = $field->get_title();
-                    if (in_array(Fum_Html_Input_Field::get_input_field($title)->get_title(), $public_fields)) {
-                        $excel_array_public[0][] = Fum_Html_Input_Field::get_input_field($title)->get_title();
-                    }
-                }
-
-            }
-
-            //Generate entry rows
-            foreach ($participant_list as $index => $participant) {
-                foreach ($order as $title => $unused) {
-                    $value = (0 === $participant[$title] ? 'Nein' : ("1" === $participant[$title] ? 'Ja' : $participant[$title]));
-                    if ($title == "fum_premium_participant") {
-                        $value = (empty($participant[$title]) ? 'Nein' : 'Ja');
-                    }
-                    //$index+1 because $index=0 is the title row
-                    $excel_array_private[$index + 1][] = $value;
-                    $field = Fum_Html_Input_Field::get_input_field($title);
-                    if (is_object($field)) {
-                        if (in_array($field->get_title(), $public_fields)) {
-                            $excel_array_public[$index + 1][] = $value;
-                        }
-                    }
-                }
             }
 
             //TODO Should be in view
@@ -221,56 +183,24 @@ class ParticipantListController extends AbstractShortcodeController
                     </div>
                 <?php endforeach; ?>
             </div>
+
             <?php
-            //Create excel table
-            $objPHPExcel = new PHPExcel();
-
-            $myWorkSheet = new PHPExcel_Worksheet($objPHPExcel, 'Teilnehmerliste');
-
-            //Use customized value binder so phone numbers with leading zeros are preserved
-            PHPExcel_Cell::setValueBinder(new Value_Binder());
-
-            //Remove default worksheet named "Worksheet"
-            $objPHPExcel->removeSheetByIndex(0);
-
-            // Attach the "My Data" worksheet as the first worksheet in the PHPExcel object
-            $objPHPExcel->addSheet($myWorkSheet, 0);
-            $objPHPExcel->setActiveSheetIndex(0);
-            $objPHPExcel->getActiveSheet()->fromArray($excel_array_private);
-
-            $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-
             $downloadDir = Event_Management_System::getPluginPath() . 'tempDownloads/';
             $downloadUrl = Event_Management_System::getPluginUrl() . 'tempDownloads/';
             if (!file_exists($downloadDir)) {
                 mkdir($downloadDir);
             }
 
-            $filename = 'private_' . GeneralUtility::getUrlSafeUid($id) . '_' . $id . '.xlsx';
+            $event = $this->eventRepository->findEventById($id);
 
-            $objWriter->save($downloadDir . $filename);
+            // Private participant list
+            $filename = ParticipantListService::getUrlSafeFileName($event, 'Eventleiter');
+            $this->participantListService->generatePrivateParticipantList($registrations, $downloadDir . $filename);
             echo '<p><a href="' . $downloadUrl . $filename . '">Teilnehmerliste für Eventleiter als Excelfile downloaden</a></p>';
 
-            //Public participant list excel table
-            $objPHPExcel = new PHPExcel();
-
-            $myWorkSheet = new PHPExcel_Worksheet($objPHPExcel, 'Teilnehmerliste');
-
-            //Use customized value binder so phone numbers with leading zeros are preserved
-            PHPExcel_Cell::setValueBinder(new Value_Binder());
-
-            //Remove default worksheet named "Worksheet"
-            $objPHPExcel->removeSheetByIndex(0);
-
-            // Attach the "My Data" worksheet as the first worksheet in the PHPExcel object
-            $objPHPExcel->addSheet($myWorkSheet, 0);
-            $objPHPExcel->setActiveSheetIndex(0);
-            $objPHPExcel->getActiveSheet()->fromArray($excel_array_public);
-
-            $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-            $filename = 'public_' . GeneralUtility::getUrlSafeUid($id) . '_' . $id . '.xlsx';
-
-            $objWriter->save($downloadDir . $filename);
+            // Public participant list
+            $filename = ParticipantListService::getUrlSafeFileName($event, 'Teilnehmer');
+            $this->participantListService->generatePublicParticipantList($registrations, $downloadDir . $filename);
             echo '<p><a href="' . $downloadUrl . $filename . '">Teilnehmerliste für Teilnehmer als Excelfile downloaden</a></p>';
         }
     }

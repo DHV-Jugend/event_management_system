@@ -10,15 +10,11 @@ class GeneralUtility
 {
     /**
      * Generate a url safe uid. Can be used for unique/secure file names.
-     * @param string|null $salt
      * @return string
      */
-    public static function getUrlSafeUid(string $salt = null)
+    public static function getUrlSafeUid()
     {
-        if (is_null($salt)) {
-            $salt = bin2hex(random_bytes(50));
-        }
-        return urlencode(wp_create_nonce($salt));
+        return urlencode(wp_create_nonce(bin2hex(random_bytes(50))));
     }
 
     /**
