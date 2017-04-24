@@ -1,4 +1,11 @@
 <?php
+/**
+ * @author Christoph Bessei
+ */
+
+namespace BIT\EMS\PluginManagement;
+
+
 use BIT\EMS\Controller\Shortcode\EventHeaderController;
 use BIT\EMS\Controller\Shortcode\EventIconLegendController;
 use BIT\EMS\Controller\Shortcode\EventListController;
@@ -7,18 +14,13 @@ use BIT\EMS\Controller\Shortcode\EventStatisticController;
 use BIT\EMS\Controller\Shortcode\ParticipantListController;
 use BIT\EMS\Model\AbstractPost;
 use BIT\EMS\Schedule\CleanTempFilesSchedule;
+use Ems_Event;
+use Ems_Event_Daily_news;
+use Ems_Name_Conversion;
 
-/**
- * @author Christoph Bessei
- * @version
- */
-class Ems_Initialisation
+class Initialisation
 {
-
-    /**
-     *
-     */
-    public static function initPlugin()
+    public static function run()
     {
         static::registerShortcodes();
         static::addAction();
@@ -33,13 +35,13 @@ class Ems_Initialisation
     protected static function addFilter()
     {
         if (is_admin()) {
-            add_filter('manage_pages_columns', array('Ems_Initialisation', 'add_custom_column'));
-            add_filter('manage_posts_columns', array('Ems_Initialisation', 'add_custom_column'));
+            add_filter('manage_pages_columns', [static::class, 'add_custom_column']);
+            add_filter('manage_posts_columns', [static::class, 'add_custom_column']);
         }
     }
 
     /**
-     * Register event management shortcodes
+     * Register shortcodes
      */
     protected static function registerShortcodes()
     {
@@ -51,6 +53,9 @@ class Ems_Initialisation
         (new EventIconLegendController())->register();
     }
 
+    /**
+     *
+     */
     protected static function addAction()
     {
         add_action('plugins_loaded', function () {
@@ -58,25 +63,25 @@ class Ems_Initialisation
         });
 
         //Register plugin settings
-        add_action('admin_init', array('Ems_Option_Page_Controller', 'register_settings'));
+        add_action('admin_init', ['Ems_Option_Page_Controller', 'register_settings']);
         //Create plugin admin menu page
-        add_action('admin_menu', array('Ems_Option_Page_Controller', 'create_menu'));
+        add_action('admin_menu', ['Ems_Option_Page_Controller', 'create_menu']);
 
         //Redirect 'event' url parameter to 'ems_event' because event seems to be reserved from wordpress
-        add_action('parse_request', array('Ems_Redirect', 'redirect_event_parameter'));
+        add_action('parse_request', ['Ems_Redirect', 'redirect_event_parameter']);
 
-        add_action('add_meta_boxes', array('Ems_Dhv_Jugend', 'add_meta_box_to_event'), 10, 2);
-        add_action('add_meta_boxes', array('Ems_Dhv_Jugend', 'add_meta_box_to_event_report'), 10, 2);
+        add_action('add_meta_boxes', ['Ems_Dhv_Jugend', 'add_meta_box_to_event'], 10, 2);
+        add_action('add_meta_boxes', ['Ems_Dhv_Jugend', 'add_meta_box_to_event_report'], 10, 2);
 
-        add_action('save_post', array('Ems_Initialisation', 'save_post'));
+        add_action('save_post', [static::class, 'save_post']);
 
-        add_action('manage_pages_custom_column', array('Ems_Initialisation', 'manage_custom_column'), 10, 2);
-        add_action('manage_posts_custom_column', array('Ems_Initialisation', 'manage_custom_column'), 10, 2);
+        add_action('manage_pages_custom_column', [static::class, 'manage_custom_column'], 10, 2);
+        add_action('manage_posts_custom_column', [static::class, 'manage_custom_column'], 10, 2);
 
-        add_action('init', array('Ems_Initialisation', 'register_custom_post_types'));
-        add_action('do_meta_boxes', array('Ems_Dhv_Jugend', 'remove_metabox_layout'));
+        add_action('init', [static::class, 'register_custom_post_types']);
+        add_action('do_meta_boxes', ['Ems_Dhv_Jugend', 'remove_metabox_layout']);
         add_action('widgets_init', create_function('', 'return register_widget("Ems_Dhv_Jugend_Widget");'));
-        add_action('admin_enqueue_scripts', array('Ems_Script_Enqueue', 'admin_enqueue_script'));
+        add_action('admin_enqueue_scripts', ['Ems_Script_Enqueue', 'admin_enqueue_script']);
     }
 
     /**

@@ -39,11 +39,10 @@ class Event_Management_System
 
         // Check if frontend_user_management is loaded
         if (class_exists("Frontend_User_Management")) {
-
             // TODO Use always composer autoload
             spl_autoload_register(['Event_Management_System', 'autoload']);
 
-            Ems_Initialisation::initPlugin();
+            \BIT\EMS\PluginManagement\Initialisation::run();
         } else {
             // Normally not loaded during plugin init
             if (!function_exists('is_plugin_active')) {
