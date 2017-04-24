@@ -3,9 +3,20 @@
 class Event_Management_System
 {
 
+    /**
+     * @var string
+     */
     protected static $plugin_path;
+
+    /**
+     * @var string
+     */
     protected static $plugin_url;
-    protected static $src_directories = array(
+
+    /**
+     * @var array
+     */
+    protected static $src_directories = [
         'src/',
         'src/controller',
         'src/model',
@@ -15,7 +26,7 @@ class Event_Management_System
         '../../../wp-includes',
         'src/abstract',
         'src/interface',
-    );
+    ];
 
     public function __construct($plugin_path = null, $plugin_url = null)
     {
