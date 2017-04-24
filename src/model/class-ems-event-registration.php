@@ -12,7 +12,7 @@ class Ems_Event_Registration extends Ems_Log
 
     protected static $additionalLogFields = [
         'event' => 'int(11)',
-        'user' => 'int(11)'
+        'user' => 'int(11)',
     ];
 
     protected static $option_name = 'ems_event_registration';
@@ -25,7 +25,7 @@ class Ems_Event_Registration extends Ems_Log
      */
     private $data;
 
-    public function __construct($event_post_id, $user_id, $data = array())
+    public function __construct($event_post_id, $user_id, $data = [])
     {
         $this->event_post_id = $event_post_id;
         $this->user_id = $user_id;
@@ -33,15 +33,15 @@ class Ems_Event_Registration extends Ems_Log
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function get_event_post_id()
     {
-        return $this->event_post_id;
+        return (int)$this->event_post_id;
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function get_user_id()
     {
@@ -203,7 +203,7 @@ class Ems_Event_Registration extends Ems_Log
         if (is_array($registrations)) {
             return $registrations;
         }
-        return array();
+        return [];
     }
 
     /**
@@ -214,7 +214,7 @@ class Ems_Event_Registration extends Ems_Log
     public static function get_registrations_of_event($event_post_id)
     {
         $registrations = self::get_event_registrations();
-        $event_registrations = array();
+        $event_registrations = [];
         foreach ($registrations as $registration) {
             if ($registration->get_event_post_id() == $event_post_id) {
                 $event_registrations[] = $registration;
@@ -231,7 +231,7 @@ class Ems_Event_Registration extends Ems_Log
     public static function get_registrations_of_user($user_id)
     {
         $registrations = self::get_event_registrations();
-        $event_registrations = array();
+        $event_registrations = [];
         foreach ($registrations as $registration) {
             if ($registration->get_user_id() == $user_id) {
                 $event_registrations[] = $registration;
