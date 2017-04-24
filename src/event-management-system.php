@@ -31,16 +31,14 @@ class Event_Management_System
     public function __construct($plugin_path = null, $plugin_url = null)
     {
         if (!is_null($plugin_path)) {
-            Event_Management_System::$plugin_path = $plugin_path;
+            static::$plugin_path = $plugin_path;
         }
         if (!is_null($plugin_url)) {
-            Event_Management_System::$plugin_url = $plugin_url;
+            static::$plugin_url = $plugin_url;
         }
 
         // Check if frontend_user_management is loaded
         if (class_exists("Frontend_User_Management")) {
-            // Include composer autoload
-            require_once(static::getPluginPath() . 'vendor/autoload.php');
 
             // TODO Use always composer autoload
             spl_autoload_register(['Event_Management_System', 'autoload']);

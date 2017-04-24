@@ -11,6 +11,9 @@
  * License: GPLv2
  */
 
+// Include composer autoload
+require_once(__DIR__ . '/vendor/autoload.php');
+
 //Load plugin
 require_once(__DIR__ . "/src/event-management-system.php");
 new Event_Management_System(plugin_dir_path(__FILE__), plugin_dir_url(__FILE__));
