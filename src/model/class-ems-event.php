@@ -342,6 +342,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
     }
 
     /**
+     * @param bool $short
      * @return null|string
      */
     public function get_formatted_date($short = false)
