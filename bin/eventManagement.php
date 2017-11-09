@@ -8,9 +8,19 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Symfony\Component\Console\Application;
 
 if (isset($GLOBALS['argv'][0])) {
-    define("ROOT_DIR", dirname($GLOBALS['argv'][0], 5));
+    if ('/' !== $GLOBALS['argv'][0][0] && $_SERVER['PWD']) {
+        // Relativ path prepend PWD
+        define('ROOT_DIR', dirname($_SERVER['PWD'] . '/' . $GLOBALS['argv'][0], 5));
+    } else {
+        define('ROOT_DIR', dirname($GLOBALS['argv'][0], 5));
+    }
 } elseif (isset($_SERVER['SCRIPT_FILENAME'])) {
-    define("ROOT_DIR", dirname($_SERVER['SCRIPT_FILENAME'], 5));
+    if ('/' !== $_SERVER['SCRIPT_FILENAME'][0] && $_SERVER['PWD']) {
+        // Relativ path prepend PWD
+        define('ROOT_DIR', dirname($_SERVER['PWD'] . '/' . $_SERVER['SCRIPT_FILENAME'], 5));
+    } else {
+        define('ROOT_DIR', dirname($_SERVER['PWD'] . '/' . $_SERVER['SCRIPT_FILENAME'], 5));
+    }
 } else {
     throw new Exception("Couldn't determine ROOT_DIR");
 }
