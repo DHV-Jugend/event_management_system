@@ -8,6 +8,12 @@
       "email": "wp-ems@bessei-it.eu"
     }
   ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/Bessei-IT/typo3-surf-extended.git"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "BIT\\EMS\\": "src/Classes/"
@@ -17,18 +23,21 @@
     "phpoffice/phpexcel": "^1.8",
     "symfony/console": "^3.2",
     "league/flysystem-webdav": "^1.0",
-    "php-ds/php-ds": "^1.1"
+    "php-ds/php-ds": "^1.1",
+    "bit/wp-settings": "0.*.*"
   },
   "require-dev": {
     "phpunit/phpunit": "5.*.*",
     "phpunit/php-invoker": "1.*.*",
-    "phpunit/dbunit": "2.*.*"
+    "phpunit/dbunit": "2.*.*",
+    "typo3/surf": "^2.0.0@dev",
+    "bessei-it/typo3-surf-extended": "dev-master"
   },
   "scripts": {
     "build": [
       "BIT\\EMS\\Composer\\Build::run"
     ],
-    "installTests":[
+    "installTests": [
       "BIT\\EMS\\Composer\\InstallTests::run"
     ]
   }
