@@ -22,12 +22,16 @@ class Ems_Option_Page_Controller
 
         wp_enqueue_style('ems_smoothness_jquery_css');
 
-        wp_enqueue_script('ems_datepicker_period', Event_Management_System::getAssetsBaseUrl() . "js/ems_datepicker_period.js", array('jquery-ui-datepicker'));
+        wp_enqueue_script(
+            'ems_datepicker_period',
+            Event_Management_System::getAssetsBaseUrl() . "js/ems_datepicker_period.js",
+            ['jquery-ui-datepicker']
+        );
         $localized = Ems_Javascript_Helper::get_localized_datepicker_options();
         wp_localize_script('ems_datepicker_period', 'objectL10n', $localized);
 
         /** @var Fum_Option_Page[] $pages */
-        $pages = array();
+        $pages = [];
 
         //Add General Settings Page
         $page = new Fum_Option_Page('ems_general_settings_page', 'Allgemeine Einstellungen');
@@ -35,7 +39,7 @@ class Ems_Option_Page_Controller
 
         //Add General Settings Fum_Option Group
         $option_group = new Fum_Option_Group('Fum_Option_Group');
-        $options = array();
+        $options = [];
 
         //Create hide wordpress login and register page checkbox
         $name = Ems_Conf::$ems_general_option_show_events_in_menu;
@@ -56,7 +60,7 @@ class Ems_Option_Page_Controller
 
         //Add option to option_group
         $option = new Fum_Option($name, $title, $description, get_option($name), $option_group, 'select');
-        $option->set_possible_values(array('stable', 'experimental'));
+        $option->set_possible_values(['stable', 'experimental']);
         $option->set_value(get_option('ems_git_branch'));
         $options[] = $option;
 
@@ -83,6 +87,29 @@ class Ems_Option_Page_Controller
         $option = new Fum_Option($name, $title, $description, get_option($name), $option_group, 'checkbox');
         $options[] = $option;
 
+        //
+        $name = \Ems_Conf::PREFIX . 'event_list_upload_remote_server_host';
+        $title = 'Event list upload server ';
+        $description = '';
+
+        //Add option to option_group
+        $options[] = new Fum_Option($name, $title, $description, get_option($name), $option_group, 'text');
+
+        //Create SMTP username text field
+        $name = \Ems_Conf::PREFIX . 'event_list_upload_remote_server_username';
+        $title = 'Event list upload username';
+        $description = '';
+
+        //Add option to option_group
+        $options[] = new Fum_Option($name, $title, $description, get_option($name), $option_group, 'text');
+
+        //Create SMTP password text field
+        $name = \Ems_Conf::PREFIX . 'event_list_upload_remote_server_password';
+        $title = 'Event list upload password';
+        $description = '';
+
+        $options[] = new Fum_Option($name, $title, $description, get_option($name), $option_group, 'password');
+
         //Add created options to $option_group and register $option_group
         $option_group->set_options($options);
 
@@ -97,15 +124,34 @@ class Ems_Option_Page_Controller
         self::$pages = $pages;
 
         //Add main menu
-        add_menu_page('Event Management System', 'Event Management System', 'manage_options', self::$parent_slug, array($page, 'notifyObservers'));
+        add_menu_page(
+            'Event Management System',
+            'Event Management System',
+            'manage_options',
+            self::$parent_slug,
+            [$page, 'notifyObservers']
+        );
         //Add first submenu to avoid duplicate entries: http://wordpress.org/support/topic/top-level-menu-duplicated-as-submenu-in-admin-section-plugin
-        add_submenu_page(self::$parent_slug, $pages[0]->get_title(), self::$pages[0]->get_title(), 'manage_options', self::$parent_slug);
+        add_submenu_page(
+            self::$parent_slug,
+            $pages[0]->get_title(),
+            self::$pages[0]->get_title(),
+            'manage_options',
+            self::$parent_slug
+        );
         //remove first submenu because we used this already
         unset($pages[0]);
 
         foreach ($pages as $page) {
 
-            add_submenu_page(self::$parent_slug, $page->get_title(), $page->get_title(), 'manage_options', $page->get_name(), array($page, 'notifyObservers'));
+            add_submenu_page(
+                self::$parent_slug,
+                $page->get_title(),
+                $page->get_title(),
+                'manage_options',
+                $page->get_name(),
+                [$page, 'notifyObservers']
+            );
         }
     }
 

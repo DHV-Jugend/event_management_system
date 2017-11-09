@@ -11,9 +11,8 @@ interface CloudInterface
     /**
      * CloudInterface constructor.
      * @param array $settings
-     * @param string $basePath
      */
-    public function __construct(array $settings, string $basePath);
+    public function __construct(array $settings);
 
     /**
      * @param string $content

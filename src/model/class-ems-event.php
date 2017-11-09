@@ -510,6 +510,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
             //Because we have to order the events later in the function, we need all events
             $posts_per_page = -1;
         }
+
         $args = array(
             'post_type' => self::get_post_type(),
             'posts_per_page' => $posts_per_page,

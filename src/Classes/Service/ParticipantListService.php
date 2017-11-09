@@ -37,18 +37,26 @@ class ParticipantListService
     public function __construct()
     {
         $this->eventRegistrationRepository = new EventRegistrationRepository();
-        $this->publicFields = new Set([
-            "Vorname", "Nachname", "E-Mail",
-            "Stadt", "Postleitzahl", "Bundesland",
-            "Telefonnummer", "Handynummer",
-            "Suche Mitfahrgelegenheit", "Biete Mitfahrgelgenheit",
-        ]);
+        $this->publicFields = new Set(
+            [
+                "Vorname",
+                "Nachname",
+                "E-Mail",
+                "Stadt",
+                "Postleitzahl",
+                "Bundesland",
+                "Telefonnummer",
+                "Handynummer",
+                "Suche Mitfahrgelegenheit",
+                "Biete Mitfahrgelgenheit",
+            ]
+        );
     }
 
     /**
      * @param \BIT\EMS\Domain\Model\EventRegistration[] $eventRegistrations
      * @param string $filePath
-     * @param array|null $fields
+     * @param Set|null $fields
      * @return bool
      * @throws \Exception
      * @throws \PHPExcel_Exception
@@ -59,18 +67,34 @@ class ParticipantListService
         $participant_list = [];
 
         foreach ($eventRegistrations as $registration) {
-            $user_data = array_intersect_key(Fum_User::get_user_data($registration->get_user_id()), array_merge(Fum_Html_Form::get_form(Fum_Conf::$fum_event_register_form_unique_name)->get_unique_names_of_input_fields(), ["fum_premium_participant" => "fum_premium_participant"]));
+            $user_data = array_intersect_key(
+                Fum_User::get_user_data($registration->get_user_id()),
+                array_merge(
+                    Fum_Html_Form::get_form(
+                        Fum_Conf::$fum_event_register_form_unique_name
+                    )->get_unique_names_of_input_fields(),
+                    ["fum_premium_participant" => "fum_premium_participant"]
+                )
+            );
             if (empty($user_data)) {
                 continue;
             }
             unset($user_data[Fum_Conf::$fum_input_field_submit]);
             unset($user_data[Fum_Conf::$fum_input_field_accept_agb]);
-            $merged_array = array_merge($user_data, $registration->get_data(), ['id' => $registration->get_user_id()]);
-            $participant_list[] = $merged_array;
+            $participant_list[] = array_merge(
+                $user_data,
+                $registration->get_data(),
+                ['id' => $registration->get_user_id()]
+            );
         }
 
         $data = [];
-        $fieldOrder = $participant_list[0];
+        // Has event participants?
+        if (isset($participant_list[0])) {
+            $fieldOrder = $participant_list[0];
+        } else {
+            $fieldOrder = [];
+        }
 
         //Generate title row
         foreach ($fieldOrder as $title => $value) {
@@ -99,12 +123,18 @@ class ParticipantListService
         $objPHPExcel->getActiveSheet()->fromArray($data);
 
         $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-        $objWriter->save($filePath);
-
-        if (!file_exists($filePath)) {
-            return false;
+        try {
+            $objWriter->save($filePath);
+            if (file_exists($filePath)) {
+                return true;
+            }
+        } catch (\Exception $e) {
+            //TODO Add logging
+            echo '';
         }
-        return true;
+
+
+        return false;
     }
 
     public function generatePrivateParticipantList(array $eventRegistrations, string $filePath)
@@ -124,7 +154,10 @@ class ParticipantListService
      */
     public function generatePrivateParticipantListFromEvent(Event $event, string $filePath)
     {
-        return $this->generatePrivateParticipantList($this->eventRegistrationRepository->findByEvent($event), $filePath);
+        return $this->generatePrivateParticipantList(
+            $this->eventRegistrationRepository->findByEvent($event),
+            $filePath
+        );
     }
 
     /**

@@ -26,8 +26,18 @@ class Initialisation
         static::addAction();
         static::addFilter();
         static::registerScheduler();
+        static::registerSettings();
     }
 
+    /**
+     * Register backend settings page / options page
+     */
+    protected static function registerSettings()
+    {
+        if (is_admin()) {
+            Settings::register();
+        }
+    }
 
     /**
      *
