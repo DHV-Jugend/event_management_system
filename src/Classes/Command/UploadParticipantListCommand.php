@@ -90,7 +90,7 @@ class UploadParticipantListCommand extends Command
         );
 
         try {
-            include realpath(__DIR__ . '/../../../../../../wp-load.php');
+            require ROOT_DIR . '/wp-load.php';
         } catch (\Exception $e) {
             // Fill $_SERVER with real values
             $_SERVER['HTTP_HOST'] = WP_SITEURL;
