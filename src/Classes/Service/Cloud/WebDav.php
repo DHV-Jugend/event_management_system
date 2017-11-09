@@ -24,8 +24,6 @@ class WebDav implements CloudInterface
     public function upload(string $content, string $targetPath, $overwriteExistingFile = false)
     {
         $this->filesystem->createDir(dirname($targetPath));
-        if ($overwriteExistingFile || !$this->filesystem->has($targetPath)) {
-            return $this->filesystem->put($targetPath, $content);
-        }
+        return $this->filesystem->put($targetPath, $content);
     }
 }

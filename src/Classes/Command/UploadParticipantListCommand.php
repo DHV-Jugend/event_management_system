@@ -53,8 +53,15 @@ class UploadParticipantListCommand extends Command
         $basePath = \Event_Management_System::getPluginPath();
         // File names must stay the same for an event. Otherwise each run would create a new file instead of updating the old one
         $fileNameBase = sanitize_file_name($event->get_post()->post_title) . '_' . $event->getID();
-        $privateListPath = $basePath . 'tmp/' . $fileNameBase . '_Eventleiter.xlsx';
-        $publicListPath = $basePath . 'tmp/' . $fileNameBase . '_Teilnehmer.xlsx';
+
+        $privateListFileName = $fileNameBase . '_Eventleiter.xlsx';
+        $privateListFileNameSecured = sha1(random_bytes(30)) . $privateListFileName;
+
+        $publicListFileName = $fileNameBase . '_Teilnehmer.xlsx';
+        $publicListFileNameSecured = sha1(random_bytes(30)) . $publicListFileName;
+
+        $privateListPath = $basePath . 'tmp/' . $privateListFileNameSecured;
+        $publicListPath = $basePath . 'tmp/' . $publicListFileNameSecured;
 
         $participantListService->generatePrivateParticipantListFromEvent($event, $privateListPath);
         $participantListService->generatePublicParticipantListFromEvent($event, $publicListPath);
@@ -68,8 +75,8 @@ class UploadParticipantListCommand extends Command
         $webDav = new WebDav($settings);
         $webDavFolder = 'Events/Teilnehmerlisten/' . $event->get_start_date_time()->format('Y');
 
-        $webDav->upload(file_get_contents($privateListPath), $webDavFolder . '/' . basename($privateListPath));
-        $webDav->upload(file_get_contents($publicListPath), $webDavFolder . '/' . basename($publicListPath));
+        $webDav->upload(file_get_contents($privateListPath), $webDavFolder . '/' . $privateListFileName);
+        $webDav->upload(file_get_contents($publicListPath), $webDavFolder . '/' . $publicListFileName);
 
         unlink($privateListPath);
         unlink($publicListPath);
