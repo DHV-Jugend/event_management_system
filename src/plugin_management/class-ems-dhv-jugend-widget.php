@@ -48,11 +48,6 @@ class Ems_Dhv_Jugend_Widget extends WP_Widget {
 					<a target="_blank" href="https://cloud.dhv-jugend.de">DHV-Jugend Cloud</a>
 				</li>
 			<?php endif; ?>
-			<!--			--><?php //if ( is_user_logged_in() && ( current_user_can( 'read_event' ) || current_user_can( "read_" . Ems_Conf::PREFIX . "event" ) ) ): ?>
-			<!--				<li>-->
-			<!--					<a href="--><?php //echo get_permalink( 1153 ); ?><!--">Leitlinien/Protokolle</a>-->
-			<!--				</li>-->
-			<!--			--><?php //endif; ?>
 			<?php if ( ! is_user_logged_in() || current_user_can( 'manage_options' ) || ( current_user_can( 'read_event' ) || current_user_can( "read_" . Ems_Conf::PREFIX . "event" ) ) ): ?>
 				<?php wp_register(); ?>
 			<?php endif; ?>
