@@ -3,6 +3,6 @@
  */
 module.exports = {
     dist: {
-        src: ['assets/dist/css/*', 'assets/dist/js/*']
+        src: ['dist/css/*', 'dist/js/*']
     }
 };

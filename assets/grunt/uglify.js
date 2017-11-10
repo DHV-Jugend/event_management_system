@@ -5,9 +5,9 @@ module.exports = {
     dist: {
         files: [{
             expand: true,
-            cwd: 'assets/dist/js',
+            cwd: 'dist/js',
             src: '**/*.js',
-            dest: 'assets/dist/js'
+            dest: 'dist/js'
         }]
     },
     options: {

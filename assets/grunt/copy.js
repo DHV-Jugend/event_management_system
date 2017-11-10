@@ -6,15 +6,15 @@ module.exports = {
         files: [
             {
                 expand: true,
-                cwd: 'assets/src/',
+                cwd: 'src/',
                 src: ['fonts/**'],
-                dest: 'assets/dist/'
+                dest: 'dist/'
             },
             {
                 expand: true,
-                cwd: 'assets/src/optimizedImg/',
+                cwd: 'src/optimizedImg/',
                 src: ['**'],
-                dest: 'assets/dist/img/'
+                dest: 'dist/img/'
             }
         ]
     }

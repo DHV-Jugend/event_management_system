@@ -8,8 +8,8 @@ module.exports = {
         },
         files: [{
             expand: true,
-            src: ['assets/src/sass/main.scss'],
-            dest: 'assets/dist/css',
+            src: ['src/sass/main.scss'],
+            dest: 'dist/css',
             flatten: true,
             ext: '.css'
         }]
@@ -18,8 +18,8 @@ module.exports = {
         options: {sourcemap: 'none'},
         files: [{
             expand: true,
-            src: ['assets/src/sass/main.scss'],
-            dest: 'assets/dist/css',
+            src: ['src/sass/main.scss'],
+            dest: 'dist/css',
             flatten: true,
             ext: '.css'
         }]

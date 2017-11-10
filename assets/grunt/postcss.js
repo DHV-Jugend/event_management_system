@@ -11,6 +11,6 @@ module.exports = {
         ]
     },
     dist: {
-        src: 'assets/dist/css/*.css'
+        src: 'dist/css/*.css'
     }
 };
