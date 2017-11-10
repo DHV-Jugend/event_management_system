@@ -68,9 +68,12 @@ class Initialisation
      */
     protected static function addAction()
     {
-        add_action('plugins_loaded', function () {
-            load_plugin_textdomain('event-management-system', false, 'event-management-system/languages');
-        });
+        add_action(
+            'plugins_loaded',
+            function () {
+                load_plugin_textdomain('event-management-system', false, 'event-management-system/languages');
+            }
+        );
 
         //Register plugin settings
         add_action('admin_init', ['Ems_Option_Page_Controller', 'register_settings']);
@@ -92,6 +95,8 @@ class Initialisation
         add_action('do_meta_boxes', ['Ems_Dhv_Jugend', 'remove_metabox_layout']);
         add_action('widgets_init', create_function('', 'return register_widget("Ems_Dhv_Jugend_Widget");'));
         add_action('admin_enqueue_scripts', ['Ems_Script_Enqueue', 'admin_enqueue_script']);
+
+        (new ParticipantListController())->addAction();
     }
 
     /**
