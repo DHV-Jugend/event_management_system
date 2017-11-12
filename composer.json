@@ -34,9 +34,6 @@
     "bessei-it/typo3-surf-extended": "dev-master"
   },
   "scripts": {
-    "build": [
-      "BIT\\EMS\\Composer\\Build::run"
-    ],
     "installTests": [
       "BIT\\EMS\\Composer\\InstallTests::run"
     ]
