@@ -455,6 +455,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
 
     /**
      * Returns the events which are currently active (starts between ems_start_date_period and ems_end_date_period)
+     *
      * @param bool $hideEventsInPast
      * @return Ems_Event[]
      * @throws \Exception
@@ -462,11 +463,9 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
     public static function get_active_events($hideEventsInPast = false)
     {
         $allowed_event_time_start = new DateTime();
-        if (!$hideEventsInPast) {
-            $allowed_event_time_start->setTimestamp(
-                Ems_Date_Helper::get_timestamp(get_option("date_format"), get_option("ems_start_date_period"))
-            );
-        }
+        $allowed_event_time_start->setTimestamp(
+            Ems_Date_Helper::get_timestamp(get_option("date_format"), get_option("ems_start_date_period"))
+        );
 
         $allowed_event_time_end = new DateTime();
         $allowed_event_time_end->setTimestamp(
@@ -474,7 +473,12 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
         );
         $allowed_event_time_period = new Ems_Date_Period($allowed_event_time_start, $allowed_event_time_end);
 
-        return self::get_events(-1, true, false, null, [], $allowed_event_time_period);
+        $allowed_event_time_end_period = new Ems_Date_Period(
+            new DateTime(),
+            $allowed_event_time_end
+        );
+
+        return self::get_events(-1, true, false, null, [], $allowed_event_time_period, $allowed_event_time_end_period);
     }
 
 
