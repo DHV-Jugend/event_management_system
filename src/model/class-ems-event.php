@@ -12,7 +12,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
 {
 
     protected static $post_type = 'ems_event';
-    protected static $capability_type = array('ems_event', 'ems_events');
+    protected static $capability_type = ['ems_event', 'ems_events'];
     protected static $object = null;
 
     protected static $start_date_meta_key = 'ems_start_date';
@@ -93,7 +93,10 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
 
 
         //Save form options first, then date stuff
-        if (isset($_REQUEST['ems_premium_field_nonce']) && wp_verify_nonce($_REQUEST['ems_premium_field_nonce'], 'ems_premium_field')) {
+        if (isset($_REQUEST['ems_premium_field_nonce']) && wp_verify_nonce(
+                $_REQUEST['ems_premium_field_nonce'],
+                'ems_premium_field'
+            )) {
 
             /* OK, its safe for us to save the data now. */
             if (!isset($_REQUEST['ems_premium_field'])) {
@@ -104,7 +107,11 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
             $ID = preg_replace("/[^0-9]/", "", $_REQUEST['ems_event_leader']);
             //Set mail address if "Benutzerdefiniert" was set as leader
             if ("0" === $ID) {
-                update_post_meta($this->ID, 'ems_event_leader_mail', sanitize_text_field($_REQUEST['ems_event_leader_mail']));
+                update_post_meta(
+                    $this->ID,
+                    'ems_event_leader_mail',
+                    sanitize_text_field($_REQUEST['ems_event_leader_mail'])
+                );
             } else {
                 update_post_meta($this->ID, 'ems_event_leader_mail', "");
             }
@@ -127,7 +134,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
             $participantLevels = $_REQUEST['ems_participant_level'];
             foreach ($participantLevels as $level => $value) {
                 //Check value (0,0.5 or 1)
-                if (!is_numeric($value) || !in_array($value, array(0, 0.5, 1))) {
+                if (!is_numeric($value) || !in_array($value, [0, 0.5, 1])) {
                     unset($participantLevels[$level]);
                     continue;
                 }
@@ -147,7 +154,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
         ) {
             $participantTypes = $_REQUEST['ems_participant_type'];
             foreach ($participantTypes as $type => $value) {
-                if (!in_array($value, array(0, 1))) {
+                if (!in_array($value, [0, 1])) {
                     unset($participantTypes[$type]);
                     continue;
                 }
@@ -171,7 +178,9 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
             $date_time_end_date = new DateTime('@' . $end_date);
 
             //Convert Datetime back to $_POST values, to check if date is valid
-            if (date_i18n($format, $date_time_start_date->getTimestamp()) == sanitize_text_field($_REQUEST['ems_start_date'])) {
+            if (date_i18n($format, $date_time_start_date->getTimestamp()) == sanitize_text_field(
+                    $_REQUEST['ems_start_date']
+                )) {
                 // Update the meta field in the database.
                 update_post_meta($this->ID, 'ems_start_date', $date_time_start_date);
             } else {
@@ -179,7 +188,9 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
             }
 
 
-            if (date_i18n($format, $date_time_end_date->getTimestamp()) == sanitize_text_field($_REQUEST['ems_end_date'])) {
+            if (date_i18n($format, $date_time_end_date->getTimestamp()) == sanitize_text_field(
+                    $_REQUEST['ems_end_date']
+                )) {
                 // Update the meta field in the database.
                 update_post_meta($this->ID, 'ems_end_date', $date_time_end_date);
             }
@@ -334,7 +345,13 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
                 case Fum_Conf::$fum_event_register_form_unique_name:
 
                     //Value of the input field is ID_<id_of_event> the preg_replace below is not safe for use with floating points numbers, but  ID should be an integer anyway
-                    $post_id = preg_replace("/[^0-9]/", "", $observable->get_input_field(Fum_Conf::$fum_input_field_select_event)->get_value());
+                    $post_id = preg_replace(
+                        "/[^0-9]/",
+                        "",
+                        $observable->get_input_field(
+                            Fum_Conf::$fum_input_field_select_event
+                        )->get_value()
+                    );
                     self::register_user_to_event($post_id, get_current_user_id(), $observable);
                     break;
             }
@@ -438,18 +455,26 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
 
     /**
      * Returns the events which are currently active (starts between ems_start_date_period and ems_end_date_period)
+     * @param bool $hideEventsInPast
      * @return Ems_Event[]
-     * @throws Exception
+     * @throws \Exception
      */
-    public static function get_active_events()
+    public static function get_active_events($hideEventsInPast = false)
     {
         $allowed_event_time_start = new DateTime();
-        $allowed_event_time_start->setTimestamp(Ems_Date_Helper::get_timestamp(get_option("date_format"), get_option("ems_start_date_period")));
+        if (!$hideEventsInPast) {
+            $allowed_event_time_start->setTimestamp(
+                Ems_Date_Helper::get_timestamp(get_option("date_format"), get_option("ems_start_date_period"))
+            );
+        }
+
         $allowed_event_time_end = new DateTime();
-        $allowed_event_time_end->setTimestamp(Ems_Date_Helper::get_timestamp(get_option("date_format"), get_option("ems_end_date_period")));
+        $allowed_event_time_end->setTimestamp(
+            Ems_Date_Helper::get_timestamp(get_option("date_format"), get_option("ems_end_date_period"))
+        );
         $allowed_event_time_period = new Ems_Date_Period($allowed_event_time_start, $allowed_event_time_end);
 
-        return self::get_events(-1, true, false, null, array(), $allowed_event_time_period);
+        return self::get_events(-1, true, false, null, [], $allowed_event_time_period);
     }
 
 
@@ -462,7 +487,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
     public static function get_events_by_start_date(Ems_Date_Period $start_period)
     {
 
-        return self::get_events(-1, true, false, null, array(), $start_period);
+        return self::get_events(-1, true, false, null, [], $start_period);
     }
 
     /**
@@ -473,7 +498,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
      */
     public static function get_events_by_end_date(Ems_Date_Period $end_period)
     {
-        return self::get_events(-1, true, false, null, array(), null, $end_period);
+        return self::get_events(-1, true, false, null, [], null, $end_period);
     }
 
 
@@ -492,12 +517,19 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
      * @throws Exception
      * @return Ems_Event[]    returns an array of Ems_Event
      */
-    public static function get_events($limit = -1, $sort = true, $reverse_order = false, callable $user_sort_callback = null, array $user_args = array(), Ems_Date_Period $start_period = null, Ems_Date_Period $end_period = null)
-    {
+    public static function get_events(
+        $limit = -1,
+        $sort = true,
+        $reverse_order = false,
+        callable $user_sort_callback = null,
+        array $user_args = [],
+        Ems_Date_Period $start_period = null,
+        Ems_Date_Period $end_period = null
+    ) {
 
         //return empty array if limit is 0
         if (0 === $limit) {
-            return array();
+            return [];
         }
 
         //unset post_type,posts_per_page and order_by from $user_args because we do this on our own
@@ -511,26 +543,30 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
             $posts_per_page = -1;
         }
 
-        $args = array(
+        $args = [
             'post_type' => self::get_post_type(),
             'posts_per_page' => $posts_per_page,
-        );
+        ];
         $posts = get_posts(array_merge($user_args, $args));
 
-        $events = array();
+        $events = [];
         /** @var WP_Post[] $posts */
         foreach ($posts as $post) {
             $event = new Ems_Event($post);
             $start_date_time = $event->get_start_date_time();
             //Check if start period is set and if the event start fits in
-            if (null !== $start_period && (!$start_date_time instanceof DateTime || !$start_period->contains($event->get_start_date_time()))) {
+            if (null !== $start_period && (!$start_date_time instanceof DateTime || !$start_period->contains(
+                        $event->get_start_date_time()
+                    ))) {
                 //Skip event if start isn't in start period
                 continue;
             }
 
             $end_date_time = $event->get_end_date_time();
             //Check if end period is set and if the event end fits in
-            if (null !== $end_period && (!$end_date_time instanceof DateTime || !$end_period->contains($event->get_end_date_time()))) {
+            if (null !== $end_period && (!$end_date_time instanceof DateTime || !$end_period->contains(
+                        $event->get_end_date_time()
+                    ))) {
                 //Skip event if end isn't in end period
                 continue;
             }
@@ -541,11 +577,13 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
 
         if ($sort) {
             if (null === $user_sort_callback) {
-                $user_sort_callback = array(__CLASS__, 'compare');
+                $user_sort_callback = [__CLASS__, 'compare'];
             }
 
             if (false === usort($events, $user_sort_callback)) {
-                throw new Exception("Couldn't sort events with " . print_r($user_sort_callback, true) . " as callback function");
+                throw new Exception(
+                    "Couldn't sort events with " . print_r($user_sort_callback, true) . " as callback function"
+                );
             }
             if ($reverse_order) {
                 $events = array_reverse($events);
@@ -563,13 +601,14 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
     private static function register_user_to_event($event_post_id, $user_id, Fum_Html_Form $form = null)
     {
         $event_registration = new Ems_Event_Registration($event_post_id, $user_id);
-        $data = array();
+        $data = [];
 
         $used_input_fields = Fum_Activation::get_event_input_fields();
         if (null !== $form) {
             foreach ($form->get_input_fields() as $input_field) {
                 //Skip select_event field (contains ID) because we already have $event_post_id
-                if ($input_field->get_unique_name() == 'select_event' || $input_field->get_unique_name() == Fum_Conf::$fum_input_field_accept_agb) {
+                if ($input_field->get_unique_name() == 'select_event' || $input_field->get_unique_name(
+                    ) == Fum_Conf::$fum_input_field_accept_agb) {
                     continue;
                 }
                 if (in_array($input_field->get_unique_name(), $used_input_fields)) {
@@ -583,7 +622,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
         }
 
         $event_registration->set_data($data);
-        Ems_Event_Registration::add_event_registration($event_registration);
+        (new \BIT\EMS\Service\Event\Registration\RegistrationService())->addEventRegistration($event_registration);
     }
 
 
@@ -599,9 +638,10 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
 
     public static function register_post_type()
     {
-        register_post_type(self::get_post_type(),
-            array(
-                'labels' => array('name' => __('Events'), 'singular_name' => __('Event')),
+        register_post_type(
+            self::get_post_type(),
+            [
+                'labels' => ['name' => __('Events'), 'singular_name' => __('Event')],
                 'public' => true,
                 'publicly_queryable' => true,
                 'show_ui' => true,
@@ -612,14 +652,14 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
                 'capability_type' => self::get_capability_type(),
                 'has_archive' => false,
                 'hierarchical' => false,
-                'supports' => array('title', 'editor', 'custom_fields'),
-            )
+                'supports' => ['title', 'editor', 'custom_fields'],
+            ]
         );
     }
 
     public static function get_custom_columns()
     {
-        return array();
+        return [];
         // TODO: Implement get_custom_columns() method.
     }
 
