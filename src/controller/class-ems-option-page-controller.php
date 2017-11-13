@@ -41,29 +41,6 @@ class Ems_Option_Page_Controller
         $option_group = new Fum_Option_Group('Fum_Option_Group');
         $options = [];
 
-        //Create hide wordpress login and register page checkbox
-        $name = Ems_Conf::$ems_general_option_show_events_in_menu;
-        $title = 'Zeige Events automatisch unter folgendem Menüpunkt';
-
-        $description = 'Fügt alle Events automatisch zum angegebenen Menüpunkt' . "\n" . ' ( "Angezeigter Name" des Menüpunkt) hinzu. Der Menüpunkt muss bereits existieren!';
-        $description = esc_attr($description);
-
-        //Add option to option_group
-        $options[] = new Fum_Option($name, $title, $description, get_option($name), $option_group, 'text');
-
-        //Create hide wordpress login and register page checkboxtext
-        $name = 'ems_git_branch';
-        $title = 'Welche Version soll verwendet werden (Experimental beinhaltet nicht geteste Versionen!)';
-
-        $description = 'Welche Version soll verwendet werden (Experimental beinhaltet nicht geteste Versionen!), im Zweifelsfall immer stable benutzen';
-        $description = esc_attr($description);
-
-        //Add option to option_group
-        $option = new Fum_Option($name, $title, $description, get_option($name), $option_group, 'select');
-        $option->set_possible_values(['stable', 'experimental']);
-        $option->set_value(get_option('ems_git_branch'));
-        $options[] = $option;
-
         //Add start date range
         $name = 'ems_start_date_period';
         $title = 'Wählen den Zeitraum aus in dem ein Event starten muss, um angezeigt zu werden<br> Von:';
