@@ -12,10 +12,10 @@ use BIT\EMS\Controller\Shortcode\EventListController;
 use BIT\EMS\Controller\Shortcode\EventRegistrationLinkController;
 use BIT\EMS\Controller\Shortcode\EventStatisticController;
 use BIT\EMS\Controller\Shortcode\ParticipantListController;
+use BIT\EMS\Migration\Migration;
 use BIT\EMS\Model\AbstractPost;
 use BIT\EMS\Schedule\CleanTempFilesSchedule;
 use BIT\EMS\Settings\Settings;
-use BIT\EMS\Settings\Tab\BasicTab;
 use Ems_Event;
 use Ems_Event_Daily_news;
 use Ems_Name_Conversion;
@@ -24,11 +24,20 @@ class Initialisation
 {
     public static function run()
     {
+        static::executeMigrations();
         static::registerShortcodes();
         static::addAction();
         static::addFilter();
         static::registerScheduler();
         static::registerSettings();
+    }
+
+
+    protected static function executeMigrations()
+    {
+        if (is_admin() && !wp_doing_ajax()) {
+            Migration::run();
+        }
     }
 
     /**
@@ -39,9 +48,6 @@ class Initialisation
         if (is_admin()) {
             Settings::register();
         }
-
-        $defaultEventPage = Settings::get(BasicTab::DEFAULT_EVENT_PAGE, BasicTab::class);
-        echo '';
     }
 
     /**

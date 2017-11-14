@@ -9,12 +9,6 @@ class Ems_Event_Registration extends Ems_Log
     const MAIL_TYPE_REGISTRATION = 1;
     const MAIL_TYPE_DELETE_REGISTRATION = 2;
 
-
-    protected static $additionalLogFields = [
-        'event' => 'int(11)',
-        'user' => 'int(11)',
-    ];
-
     protected static $option_name = 'ems_event_registration';
 
     private $event_post_id;
