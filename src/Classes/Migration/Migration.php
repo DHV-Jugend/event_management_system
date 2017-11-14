@@ -21,7 +21,6 @@ class Migration
             $migrations = [];
 
             $dbVersion = get_option(static::MIGRATION_VERSION_KEY);
-            $dbVersion = 0;
             if (empty($dbVersion)) {
                 // No dbVersion set, we migrate from a version without DB migration. Just execute all migrations
                 foreach (static::$migrations as $migrationVersion => $migration) {
