@@ -5,6 +5,7 @@
 
 namespace BIT\EMS\Service;
 
+use BIT\EMS\Domain\Model\EventRegistration;
 use BIT\EMS\Domain\Repository\EventRegistrationRepository;
 use BIT\EMS\Model\Event;
 use BIT\EMS\Service\Cloud\WebDav;
@@ -168,7 +169,7 @@ class ParticipantListService
     }
 
     /**
-     * @param \BIT\EMS\Domain\Model\EventRegistration[] $eventRegistrations
+     * @param EventRegistration[] $eventRegistrations
      * @param string $filePath
      * @param Set|null $fields
      * @return string MD5 checksum of content
@@ -182,7 +183,7 @@ class ParticipantListService
 
         foreach ($eventRegistrations as $registration) {
             $user_data = array_intersect_key(
-                Fum_User::get_user_data($registration->get_user_id()),
+                Fum_User::get_user_data($registration->getUserId()),
                 array_merge(
                     Fum_Html_Form::get_form(
                         Fum_Conf::$fum_event_register_form_unique_name
@@ -197,8 +198,8 @@ class ParticipantListService
             unset($user_data[Fum_Conf::$fum_input_field_accept_agb]);
             $participant_list[] = array_merge(
                 $user_data,
-                $registration->get_data(),
-                ['id' => $registration->get_user_id()]
+                $registration->getData(),
+                ['id' => $registration->getUserId()]
             );
         }
 

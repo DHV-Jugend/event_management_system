@@ -6,113 +6,105 @@
 namespace BIT\EMS\Domain\Repository;
 
 
+use BIT\EMS\Domain\Mapper\EventRegistrationMapper;
 use BIT\EMS\Domain\Model\EventRegistration;
 use BIT\EMS\Exception\Event\EventRegistrationNotFoundException;
 use BIT\EMS\Log\EventRegistrationLog;
-use BIT\EMS\Model\Event;
-use Ems_Event_Registration;
 
-class EventRegistrationRepository extends AbstractRepository
+class EventRegistrationRepository extends AbstractDatabaseRepository
 {
-    protected static $option_name = 'ems_event_registration';
+    protected $tableWithoutPrefix = \Ems_Conf::PREFIX . 'event_registration';
 
     /**
      * @var \BIT\EMS\Log\EventRegistrationLog
      */
     protected $eventRegistrationLog;
 
+    /**
+     * @var \BIT\EMS\Domain\Mapper\EventRegistrationMapper
+     */
+    protected $eventRegistrationMapper;
+
     public function __construct()
     {
+        parent::__construct();
         $this->eventRegistrationLog = new EventRegistrationLog();
-    }
-
-    public function findAll()
-    {
-        $registrations = get_option(self::$option_name);
-        if (is_array($registrations)) {
-            return $registrations;
-        }
-        return [];
+        $this->eventRegistrationMapper = new EventRegistrationMapper();
     }
 
     /**
-     * @param \BIT\EMS\Model\Event $event
-     * @return Ems_Event_Registration[]
+     * @param array $fields
+     * @return EventRegistration[]
      */
-    public function findByEvent(Event $event): array
+    public function findAll(array $fields = ['*']): array
     {
-        $eventId = $event->getID();
-        /** @var EventRegistration[] $registrations */
-        $registrations = get_option(EventRegistration::get_option_name());
-        $event_registrations = [];
-        foreach ($registrations as $registration) {
-            if ($registration->get_event_post_id() === $eventId) {
-                $event_registrations[] = $registration;
-            }
-        }
-        return $event_registrations;
+        $entries = parent::findByIdentifier(['deleted' => false]);
+        return $this->eventRegistrationMapper->toObject($entries);
     }
 
-    public function findByParticipant($user_id): array
+    /**
+     * @param \Ems_Event $event
+     * @return EventRegistration[]
+     */
+    public function findByEvent(\Ems_Event $event): array
     {
-        $registrations = $this->findAll();
-        $event_registrations = [];
-        foreach ($registrations as $registration) {
-            if ($registration->get_user_id() == $user_id) {
-                $event_registrations[] = $registration;
-            }
-        }
-        return $event_registrations;
+        $entries = $this->findByIdentifier(['event_id' => $event->getID(), 'deleted' => false]);
+        return $this->eventRegistrationMapper->toObject($entries);
+    }
+
+    /**
+     * @param int $user_id
+     * @return EventRegistration[]
+     */
+    public function findByParticipant(int $user_id): array
+    {
+        $entries = $this->findByIdentifier(['user_id' => $user_id, 'deleted' => false]);
+        return $this->eventRegistrationMapper->toObject($entries);
     }
 
     public function findByEventAndParticipant(int $eventId, int $participantId): EventRegistration
     {
-        $registrations = $this->findAll();
-        foreach ($registrations as $registration) {
-            if ($registration->get_user_id() == $participantId && $eventId == $registration->get_event_post_id()) {
-                return $registration;
-            }
+        $entries = $this->findByIdentifier(['event_id' => $eventId, 'user_id' => $participantId, 'deleted' => false]);
+        if (empty($entries)) {
+            throw new EventRegistrationNotFoundException('Event: ' . $eventId . ' User: ' . $participantId);
         }
-        throw new EventRegistrationNotFoundException(
-            'No event registration found. Event: ' . $eventId . ' Participant: ' . $participantId
-        );
+        $entry = reset($entries);
+        return $this->eventRegistrationMapper->toSingleObject($entry);
     }
 
-    public function add(Ems_Event_Registration $eventRegistration)
+    /**
+     * @param \BIT\EMS\Domain\Model\EventRegistration $eventRegistration
+     * @throws \Doctrine\DBAL\Exception\UniqueConstraintViolationException
+     */
+    public function add(EventRegistration $eventRegistration)
     {
-        $registrations = $this->findAll();
-        $registrations[] = $eventRegistration;
+        $entry = $this->eventRegistrationMapper->toSingleArray($eventRegistration);
 
-        return update_option(self::$option_name, $registrations);
+        $identifier = $entry;
+        unset($identifier['data']);
+
+        // Check if exists with deleted = true
+        $dbEntry = $this->findByIdentifier(array_merge($identifier, ['deleted' => true]));
+        if (!empty($dbEntry)) {
+            // Set deleted to false
+            $this->update(['deleted' => false], $identifier);
+        } else {
+            $this->insert($entry);
+        }
     }
 
-    public function removeByEventRegistration(Ems_Event_Registration $registration)
+    public function removeByEventRegistration(EventRegistration $registration)
     {
-        $registrations = $this->findAll();
-
-        foreach ($registrations as $key => $cur_registration) {
-            if ($registration->equals($cur_registration)) {
-                unset($registrations[$key]);
-                break;
-            }
-        }
-
-        return update_option(static::$option_name, $registrations);
+        $this->removeByEventAndParticipant($registration->getEventId(), $registration->getUserId());
     }
 
-    public function removeByEventAndParticipant(Event $event, $participant)
+    public function removeByEventAndParticipant(int $eventId, int $participantId)
     {
-        $eventRegistrations = $this->findByParticipant($participant);
-        if (is_array($eventRegistrations)) {
-            foreach ($eventRegistrations as $eventRegistration) {
-                if ($event === intval($eventRegistration->get_event_post_id())) {
-                    return $this->removeByEventRegistration($eventRegistration);
-                }
-            }
-        }
+        $this->delete(['event_id' => $eventId, 'user_id' => $participantId]);
+    }
 
-        throw new EventRegistrationNotFoundException(
-            'No event registration found. Event: ' . $event->getID() . ' Participant: ' . $participant
-        );
+    public function delete(array $identifier)
+    {
+        $this->update(['deleted' => true], $identifier);
     }
 }

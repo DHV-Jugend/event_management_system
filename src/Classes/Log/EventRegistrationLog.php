@@ -1,7 +1,7 @@
 <?php
 namespace BIT\EMS\Log;
 
-use Ems_Event_Registration;
+use BIT\EMS\Domain\Model\EventRegistration;
 
 /**
  * @author Christoph Bessei
@@ -18,32 +18,32 @@ class EventRegistrationLog extends AbstractLog
 
     /**
      * @param string $msg
-     * @param \Ems_Event_Registration $registration
+     * @param EventRegistration $registration
      */
-    public function info(string $msg, Ems_Event_Registration $registration)
+    public function info(string $msg, EventRegistration $registration)
     {
         $this->insert(
             AbstractLog::LOG_LEVEL_INFO,
             $msg,
             [
-                'user' => $registration->get_user_id(),
-                'event' => $registration->get_event_post_id(),
+                'user' => $registration->getUserId(),
+                'event' => $registration->getEventId(),
             ]
         );
     }
 
     /**
      * @param string $msg
-     * @param \Ems_Event_Registration $registration
+     * @param EventRegistration $registration
      */
-    public function error(string $msg, Ems_Event_Registration $registration)
+    public function error(string $msg, EventRegistration $registration)
     {
         $this->insert(
             AbstractLog::LOG_LEVEL_ERROR,
             $msg,
             [
-                'user' => $registration->get_user_id(),
-                'event' => $registration->get_event_post_id(),
+                'user' => $registration->getUserId(),
+                'event' => $registration->getEventId(),
             ]
         );
     }

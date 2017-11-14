@@ -13,7 +13,6 @@ class Ems_Activation
         Fum_Activation::activate_plugin();
 
         // Create tables
-        Ems_Event_Registration::createTables();
         (new\BIT\EMS\Log\EventRegistrationLog())->createTable();
 
         $admin_role = get_role('administrator');

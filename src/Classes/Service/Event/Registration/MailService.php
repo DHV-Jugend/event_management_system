@@ -1,7 +1,11 @@
 <?php
 namespace BIT\EMS\Service\Event\Registration;
 
+use BIT\EMS\Domain\Model\EventRegistration;
 use BIT\EMS\Exception\Event\SendRegistrationMailFailedException;
+use BIT\EMS\Settings\Settings;
+use BIT\EMS\Settings\Tab\EventManagerMailTab;
+use BIT\EMS\Settings\Tab\ParticipantMailTab;
 use Fum_Mail;
 
 /**
@@ -14,83 +18,105 @@ class MailService
 
     /**
      * Notify leader and participant about a registration
-     * @param \Ems_Event_Registration $registration
+     * @param EventRegistration $registration
      * @throws \Exception
      */
-    public function sendRegisterMail(\Ems_Event_Registration $registration)
+    public function sendRegisterMail(EventRegistration $registration)
     {
         $this->sendMail($registration, static::MAIL_TYPE_REGISTRATION);
     }
 
     /**
      * Notify leader and participant about a cancelled registration
-     * @param \Ems_Event_Registration $registration
+     * @param EventRegistration $registration
      * @throws \Exception
      */
-    public function sendCancelMail(\Ems_Event_Registration $registration)
+    public function sendCancelMail(EventRegistration $registration)
     {
         $this->sendMail($registration, static::MAIL_TYPE_CANCEL_REGISTRATION);
     }
 
     /**
-     * @param \Ems_Event_Registration $registration
+     * @param EventRegistration $registration
      * @param $mail_type
      * @throws \BIT\EMS\Exception\Event\SendRegistrationMailFailedException
      * @throws \Exception
      */
-    protected function sendMail(\Ems_Event_Registration $registration, $mail_type)
+    protected function sendMail(EventRegistration $registration, $mail_type)
     {
         // Common variables
-        $event_title = htmlspecialchars_decode(get_post($registration->get_event_post_id())->post_title);
-        $user = get_userdata($registration->get_user_id());
+        $event_title = htmlspecialchars_decode(get_post($registration->getEventId())->post_title);
+        $eventId = $registration->getEventId();
+        $user = get_userdata($registration->getUserId());
 
-        $leader_id = get_post_meta($registration->get_event_post_id(), 'ems_event_leader', true);
+        $leader_id = get_post_meta($registration->getEventId(), 'ems_event_leader', true);
         $leader = get_userdata($leader_id);
 
         if (false === $leader) {
-            $leader_email = get_post_meta($registration->get_event_post_id(), 'ems_event_leader_mail', true);
+            $leader_email = get_post_meta($registration->getEventId(), 'ems_event_leader_mail', true);
         } else {
             $leader_email = $leader->user_email;
         }
 
-        $send_leader_email = 1 == get_post_meta($registration->get_event_post_id(), 'ems_inform_via_mail', true);
+        $send_leader_email = 1 == get_post_meta($registration->getEventId(), 'ems_inform_via_mail', true);
 
         switch ($mail_type) {
             case static::MAIL_TYPE_REGISTRATION:
-                $subject = 'Erfolgreich für "' . $event_title . '" registriert';
-                $message =
-                    'Liebe/r ' . $user->user_firstname . "," . PHP_EOL .
-                    'du hast dich erfolgreich für das Event "' . $event_title . '" registriert.' . PHP_EOL .
-                    'Du bekommst spätestens 14 Tage vor dem Event weitere Informationen vom Eventleiter zugeschickt.' . PHP_EOL .
-                    'Viele Grüße,' . "\n" .
-                    'Das DHV-Jugendteam';
+                $subject = $this->loadMailFromSettings(
+                    ParticipantMailTab::class,
+                    ParticipantMailTab::EVENT_REGISTRATION_SUCCESSFUL_SUBJECT
+                );
+                $subject = $this->replaceMarkers($subject, $user, $event_title, $eventId);
+
+                $message = $this->loadMailFromSettings(
+                    ParticipantMailTab::class,
+                    ParticipantMailTab::EVENT_REGISTRATION_SUCCESSFUL_BODY
+                );
+                $message = $this->replaceMarkers($message, $user, $event_title, $eventId);
 
                 if ($send_leader_email && false !== $leader_email) {
-                    $leader_subject = 'Es gibt eine neue Anmeldung für das "' . $event_title . '" Event';
-                    $leader_message = $user->user_firstname . ' ' . $user->lastname . ' hat sich für dein Event "' . $event_title . '" angemeldet.' . PHP_EOL;
-                    $leader_message .= 'Du kannst die Details zur Anmeldung auf ' . get_permalink(
-                            get_option('ems_partcipant_list_page')
-                        ) . '?select_event=ID_' . $registration->get_event_post_id() . ' einsehen';
-                    // TODO Remove duplicate e-mail to leader and participant (was needed as backup)
-                    Fum_Mail::sendMail($leader_email, $subject, $message);
+                    $eventManagerSubject = $this->loadMailFromSettings(
+                        EventManagerMailTab::class,
+                        EventManagerMailTab::EVENT_REGISTRATION_SUCCESSFUL_SUBJECT
+                    );
+                    $eventManagerSubject = $this->replaceMarkers($eventManagerSubject, $user, $event_title, $eventId);
+
+                    $eventManagerMessage = $this->loadMailFromSettings(
+                        EventManagerMailTab::class,
+                        EventManagerMailTab::EVENT_REGISTRATION_SUCCESSFUL_BODY
+                    );
+                    $eventManagerMessage = $this->replaceMarkers($eventManagerMessage, $user, $event_title, $eventId);
+
+                    Fum_Mail::sendMail($leader_email, $eventManagerSubject, $eventManagerMessage);
                 }
                 break;
             case static::MAIL_TYPE_CANCEL_REGISTRATION:
-                $subject = 'Erfolgreich von "' . $event_title . '" abgemeldet';
-                $message =
-                    'Liebe/r ' . $user->user_firstname . "." . PHP_EOL .
-                    'Schade, dass du nicht mehr auf das Event "' . $event_title . '" möchtest.' . PHP_EOL .
-                    'Wir würden uns freuen wenn wir dich auf einem anderen Event sehen würden.' . PHP_EOL .
-                    'Vielleicht schaust du nochmal auf www.dhv-jugend.de/events/ vorbei und schaust dir unseren andere Events an?' . PHP_EOL .
-                    'Viele Grüße,' . PHP_EOL .
-                    'Das DHV-Jugendteam';
+                $subject = $this->loadMailFromSettings(
+                    ParticipantMailTab::class,
+                    ParticipantMailTab::EVENT_CANCEL_REGISTRATION_SUBJECT
+                );
+                $subject = $this->replaceMarkers($subject, $user, $event_title, $eventId);
+
+                $message = $this->loadMailFromSettings(
+                    ParticipantMailTab::class,
+                    ParticipantMailTab::EVENT_CANCEL_REGISTRATION_BODY
+                );
+                $message = $this->replaceMarkers($message, $user, $event_title, $eventId);
 
                 if ($send_leader_email && false !== $leader_email) {
-                    $leader_subject = 'Es gibt eine Abmeldung vom "' . $event_title . '" Event';
-                    $leader_message = $user->user_firstname . ' ' . $user->lastname . ' hat sich von deinem Event "' . $event_title . '" abgemeldet.' . "\n";
-                    $leader_message .= 'Du kannst die Details zur Abmeldung auf ' . get_permalink(
-                            get_option('ems_partcipant_list_page')
-                        ) . '?select_event=ID_' . $registration->get_event_post_id() . ' einsehen';
+                    $eventManagerSubject = $this->loadMailFromSettings(
+                        EventManagerMailTab::class,
+                        EventManagerMailTab::EVENT_CANCEL_REGISTRATION_SUBJECT
+                    );
+                    $eventManagerSubject = $this->replaceMarkers($eventManagerSubject, $user, $event_title, $eventId);
+
+                    $eventManagerMessage = $this->loadMailFromSettings(
+                        EventManagerMailTab::class,
+                        EventManagerMailTab::EVENT_CANCEL_REGISTRATION_BODY
+                    );
+                    $eventManagerMessage = $this->replaceMarkers($eventManagerMessage, $user, $event_title, $eventId);
+
+                    Fum_Mail::sendMail($leader_email, $eventManagerSubject, $eventManagerMessage);
                 }
                 break;
         }
@@ -110,5 +136,31 @@ class MailService
             echo $msg;
             throw new SendRegistrationMailFailedException($msg, 1510467545, $e);
         }
+    }
+
+    protected function loadMailFromSettings($section, $option): string
+    {
+        $subject = Settings::get($option, $section);
+        $subject = wpautop($subject);
+        return $subject;
+    }
+
+    protected function replaceMarkers(string $text, \WP_User $user, string $event_title, int $eventId)
+    {
+        return str_ireplace(
+            [
+                '###user_firstname###',
+                '###user_lastname###',
+                '###event_title###',
+                '###event_participant_list_link###',
+            ],
+            [
+                $user->user_firstname,
+                $user->user_lastname,
+                $event_title,
+                get_permalink(get_option('ems_partcipant_list_page')) . '?select_event=ID_' . $eventId,
+            ],
+            $text
+        );
     }
 }

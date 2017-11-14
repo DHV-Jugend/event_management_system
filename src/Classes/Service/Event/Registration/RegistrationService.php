@@ -1,11 +1,12 @@
 <?php
 namespace BIT\EMS\Service\Event\Registration;
 
+use BIT\EMS\Domain\Model\EventRegistration;
 use BIT\EMS\Domain\Repository\EventRegistrationRepository;
 use BIT\EMS\Exception\Event\EventRegistrationAlreadyExists;
 use BIT\EMS\Exception\Event\EventRegistrationNotFoundException;
 use BIT\EMS\Log\EventRegistrationLog;
-use Ems_Event_Registration;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 /**
  * @author Christoph Bessei
@@ -36,43 +37,57 @@ class RegistrationService
 
     public function removeByParticipantAndEvent(int $event, int $participant)
     {
-        try {
-            $eventRegistration = $this->eventRegistrationRepository->findByEventAndParticipant($event, $participant);
-            $this->removeByEventRegistration($eventRegistration);
-        } catch (EventRegistrationNotFoundException $e) {
-            return false;
-        }
-
-        return true;
+        $eventRegistration = (new EventRegistration())->setEventId($event)->setUserId($participant);
+        return $this->removeByEventRegistration($eventRegistration);
     }
 
     /**
-     * @param \Ems_Event_Registration $eventRegistration
-     * @throws \Exception
+     * @param EventRegistration $eventRegistration
+     * @return bool
      */
-    public function removeByEventRegistration(Ems_Event_Registration $eventRegistration)
+    public function removeByEventRegistration(EventRegistration $eventRegistration)
     {
-        if ($this->eventRegistrationRepository->removeByEventRegistration($eventRegistration)) {
+        try {
+            $this->eventRegistrationRepository->removeByEventRegistration($eventRegistration);
             $this->eventRegistrationLog->info('Deleted event registration.', $eventRegistration);
             $this->eventRegistrationLog->info('Sent delete event registration mail.', $eventRegistration);
             $this->mailService->sendCancelMail($eventRegistration);
-        } else {
-            $this->eventRegistrationLog->error('removeByEventRegistration failed', $eventRegistration);
+            return true;
+        } catch (\Throwable $e) {
+            return false;
         }
     }
 
-    public function addEventRegistration(Ems_Event_Registration $eventRegistration)
+    /**
+     * @param \BIT\EMS\Domain\Model\EventRegistration $eventRegistration
+     * @throws \BIT\EMS\Exception\Event\EventRegistrationAlreadyExists
+     * @throws \Exception
+     */
+    public function add(EventRegistration $eventRegistration)
     {
-        if (Ems_Event_Registration::is_already_registered($eventRegistration)) {
-            throw new EventRegistrationAlreadyExists("User is already registered for this event");
-        }
-
-        if ($this->eventRegistrationRepository->add($eventRegistration)) {
+        try {
+            $this->eventRegistrationRepository->add($eventRegistration);
             $this->eventRegistrationLog->info('Added event registration.', $eventRegistration);
             $this->mailService->sendRegisterMail($eventRegistration);
             $this->eventRegistrationLog->info('Sent add event registration mail.', $eventRegistration);
-        } else {
-            $this->eventRegistrationLog->error("Couldn't add event registration.", $eventRegistration);
+        } catch (UniqueConstraintViolationException $e) {
+            throw new EventRegistrationAlreadyExists("User is already registered for this event");
+        }
+    }
+
+    public function update(EventRegistration $eventRegistration)
+    {
+        // TODO: Implement
+    }
+
+
+    public function isRegistered(int $eventId, int $participantId)
+    {
+        try {
+            $this->eventRegistrationRepository->findByEventAndParticipant($eventId, $participantId);
+            return true;
+        } catch (EventRegistrationNotFoundException $e) {
+            return false;
         }
     }
 }

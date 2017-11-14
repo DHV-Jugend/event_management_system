@@ -6,6 +6,15 @@ namespace BIT\EMS\Settings\Api;
  */
 class SettingsApi extends \WeDevs_Settings_API
 {
+    protected $defaultMaiLWysiwigOptions = [
+        'editor_height' => 300,
+        'media_buttons' => false,
+        'quicktags' => false,
+        'tinymce' => [
+            'toolbar1' => 'bold,italic,underline,bullist,numlist,link,unlink,undo,redo',
+        ],
+    ];
+
     public function callback_datePickerStart($args)
     {
         $args['class'] = 'datepicker_period_start';
@@ -20,6 +29,16 @@ class SettingsApi extends \WeDevs_Settings_API
         $this->printTextFieldHtml($args);
     }
 
+    public function callback_mailWysiwig($args)
+    {
+        $args['type'] = 'wysiwig';
+        if (empty($args['options'])) {
+            $args['options'] = $this->defaultMaiLWysiwigOptions;
+        } else {
+            $args['options'] = array_merge_recursive($this->defaultMaiLWysiwigOptions, $args['options']);
+        }
+        $this->callback_wysiwyg($args);
+    }
 
     protected function printTextFieldHtml($args)
     {

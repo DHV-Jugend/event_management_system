@@ -4,6 +4,8 @@
  * @version
  */
 
+use BIT\EMS\Domain\Model\EventRegistration;
+
 /**
  * Class Ems_Event quasi(!) extends WP_Post, because WP_Post is final it fake the extends via __get and __set method
  * e.g you can access the WP_Post variable $post_title via $event->post_title
@@ -604,7 +606,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
 
     private static function register_user_to_event($event_post_id, $user_id, Fum_Html_Form $form = null)
     {
-        $event_registration = new Ems_Event_Registration($event_post_id, $user_id);
+        $event_registration = (new EventRegistration())->setEventId($event_post_id)->setUserId($user_id);
         $data = [];
 
         $used_input_fields = Fum_Activation::get_event_input_fields();
@@ -625,8 +627,8 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
             }
         }
 
-        $event_registration->set_data($data);
-        (new \BIT\EMS\Service\Event\Registration\RegistrationService())->addEventRegistration($event_registration);
+        $event_registration->setData($data);
+        (new \BIT\EMS\Service\Event\Registration\RegistrationService())->add($event_registration);
     }
 
 

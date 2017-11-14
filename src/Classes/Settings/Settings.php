@@ -10,6 +10,8 @@ use BIT\EMS\Settings\Api\SettingsApi;
 use BIT\EMS\Settings\Tab\AdvancedTab;
 use BIT\EMS\Settings\Tab\BasicTab;
 use BIT\EMS\Settings\Tab\CloudTab;
+use BIT\EMS\Settings\Tab\EventManagerMailTab;
+use BIT\EMS\Settings\Tab\ParticipantMailTab;
 use BIT\EMS\Settings\Tab\TabInterface;
 
 class Settings
@@ -65,6 +67,8 @@ class Settings
         $this->settings_api = new SettingsApi();
 
         $this->tabs[BasicTab::class] = new BasicTab();
+        $this->tabs[ParticipantMailTab::class] = new ParticipantMailTab();
+        $this->tabs[EventManagerMailTab::class] = new EventManagerMailTab();
         $this->tabs[CloudTab::class] = new CloudTab();
         $this->tabs[AdvancedTab::class] = new AdvancedTab();
 

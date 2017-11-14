@@ -2,11 +2,12 @@
 
 namespace BIT\EMS\Controller\Shortcode;
 
+use BIT\EMS\Domain\Repository\EventRegistrationRepository;
 use BIT\EMS\Domain\Repository\EventRepository;
+use BIT\EMS\Model\Event;
 use BIT\EMS\Service\Event\Registration\RegistrationService;
 use BIT\EMS\Service\ParticipantListService;
 use Ems_Event;
-use Ems_Event_Registration;
 use Event_Management_System;
 use Fum_Conf;
 use Fum_Form_View;
@@ -39,6 +40,11 @@ class ParticipantListController extends AbstractShortcodeController
     protected $eventRepository;
 
     /**
+     * @var \BIT\EMS\Domain\Repository\EventRegistrationRepository
+     */
+    protected $eventRegistrationRepository;
+
+    /**
      * @var \BIT\EMS\Service\Event\Registration\RegistrationService
      */
     protected $eventRegistrationService;
@@ -47,6 +53,7 @@ class ParticipantListController extends AbstractShortcodeController
     {
         $this->participantListService = new ParticipantListService();
         $this->eventRepository = new EventRepository();
+        $this->eventRegistrationRepository = new EventRegistrationRepository();
         $this->eventRegistrationService = new RegistrationService();
     }
 
@@ -92,7 +99,7 @@ class ParticipantListController extends AbstractShortcodeController
             }
 
             $title = $event->post_title . ' ' . $year . ' (' . count(
-                    Ems_Event_Registration::get_registrations_of_event($event->ID)
+                    $this->eventRegistrationRepository->findByEvent($event)
                 ) . ')';
             $value = 'ID_' . $event->ID;
             $possible_values = $form->get_input_field('select_event')->get_possible_values();
@@ -110,7 +117,7 @@ class ParticipantListController extends AbstractShortcodeController
         //print particpant list if event selected
         if (isset($_REQUEST[Fum_Conf::$fum_input_field_select_event])) {
             $id = preg_replace("/[^0-9]/", "", $_REQUEST[Fum_Conf::$fum_input_field_select_event]);
-            $registrations = Ems_Event_Registration::get_registrations_of_event($id);
+            $registrations = $this->eventRegistrationRepository->findByEvent(new Event($id));
 
             if (empty($registrations)) {
                 echo '<p><strong>Bisher gibt es keine Anmeldungen für dieses Event</strong></p>';
@@ -122,7 +129,7 @@ class ParticipantListController extends AbstractShortcodeController
 
             foreach ($registrations as $registration) {
                 $user_data = array_intersect_key(
-                    Fum_User::get_user_data($registration->get_user_id()),
+                    Fum_User::get_user_data($registration->getUserId()),
                     array_merge(
                         Fum_Html_Form::get_form(
                             Fum_Conf::$fum_event_register_form_unique_name
@@ -137,8 +144,8 @@ class ParticipantListController extends AbstractShortcodeController
                 unset($user_data[Fum_Conf::$fum_input_field_accept_agb]);
                 $merged_array = array_merge(
                     $user_data,
-                    $registration->get_data(),
-                    ['id' => $registration->get_user_id()]
+                    $registration->getData(),
+                    ['id' => $registration->getUserId()]
                 );
                 $participant_list[] = $merged_array;
             }
