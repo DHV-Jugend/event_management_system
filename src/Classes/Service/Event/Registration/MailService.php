@@ -45,8 +45,8 @@ class MailService
     protected function sendMail(EventRegistration $registration, $mail_type)
     {
         // Common variables
-        $event_title = htmlspecialchars_decode(get_post($registration->getEventId())->post_title);
         $eventId = $registration->getEventId();
+        $event = \Ems_Event::get_event($eventId);
         $user = get_userdata($registration->getUserId());
 
         $leader_id = get_post_meta($registration->getEventId(), 'ems_event_leader', true);
@@ -62,60 +62,26 @@ class MailService
 
         switch ($mail_type) {
             case static::MAIL_TYPE_REGISTRATION:
-                $subject = $this->loadMailFromSettings(
-                    ParticipantMailTab::class,
-                    ParticipantMailTab::EVENT_REGISTRATION_SUCCESSFUL_SUBJECT
-                );
-                $subject = $this->replaceMarkers($subject, $user, $event_title, $eventId);
-
-                $message = $this->loadMailFromSettings(
-                    ParticipantMailTab::class,
-                    ParticipantMailTab::EVENT_REGISTRATION_SUCCESSFUL_BODY
-                );
-                $message = $this->replaceMarkers($message, $user, $event_title, $eventId);
+                // Send event registration confirmation to participant
+                $mail = $this->loadParticipantRegistrationSuccessfulMail($user, $event);
+                list($subject, $message) = $mail;
 
                 if ($send_leader_email && false !== $leader_email) {
-                    $eventManagerSubject = $this->loadMailFromSettings(
-                        EventManagerMailTab::class,
-                        EventManagerMailTab::EVENT_REGISTRATION_SUCCESSFUL_SUBJECT
-                    );
-                    $eventManagerSubject = $this->replaceMarkers($eventManagerSubject, $user, $event_title, $eventId);
-
-                    $eventManagerMessage = $this->loadMailFromSettings(
-                        EventManagerMailTab::class,
-                        EventManagerMailTab::EVENT_REGISTRATION_SUCCESSFUL_BODY
-                    );
-                    $eventManagerMessage = $this->replaceMarkers($eventManagerMessage, $user, $event_title, $eventId);
-
+                    // Send notification about new registration to event manager
+                    $eventManagerMail = $this->loadEventManagerRegistrationSuccessfulMail($user, $event);
+                    list($eventManagerSubject, $eventManagerMessage) = $eventManagerMail;
                     Fum_Mail::sendMail($leader_email, $eventManagerSubject, $eventManagerMessage);
                 }
                 break;
             case static::MAIL_TYPE_CANCEL_REGISTRATION:
-                $subject = $this->loadMailFromSettings(
-                    ParticipantMailTab::class,
-                    ParticipantMailTab::EVENT_CANCEL_REGISTRATION_SUBJECT
-                );
-                $subject = $this->replaceMarkers($subject, $user, $event_title, $eventId);
-
-                $message = $this->loadMailFromSettings(
-                    ParticipantMailTab::class,
-                    ParticipantMailTab::EVENT_CANCEL_REGISTRATION_BODY
-                );
-                $message = $this->replaceMarkers($message, $user, $event_title, $eventId);
+                // Send cancel registration confirmation to participant
+                $mail = $this->loadParticipantCancelRegistrationMail($user, $event);
+                list($subject, $message) = $mail;
 
                 if ($send_leader_email && false !== $leader_email) {
-                    $eventManagerSubject = $this->loadMailFromSettings(
-                        EventManagerMailTab::class,
-                        EventManagerMailTab::EVENT_CANCEL_REGISTRATION_SUBJECT
-                    );
-                    $eventManagerSubject = $this->replaceMarkers($eventManagerSubject, $user, $event_title, $eventId);
-
-                    $eventManagerMessage = $this->loadMailFromSettings(
-                        EventManagerMailTab::class,
-                        EventManagerMailTab::EVENT_CANCEL_REGISTRATION_BODY
-                    );
-                    $eventManagerMessage = $this->replaceMarkers($eventManagerMessage, $user, $event_title, $eventId);
-
+                    // Inform event manager about cancelled registration
+                    $eventManagerMail = $this->loadEventManagerCancelRegistrationMail($user, $event);
+                    list($eventManagerSubject, $eventManagerMessage) = $eventManagerMail;
                     Fum_Mail::sendMail($leader_email, $eventManagerSubject, $eventManagerMessage);
                 }
                 break;
@@ -145,8 +111,94 @@ class MailService
         return $subject;
     }
 
-    protected function replaceMarkers(string $text, \WP_User $user, string $event_title, int $eventId)
+    protected function loadMailPartFromSettingsAndReplaceMarker($section, $option, $user, $event)
     {
+        $part = $this->loadMailFromSettings($section, $option);
+        return $this->replaceMarkers($part, $user, $event);
+    }
+
+    protected function loadParticipantRegistrationSuccessfulMail($user, \Ems_Event $event)
+    {
+        $subject = $this->loadMailPartFromSettingsAndReplaceMarker(
+            ParticipantMailTab::class,
+            ParticipantMailTab::EVENT_REGISTRATION_SUCCESSFUL_SUBJECT,
+            $user,
+            $event
+        );
+
+        $message = $this->loadMailPartFromSettingsAndReplaceMarker(
+            ParticipantMailTab::class,
+            ParticipantMailTab::EVENT_REGISTRATION_SUCCESSFUL_BODY,
+            $user,
+            $event
+        );
+
+        return [$subject, $message];
+    }
+
+    protected function loadParticipantCancelRegistrationMail($user, \Ems_Event $event)
+    {
+        $subject = $this->loadMailPartFromSettingsAndReplaceMarker(
+            ParticipantMailTab::class,
+            ParticipantMailTab::EVENT_CANCEL_REGISTRATION_SUBJECT,
+            $user,
+            $event
+        );
+
+        $message = $this->loadMailPartFromSettingsAndReplaceMarker(
+            ParticipantMailTab::class,
+            ParticipantMailTab::EVENT_CANCEL_REGISTRATION_BODY,
+            $user,
+            $event
+        );
+
+        return [$subject, $message];
+    }
+
+    protected function loadEventManagerRegistrationSuccessfulMail($user, \Ems_Event $event)
+    {
+        $subject = $this->loadMailPartFromSettingsAndReplaceMarker(
+            EventManagerMailTab::class,
+            EventManagerMailTab::EVENT_REGISTRATION_SUCCESSFUL_SUBJECT,
+            $user,
+            $event
+        );
+
+        $message = $this->loadMailPartFromSettingsAndReplaceMarker(
+            EventManagerMailTab::class,
+            EventManagerMailTab::EVENT_REGISTRATION_SUCCESSFUL_BODY,
+            $user,
+            $event
+        );
+
+        return [$subject, $message];
+    }
+
+    protected function loadEventManagerCancelRegistrationMail($user, \Ems_Event $event)
+    {
+        $subject = $this->loadMailPartFromSettingsAndReplaceMarker(
+            EventManagerMailTab::class,
+            EventManagerMailTab::EVENT_CANCEL_REGISTRATION_SUBJECT,
+            $user,
+            $event
+        );
+
+        $message = $this->loadMailPartFromSettingsAndReplaceMarker(
+            EventManagerMailTab::class,
+            EventManagerMailTab::EVENT_CANCEL_REGISTRATION_BODY,
+            $user,
+            $event
+        );
+
+        return [$subject, $message];
+    }
+
+
+    protected function replaceMarkers(string $text, \WP_User $user, \Ems_Event $event)
+    {
+        $eventTitle = htmlspecialchars_decode($event->get_post()->post_title);
+        $eventId = $event->getID();
+
         return str_ireplace(
             [
                 '###user_firstname###',
@@ -157,7 +209,7 @@ class MailService
             [
                 $user->user_firstname,
                 $user->user_lastname,
-                $event_title,
+                $eventTitle,
                 get_permalink(get_option('ems_partcipant_list_page')) . '?select_event=ID_' . $eventId,
             ],
             $text
