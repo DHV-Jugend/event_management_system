@@ -3,7 +3,7 @@
 namespace BIT\EMS\Controller\Shortcode;
 
 use BIT\EMS\Domain\Repository\EventRepository;
-use BIT\EMS\Service\Event\Registration;
+use BIT\EMS\Service\Event\Registration\RegistrationService;
 use BIT\EMS\Service\ParticipantListService;
 use Ems_Event;
 use Ems_Event_Registration;
@@ -38,13 +38,16 @@ class ParticipantListController extends AbstractShortcodeController
      */
     protected $eventRepository;
 
+    /**
+     * @var \BIT\EMS\Service\Event\Registration\RegistrationService
+     */
     protected $eventRegistrationService;
 
     public function __construct()
     {
         $this->participantListService = new ParticipantListService();
         $this->eventRepository = new EventRepository();
-        $this->eventRegistrationService = new Registration();
+        $this->eventRegistrationService = new RegistrationService();
     }
 
     public function printContent($atts = [], $content = null)
@@ -81,7 +84,6 @@ class ParticipantListController extends AbstractShortcodeController
         );
 
         foreach ($events as $event) {
-
             $date_time = $event->get_start_date_time();
             $year = '';
             if (null !== $date_time) {

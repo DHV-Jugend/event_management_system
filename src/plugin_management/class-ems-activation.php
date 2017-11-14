@@ -14,6 +14,7 @@ class Ems_Activation
 
         // Create tables
         Ems_Event_Registration::createTables();
+        (new\BIT\EMS\Log\EventRegistrationLog())->createTable();
 
         $admin_role = get_role('administrator');
         //TODO Because performance is not important here, maybe it would be nice if we just include all classes from the autoloader and the call get_admin_capabilities on each child of AbstractPost
@@ -39,13 +40,25 @@ class Ems_Activation
         remove_role('eventleiter');
         add_role('eventleiter', 'Eventleiter', $caps);
 
-        $post_id = Fum_Post::add_post('Event Statistiken', 'Event Statistiken', '[' . Ems_Conf::PREFIX . 'event_statistic]');
+        $post_id = Fum_Post::add_post(
+            'Event Statistiken',
+            'Event Statistiken',
+            '[' . Ems_Conf::PREFIX . 'event_statistic]'
+        );
         update_option(Ems_Conf::PREFIX . 'event_statistic_page', $post_id);
 
-        $post_id = Fum_Post::add_post('Eventverwaltung', 'Eventverwaltung', '[' . Ems_Conf::PREFIX . 'eventverwaltung]');
+        $post_id = Fum_Post::add_post(
+            'Eventverwaltung',
+            'Eventverwaltung',
+            '[' . Ems_Conf::PREFIX . 'eventverwaltung]'
+        );
         update_option(Ems_Conf::PREFIX . 'eventmanagement_page', $post_id);
 
-        $post_id = Fum_Post::add_post('Teilnehmerlisten', 'Teilnehmerlisten', '[' . Ems_Conf::PREFIX . 'teilnehmerlisten]');
+        $post_id = Fum_Post::add_post(
+            'Teilnehmerlisten',
+            'Teilnehmerlisten',
+            '[' . Ems_Conf::PREFIX . 'teilnehmerlisten]'
+        );
         update_option(Ems_Conf::PREFIX . 'partcipant_list_page', $post_id);
 
     }

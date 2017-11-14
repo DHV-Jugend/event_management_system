@@ -14,6 +14,8 @@ use BIT\EMS\Controller\Shortcode\EventStatisticController;
 use BIT\EMS\Controller\Shortcode\ParticipantListController;
 use BIT\EMS\Model\AbstractPost;
 use BIT\EMS\Schedule\CleanTempFilesSchedule;
+use BIT\EMS\Settings\Settings;
+use BIT\EMS\Settings\Tab\BasicTab;
 use Ems_Event;
 use Ems_Event_Daily_news;
 use Ems_Name_Conversion;
@@ -37,6 +39,9 @@ class Initialisation
         if (is_admin()) {
             Settings::register();
         }
+
+        $defaultEventPage = Settings::get(BasicTab::DEFAULT_EVENT_PAGE, BasicTab::class);
+        echo '';
     }
 
     /**

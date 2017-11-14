@@ -64,39 +64,14 @@ class Ems_Option_Page_Controller
         $option = new Fum_Option($name, $title, $description, get_option($name), $option_group, 'checkbox');
         $options[] = $option;
 
-        //
-        $name = \Ems_Conf::PREFIX . 'event_list_upload_remote_server_host';
-        $title = 'Event list upload server ';
-        $description = '';
-
-        //Add option to option_group
-        $options[] = new Fum_Option($name, $title, $description, get_option($name), $option_group, 'text');
-
-        //Create SMTP username text field
-        $name = \Ems_Conf::PREFIX . 'event_list_upload_remote_server_username';
-        $title = 'Event list upload username';
-        $description = '';
-
-        //Add option to option_group
-        $options[] = new Fum_Option($name, $title, $description, get_option($name), $option_group, 'text');
-
-        //Create SMTP password text field
-        $name = \Ems_Conf::PREFIX . 'event_list_upload_remote_server_password';
-        $title = 'Event list upload password';
-        $description = '';
-
-        $options[] = new Fum_Option($name, $title, $description, get_option($name), $option_group, 'password');
-
         //Add created options to $option_group and register $option_group
         $option_group->set_options($options);
 
         //Add all option groups to page
         $page->add_option_group($option_group);
 
-
         //Add page to page array
         $pages[] = $page;
-
 
         self::$pages = $pages;
 

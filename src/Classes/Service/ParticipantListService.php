@@ -7,6 +7,9 @@ namespace BIT\EMS\Service;
 
 use BIT\EMS\Domain\Repository\EventRegistrationRepository;
 use BIT\EMS\Model\Event;
+use BIT\EMS\Service\Cloud\WebDav;
+use BIT\EMS\Settings\Settings;
+use BIT\EMS\Settings\Tab\CloudTab;
 use BIT\EMS\Utility\GeneralUtility;
 use BIT\EMS\Utility\PHPExcel\Value_Binder;
 use Ds\Set;
@@ -17,7 +20,6 @@ use Fum_User;
 use PHPExcel;
 use PHPExcel_Cell;
 use PHPExcel_Worksheet;
-use PHPExcel_Writer_Excel2007;
 
 class ParticipantListService
 {
@@ -30,6 +32,10 @@ class ParticipantListService
      * @var \BIT\EMS\Domain\Repository\EventRegistrationRepository
      */
     protected $eventRegistrationRepository;
+
+    protected $webDavSettings;
+
+    protected $webDav;
 
     /**
      * ParticipantList constructor
@@ -51,18 +57,126 @@ class ParticipantListService
                 "Biete Mitfahrgelgenheit",
             ]
         );
+
+        $this->webDavSettings = [
+            'baseUri' => Settings::get(CloudTab::CLOUD1_HOST, CloudTab::class),
+            'userName' => Settings::get(CloudTab::CLOUD1_USERNAME, CloudTab::class),
+            'password' => Settings::get(CloudTab::CLOUD1_PASSWORD, CloudTab::class),
+            'dir' => Settings::get(CloudTab::CLOUD1_DIR, CloudTab::class),
+        ];
+
+        $this->webDav = new WebDav($this->webDavSettings);
+    }
+
+
+    public function generateAndUploadPrivateParticipantListFromEvent(Event $event)
+    {
+        return $this->generateAndUploadParticipantList($event, 'private');
+    }
+
+    public function generateAndUploadPublicParticipantListFromEvent(Event $event)
+    {
+        return $this->generateAndUploadParticipantList($event, 'public');
+    }
+
+    protected function generateAndUploadParticipantList(Event $event, $type = 'public')
+    {
+        $basePath = \Event_Management_System::getPluginPath();
+        // File names must stay the same for an event. Otherwise each run would create a new file instead of updating the old one
+        $fileNameBase = sanitize_file_name($event->get_post()->post_title) . '_' . $event->getID();
+
+        if ($type === 'private') {
+            $fileName = $fileNameBase . '_Eventleiter.xlsx';
+        } else {
+            $fileName = $fileNameBase . '_Teilnehmer.xlsx';
+        }
+
+        $fileNameSecured = sha1(random_bytes(30)) . $fileName;
+
+        $listPath = $basePath . 'tmp/' . $fileNameSecured;
+
+        if ($type === 'private') {
+            $newChecksum = $this->generatePrivateParticipantListFromEvent($event, $listPath);
+            $metaKey = 'privateParticipantChecksum';
+        } else {
+            $newChecksum = $this->generatePublicParticipantListFromEvent($event, $listPath);
+            $metaKey = 'publicParticipantChecksum';
+        }
+
+        $webDavFolder = trim($this->webDavSettings['dir'], '/') . '/' . $event->get_start_date_time()->format('Y');
+        $remotePath = $webDavFolder . '/' . $fileName;
+
+        $this->uploadList($event, $metaKey, $listPath, $remotePath, $newChecksum);
+    }
+
+    /**
+     * @param array $eventRegistrations
+     * @param string $filePath
+     * @return string
+     * @throws \Exception
+     * @throws \PHPExcel_Exception
+     * @throws \PHPExcel_Writer_Exception
+     */
+    public function generatePrivateParticipantList(array $eventRegistrations, string $filePath)
+    {
+        return $this->generateParticipantList($eventRegistrations, $filePath, null);
+    }
+
+    /**
+     * Write all registration values to participant list
+     *
+     * @param \BIT\EMS\Model\Event $event
+     * @param string $filePath
+     * @return string
+     * @throws \Exception
+     * @throws \PHPExcel_Exception
+     * @throws \PHPExcel_Writer_Exception
+     */
+    public function generatePrivateParticipantListFromEvent(Event $event, string $filePath)
+    {
+        return $this->generatePrivateParticipantList(
+            $this->eventRegistrationRepository->findByEvent($event),
+            $filePath
+        );
+    }
+
+    /**
+     * @param array $eventRegistrations
+     * @param string $filePath
+     * @return string
+     * @throws \Exception
+     * @throws \PHPExcel_Exception
+     * @throws \PHPExcel_Writer_Exception
+     */
+    public function generatePublicParticipantList(array $eventRegistrations, string $filePath)
+    {
+        return $this->generateParticipantList($eventRegistrations, $filePath, $this->publicFields);
+    }
+
+    /**
+     * Write public registration values to participant list
+     * @param \BIT\EMS\Model\Event $event
+     * @param string $filePath
+     * @return string
+     * @throws \Exception
+     * @throws \PHPExcel_Exception
+     * @throws \PHPExcel_Writer_Exception
+     */
+    public function generatePublicParticipantListFromEvent(Event $event, string $filePath)
+    {
+        return $this->generatePublicParticipantList($this->eventRegistrationRepository->findByEvent($event), $filePath);
     }
 
     /**
      * @param \BIT\EMS\Domain\Model\EventRegistration[] $eventRegistrations
      * @param string $filePath
      * @param Set|null $fields
-     * @return bool
+     * @return string MD5 checksum of content
      * @throws \Exception
      * @throws \PHPExcel_Exception
      * @throws \PHPExcel_Writer_Exception
      */
-    public function generateParticipantList(array $eventRegistrations, string $filePath, Set $fields = null)
+    protected function generateParticipantList(array $eventRegistrations, string $filePath, Set $fields = null)
     {
         $participant_list = [];
 
@@ -73,7 +187,7 @@ class ParticipantListService
                     Fum_Html_Form::get_form(
                         Fum_Conf::$fum_event_register_form_unique_name
                     )->get_unique_names_of_input_fields(),
-                    ["fum_premium_participant" => "fum_premium_participant"]
+                    ['fum_premium_participant' => 'fum_premium_participant']
                 )
             );
             if (empty($user_data)) {
@@ -122,69 +236,12 @@ class ParticipantListService
         $objPHPExcel = $this->getBootstrappedPhpExcel();
         $objPHPExcel->getActiveSheet()->fromArray($data);
 
-        $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-        try {
-            $objWriter->save($filePath);
-            if (file_exists($filePath)) {
-                return true;
-            }
-        } catch (\Exception $e) {
-            //TODO Add logging
-            echo '';
+        $objWriter = new \PHPExcel_Writer_Excel2007($objPHPExcel);
+        $objWriter->save($filePath);
+        if (file_exists($filePath)) {
+            return md5(json_encode($data));
         }
-
-
-        return false;
-    }
-
-    public function generatePrivateParticipantList(array $eventRegistrations, string $filePath)
-    {
-        return $this->generateParticipantList($eventRegistrations, $filePath, null);
-    }
-
-    /**
-     * Write all registration values to participant list
-     *
-     * @param \BIT\EMS\Model\Event $event
-     * @param string $filePath
-     * @return bool
-     * @throws \Exception
-     * @throws \PHPExcel_Exception
-     * @throws \PHPExcel_Writer_Exception
-     */
-    public function generatePrivateParticipantListFromEvent(Event $event, string $filePath)
-    {
-        return $this->generatePrivateParticipantList(
-            $this->eventRegistrationRepository->findByEvent($event),
-            $filePath
-        );
-    }
-
-    /**
-     * @param array $eventRegistrations
-     * @param string $filePath
-     * @return bool
-     * @throws \Exception
-     * @throws \PHPExcel_Exception
-     * @throws \PHPExcel_Writer_Exception
-     */
-    public function generatePublicParticipantList(array $eventRegistrations, string $filePath)
-    {
-        return $this->generateParticipantList($eventRegistrations, $filePath, $this->publicFields);
-    }
-
-    /**
-     * Write public registration values to participant list
-     * @param \BIT\EMS\Model\Event $event
-     * @param string $filePath
-     * @return bool
-     * @throws \Exception
-     * @throws \PHPExcel_Exception
-     * @throws \PHPExcel_Writer_Exception
-     */
-    public function generatePublicParticipantListFromEvent(Event $event, string $filePath)
-    {
-        return $this->generatePublicParticipantList($this->eventRegistrationRepository->findByEvent($event), $filePath);
+        throw new \Exception("Couldn't write file " . $filePath);
     }
 
     /**
@@ -226,6 +283,25 @@ class ParticipantListService
         $objPHPExcel->addSheet($myWorkSheet, 0);
         $objPHPExcel->setActiveSheetIndex(0);
         return $objPHPExcel;
+    }
+
+    /**
+     * @param \BIT\EMS\Model\Event $event
+     * @param $metaKey
+     * @param $localPath
+     * @param $remotePath
+     * @param $newChecksum
+     */
+    protected function uploadList(Event $event, $metaKey, $localPath, $remotePath, $newChecksum)
+    {
+        $changed = $newChecksum !== get_post_meta($event->getID(), $metaKey, true);
+
+        $uploadSuccessful = $this->webDav->upload(file_get_contents($localPath), $remotePath, $changed);
+        if ($changed && $uploadSuccessful) {
+            update_post_meta($event->getID(), $metaKey, $newChecksum);
+        }
+
+        unlink($localPath);
     }
 
     /**

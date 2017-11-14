@@ -7,7 +7,6 @@ namespace BIT\EMS\Command;
 
 use BIT\EMS\Domain\Repository\EventRepository;
 use BIT\EMS\Model\Event;
-use BIT\EMS\Service\Cloud\WebDav;
 use BIT\EMS\Service\ParticipantListService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
@@ -17,6 +16,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class UploadParticipantListCommand extends Command
 {
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->loadWordPress();
+    }
+
     protected function configure()
     {
         $this
@@ -34,52 +40,23 @@ class UploadParticipantListCommand extends Command
             );
         }
 
-        $this->loadWordPress();
         $eventRepository = new EventRepository();
         if ('*' === $event) {
             $events = $eventRepository->findAll();
         } else {
             $events[] = $eventRepository->findEventById($event);
         }
+
         foreach ($events as $event) {
             $this->updateParticipantList($event);
         }
-
     }
 
     protected function updateParticipantList(Event $event)
     {
         $participantListService = new ParticipantListService();
-        $basePath = \Event_Management_System::getPluginPath();
-        // File names must stay the same for an event. Otherwise each run would create a new file instead of updating the old one
-        $fileNameBase = sanitize_file_name($event->get_post()->post_title) . '_' . $event->getID();
-
-        $privateListFileName = $fileNameBase . '_Eventleiter.xlsx';
-        $privateListFileNameSecured = sha1(random_bytes(30)) . $privateListFileName;
-
-        $publicListFileName = $fileNameBase . '_Teilnehmer.xlsx';
-        $publicListFileNameSecured = sha1(random_bytes(30)) . $publicListFileName;
-
-        $privateListPath = $basePath . 'tmp/' . $privateListFileNameSecured;
-        $publicListPath = $basePath . 'tmp/' . $publicListFileNameSecured;
-
-        $participantListService->generatePrivateParticipantListFromEvent($event, $privateListPath);
-        $participantListService->generatePublicParticipantListFromEvent($event, $publicListPath);
-
-        $settings = [
-            'baseUri' => get_option(\Ems_Conf::PREFIX . 'event_list_upload_remote_server_host'),
-            'userName' => get_option(\Ems_Conf::PREFIX . 'event_list_upload_remote_server_username'),
-            'password' => get_option(\Ems_Conf::PREFIX . 'event_list_upload_remote_server_password'),
-        ];
-
-        $webDav = new WebDav($settings);
-        $webDavFolder = 'Events/Teilnehmerlisten/' . $event->get_start_date_time()->format('Y');
-
-        $webDav->upload(file_get_contents($privateListPath), $webDavFolder . '/' . $privateListFileName);
-        $webDav->upload(file_get_contents($publicListPath), $webDavFolder . '/' . $publicListFileName);
-
-        unlink($privateListPath);
-        unlink($publicListPath);
+        $participantListService->generateAndUploadPrivateParticipantListFromEvent($event);
+        $participantListService->generateAndUploadPublicParticipantListFromEvent($event);
     }
 
     protected function loadWordPress()
