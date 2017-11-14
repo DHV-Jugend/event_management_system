@@ -61,7 +61,6 @@ class Migration_0_2_0 implements MigrationInterface
                     'user_id' => $registration->get_user_id(),
                     'event_id' => $registration->get_event_post_id(),
                     'data' => json_encode($registration->get_data()),
-                    'deleted' => false,
                 ];
 
                 $wpdb->insert($eventRegistrationTable, $row);
