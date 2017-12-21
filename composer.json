@@ -12,6 +12,10 @@
     {
       "type": "vcs",
       "url": "https://github.com/Bessei-IT/typo3-surf-extended.git"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/clubdrei/wp-settings.git"
     }
   ],
   "autoload": {
@@ -19,12 +23,14 @@
       "BIT\\EMS\\": "src/Classes/"
     }
   },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "require": {
     "phpoffice/phpexcel": "^1.8",
     "symfony/console": "^3.2",
     "league/flysystem-webdav": "^1.0",
     "php-ds/php-ds": "^1.1",
-    "tareq1988/wordpress-settings-api-class": "dev-master",
+    "c3/wp-settings": "dev-master",
     "doctrine/dbal": "^2.6"
   },
   "require-dev": {
