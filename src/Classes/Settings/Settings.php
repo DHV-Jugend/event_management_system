@@ -9,6 +9,7 @@ use BIT\EMS\Settings\Tab\AdvancedTab;
 use BIT\EMS\Settings\Tab\BasicTab;
 use BIT\EMS\Settings\Tab\CloudTab;
 use BIT\EMS\Settings\Tab\EventManagerMailTab;
+use BIT\EMS\Settings\Tab\PagesTab;
 use BIT\EMS\Settings\Tab\ParticipantMailTab;
 
 class Settings extends \C3\WpSettings\Settings
@@ -24,6 +25,7 @@ class Settings extends \C3\WpSettings\Settings
 
         $settings = \C3\WpSettings\Settings::register(array_merge($basicOptions, $options));
         $settings->addTab(new BasicTab());
+        $settings->addTab(new PagesTab());
         $settings->addTab(new ParticipantMailTab());
         $settings->addTab(new EventManagerMailTab());
         $settings->addTab(new CloudTab());

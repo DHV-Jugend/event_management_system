@@ -1,12 +1,12 @@
 <?php
 namespace BIT\EMS\Settings\Tab;
 
-use C3\WpSettings\Tab\TabInterface;
+use C3\WpSettings\Tab\AbstractTab;
 
 /**
  * @author Christoph Bessei
  */
-class AdvancedTab implements TabInterface
+class AdvancedTab extends AbstractTab
 {
     public function getId(): string
     {

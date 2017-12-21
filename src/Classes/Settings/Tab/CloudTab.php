@@ -1,12 +1,12 @@
 <?php
 namespace BIT\EMS\Settings\Tab;
 
-use C3\WpSettings\Tab\TabInterface;
+use C3\WpSettings\Tab\AbstractTab;
 
 /**
  * @author Christoph Bessei
  */
-class CloudTab implements TabInterface
+class CloudTab extends AbstractTab
 {
     const CLOUD1_HOST = \Ems_Conf::PREFIX . 'cloud1_host';
     const CLOUD1_USERNAME = \Ems_Conf::PREFIX . 'cloud1_username';

@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/clubdrei/wp-settings.git",
-                "reference": "06b0db3b8301af8017fdb6c356c9da9a3be00ac9"
+                "reference": "900894b5d10da8c0f157c025ef4443be5f319f27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/clubdrei/wp-settings/zipball/06b0db3b8301af8017fdb6c356c9da9a3be00ac9",
-                "reference": "06b0db3b8301af8017fdb6c356c9da9a3be00ac9",
+                "url": "https://api.github.com/repos/clubdrei/wp-settings/zipball/900894b5d10da8c0f157c025ef4443be5f319f27",
+                "reference": "900894b5d10da8c0f157c025ef4443be5f319f27",
                 "shasum": ""
             },
             "require": {
@@ -43,7 +43,7 @@
                 "source": "https://github.com/clubdrei/wp-settings/tree/master",
                 "issues": "https://github.com/clubdrei/wp-settings/issues"
             },
-            "time": "2017-12-21 15:03:18"
+            "time": "2017-12-21 16:34:55"
         },
         {
             "name": "doctrine/annotations",

@@ -70,7 +70,7 @@ class MailService
                     // Send notification about new registration to event manager
                     $eventManagerMail = $this->loadEventManagerRegistrationSuccessfulMail($user, $event);
                     list($eventManagerSubject, $eventManagerMessage) = $eventManagerMail;
-                    Fum_Mail::sendMail($leader_email, $eventManagerSubject, $eventManagerMessage);
+                    Fum_Mail::sendHtmlMail($leader_email, $eventManagerSubject, $eventManagerMessage);
                 }
                 break;
             case static::MAIL_TYPE_CANCEL_REGISTRATION:
@@ -82,7 +82,7 @@ class MailService
                     // Inform event manager about cancelled registration
                     $eventManagerMail = $this->loadEventManagerCancelRegistrationMail($user, $event);
                     list($eventManagerSubject, $eventManagerMessage) = $eventManagerMail;
-                    Fum_Mail::sendMail($leader_email, $eventManagerSubject, $eventManagerMessage);
+                    Fum_Mail::sendHtmlMail($leader_email, $eventManagerSubject, $eventManagerMessage);
                 }
                 break;
         }
@@ -90,12 +90,12 @@ class MailService
         try {
             // Send mail to participant
             if (!empty($subject) && !empty($message)) {
-                Fum_Mail::sendMail($user->user_email, $subject, $message, $leader_email);
+                Fum_Mail::sendHtmlMail($user->user_email, $subject, $message, $leader_email);
             }
 
             // Send mail to event leader
             if ($send_leader_email && false !== $leader_email && !empty($leader_subject) && !empty($leader_message)) {
-                Fum_Mail::sendMail($leader_email, $leader_subject, $leader_message);
+                Fum_Mail::sendHtmlMail($leader_email, $leader_subject, $leader_message);
             }
         } catch (\Exception $e) {
             $msg = "Konnte Bestätitungsmail nicht versenden. Bitte versuche es später nochmal.";

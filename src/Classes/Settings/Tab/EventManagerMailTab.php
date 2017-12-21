@@ -1,12 +1,12 @@
 <?php
 namespace BIT\EMS\Settings\Tab;
 
-use C3\WpSettings\Tab\TabInterface;
+use C3\WpSettings\Tab\AbstractTab;
 
 /**
  * @author Christoph Bessei
  */
-class EventManagerMailTab implements TabInterface
+class EventManagerMailTab extends AbstractTab
 {
     const EVENT_REGISTRATION_SUCCESSFUL_SUBJECT = \Ems_Conf::PREFIX . 'event_registration_successful_subject';
     const EVENT_REGISTRATION_SUCCESSFUL_BODY = \Ems_Conf::PREFIX . 'event_registration_successful_body';

@@ -2,14 +2,13 @@
 namespace BIT\EMS\Settings\Tab;
 
 use BIT\EMS\Domain\Model\Enum\EventsActiveUntilEnum;
-use C3\WpSettings\Tab\TabInterface;
+use C3\WpSettings\Tab\AbstractTab;
 
 /**
  * @author Christoph Bessei
  */
-class BasicTab implements TabInterface
+class BasicTab extends AbstractTab
 {
-    const DEFAULT_EVENT_PAGE = \Ems_Conf::PREFIX . 'default_event_page';
     const EVENT_START_DATE = \Ems_Conf::PREFIX . 'event_start_date';
     const EVENT_END_DATE = \Ems_Conf::PREFIX . 'event_end_date';
     const EVENT_ACTIVE_UNTIL = \Ems_Conf::PREFIX . 'event_active_until';
@@ -33,12 +32,6 @@ class BasicTab implements TabInterface
     public function getFields(): array
     {
         return [
-            [
-                'name' => static::DEFAULT_EVENT_PAGE,
-                'label' => __('Default event page', 'ems_text_domain'),
-                'type' => 'pages',
-                'sanitize_callback' => 'sanitize_text_field',
-            ],
             [
                 'name' => static::EVENT_START_DATE,
                 'label' => __('Active events period<br>Start date', 'ems_text_domain'),
