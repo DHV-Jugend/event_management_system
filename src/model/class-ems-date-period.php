@@ -8,10 +8,9 @@ class Ems_Date_Period {
 	private $start;
 	private $end;
 
-	public function __construct( DateTime $start, DateTime $end ) {
+	public function __construct( \DateTime $start, \DateTime $end ) {
 		$this->start = $start;
 		$this->end   = $end;
-
 	}
 
 	/**
@@ -24,7 +23,7 @@ class Ems_Date_Period {
 	 *
 	 * @return bool
 	 */
-	public function contains( DateTime $date, $ignore_time = true, $exclude_start_date = false, $exclude_end_date = false ) {
+	public function contains( \DateTime $date, $ignore_time = true, $exclude_start_date = false, $exclude_end_date = false ) {
 		//work with clones of $start and $end
 		$start = clone $this->start;
 		$end   = clone $this->end;

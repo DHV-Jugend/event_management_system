@@ -86,11 +86,6 @@ class Initialisation
             }
         );
 
-        //Register plugin settings
-        add_action('admin_init', ['Ems_Option_Page_Controller', 'register_settings']);
-        //Create plugin admin menu page
-        add_action('admin_menu', ['Ems_Option_Page_Controller', 'create_menu']);
-
         //Redirect 'event' url parameter to 'ems_event' because event seems to be reserved from wordpress
         add_action('parse_request', ['Ems_Redirect', 'redirect_event_parameter']);
 

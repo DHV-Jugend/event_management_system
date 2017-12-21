@@ -5,6 +5,7 @@ namespace BIT\EMS\Controller\Shortcode;
 use BIT\EMS\Domain\Repository\EventRegistrationRepository;
 use BIT\EMS\Domain\Repository\EventRepository;
 use BIT\EMS\Model\Event;
+use BIT\EMS\Service\Event\EventService;
 use BIT\EMS\Service\Event\Registration\RegistrationService;
 use BIT\EMS\Service\ParticipantListService;
 use Ems_Event;
@@ -76,8 +77,7 @@ class ParticipantListController extends AbstractShortcodeController
             return;
         }
 
-        $events = Ems_Event::get_active_events();
-
+        $events = (new EventService())->findActiveEvents();
         $form = new Fum_Html_Form('fum_parctipant_list_form', 'fum_participant_list_form', '#');
         $form->add_input_field(
             new Fum_Html_Input_Field(

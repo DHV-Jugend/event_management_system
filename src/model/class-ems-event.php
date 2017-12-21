@@ -184,7 +184,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
                     $_REQUEST['ems_start_date']
                 )) {
                 // Update the meta field in the database.
-                update_post_meta($this->ID, 'ems_start_date', $date_time_start_date);
+                update_post_meta($this->ID, 'ems_start_date', $date_time_start_date->getTimestamp());
             } else {
                 return $this->ID;
             }
@@ -194,7 +194,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
                     $_REQUEST['ems_end_date']
                 )) {
                 // Update the meta field in the database.
-                update_post_meta($this->ID, 'ems_end_date', $date_time_end_date);
+                update_post_meta($this->ID, 'ems_end_date', $date_time_end_date->getTimestamp());
             }
         }
 
@@ -511,8 +511,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
     /**
      * Returns an array of events (posts with post_type Ems_Event::$post_type)
      *
-     * @param int $limit limits the returned events. If $sort the events gets sorted first and then the first $limit events will be returned
-     *                                            without sort
+     * @param int $limit limits the returned events. If $sort is set the events get sorted first and then the first $limit events will be returned without further sort
      * @param bool $sort sort events (true) or not (false)
      * @param bool $reverse_order reverse the order after sort, has no affect if $sort=false
      * @param callable $user_sort_callback function which compares two Ems_Event objects, used with usort(). Default is Ems_Event->compare
