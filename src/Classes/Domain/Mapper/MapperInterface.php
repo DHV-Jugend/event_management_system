@@ -8,7 +8,7 @@ interface MapperInterface
 {
     public function toObject(array $entries): array;
 
-    public function toSingleObject(array $entries);
+    public function toSingleObject(array $entry);
 
     public function toArray(array $objects): array;
 

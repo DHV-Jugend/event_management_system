@@ -70,6 +70,13 @@ class EventRepository extends AbstractRepository
 
         $query = new \WP_Query($args);
         $posts = $query->get_posts();
+        if (!is_array($posts)) {
+            $posts = [];
+        }
+
+        foreach ($posts as $key => $post) {
+            $posts[$key] = new Event($post);
+        }
         return $posts;
     }
 

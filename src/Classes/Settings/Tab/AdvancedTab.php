@@ -8,6 +8,8 @@ use C3\WpSettings\Tab\AbstractTab;
  */
 class AdvancedTab extends AbstractTab
 {
+    const EVENT_LIST_DATE_FORMAT = \Ems_Conf::PREFIX . 'event_liste_date_format';
+
     public function getId(): string
     {
         return \Ems_Conf::PREFIX . 'advanced';
@@ -20,6 +22,13 @@ class AdvancedTab extends AbstractTab
 
     public function getFields(): array
     {
-        return [];
+        return [
+            [
+                'name' => static::EVENT_LIST_DATE_FORMAT,
+                'label' => __('Event list date format', 'ems_text_domain'),
+                'type' => 'text',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+        ];
     }
 }

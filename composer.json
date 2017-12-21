@@ -31,7 +31,8 @@
     "league/flysystem-webdav": "^1.0",
     "php-ds/php-ds": "^1.1",
     "c3/wp-settings": "dev-master",
-    "doctrine/dbal": "^2.6"
+    "doctrine/dbal": "^2.6",
+    "nesbot/carbon": "^1.22"
   },
   "require-dev": {
     "phpunit/phpunit": "5.*.*",

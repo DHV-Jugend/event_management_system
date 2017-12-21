@@ -94,7 +94,12 @@ class ParticipantListController extends AbstractShortcodeController
             $date_time = $event->get_start_date_time();
             $year = '';
             if (null !== $date_time) {
-                $timestamp = $date_time->getTimestamp();
+                if ($date_time instanceof \DateTime) {
+                    $timestamp = $date_time->getTimestamp();
+                } else {
+                    $timestamp = $date_time;
+                }
+
                 $year = date('Y', $timestamp);
             }
 

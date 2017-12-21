@@ -5,6 +5,7 @@
  */
 
 use BIT\EMS\Domain\Model\EventRegistration;
+use BIT\EMS\Settings\Tab\BasicTab;
 
 /**
  * Class Ems_Event quasi(!) extends WP_Post, because WP_Post is final it fake the extends via __get and __set method
@@ -51,14 +52,12 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
 
         $this->post = $post;
         $postID = $post->ID;
+
         $this->start_date_time = get_post_meta($postID, self::$start_date_meta_key, true);
-        if (empty($this->start_date_time)) {
-            $this->start_date_time = null;
-        }
+        $this->start_date_time = \BIT\EMS\Utility\DateTimeUtility::toDateTime($this->start_date_time);
+
         $this->end_date_time = get_post_meta($postID, self::$end_date_meta_key, true);
-        if (empty($this->end_date_time)) {
-            $this->end_date_time = null;
-        }
+        $this->end_date_time = \BIT\EMS\Utility\DateTimeUtility::toDateTime($this->end_date_time);
 
         $this->leader = get_userdata(get_post_meta($postID, self::$leader_meta_key, true));
         if (false === $this->leader) {
@@ -466,12 +465,18 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
     {
         $allowed_event_time_start = new DateTime();
         $allowed_event_time_start->setTimestamp(
-            Ems_Date_Helper::get_timestamp(get_option("date_format"), get_option("ems_start_date_period"))
+            Ems_Date_Helper::get_timestamp(
+                get_option("date_format"),
+                BasicTab::get(BasicTab::EVENT_START_DATE)
+            )
         );
 
         $allowed_event_time_end = new DateTime();
         $allowed_event_time_end->setTimestamp(
-            Ems_Date_Helper::get_timestamp(get_option("date_format"), get_option("ems_end_date_period"))
+            Ems_Date_Helper::get_timestamp(
+                get_option("date_format"),
+                BasicTab::get(BasicTab::EVENT_END_DATE)
+            )
         );
         $allowed_event_time_period = new Ems_Date_Period($allowed_event_time_start, $allowed_event_time_end);
 
@@ -558,20 +563,25 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
         /** @var WP_Post[] $posts */
         foreach ($posts as $post) {
             $event = new Ems_Event($post);
+
             $start_date_time = $event->get_start_date_time();
+            if (!$start_date_time instanceof \DateTimeInterface) {
+                continue;
+            }
+
             //Check if start period is set and if the event start fits in
-            if (null !== $start_period && (!$start_date_time instanceof DateTime || !$start_period->contains(
-                        $event->get_start_date_time()
-                    ))) {
+            if (null !== $start_period && !$start_period->contains($event->get_start_date_time())) {
                 //Skip event if start isn't in start period
                 continue;
             }
 
             $end_date_time = $event->get_end_date_time();
+            if (!$end_date_time instanceof \DateTimeInterface) {
+                continue;
+            }
+
             //Check if end period is set and if the event end fits in
-            if (null !== $end_period && (!$end_date_time instanceof DateTime || !$end_period->contains(
-                        $event->get_end_date_time()
-                    ))) {
+            if (null !== $end_period && !$end_period->contains($event->get_end_date_time())) {
                 //Skip event if end isn't in end period
                 continue;
             }

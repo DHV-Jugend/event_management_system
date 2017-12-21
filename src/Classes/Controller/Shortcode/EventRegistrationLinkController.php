@@ -6,7 +6,7 @@
 
 namespace BIT\EMS\Controller\Shortcode;
 
-use Fum_Conf;
+use BIT\EMS\Settings\Tab\PagesTab;
 
 class EventRegistrationLinkController extends AbstractShortcodeController
 {
@@ -15,7 +15,7 @@ class EventRegistrationLinkController extends AbstractShortcodeController
         $eventID = (isset($atts["ID"]) && !empty($atts["ID"])) ? intval($atts["ID"]) : get_the_ID();
         $params = ['event' => "ID_" . $eventID];
 
-        $eventRegistrationID = get_option(Fum_Conf::$fum_event_registration_page);
+        $eventRegistrationID = PagesTab::get(PagesTab::EVENT_REGISTRATION_FORM);
         $url = get_permalink($eventRegistrationID);
         $url = add_query_arg($params, $url);
         ?>

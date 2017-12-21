@@ -9,9 +9,11 @@ namespace BIT\EMS\PluginManagement;
 use BIT\EMS\Controller\Shortcode\EventHeaderController;
 use BIT\EMS\Controller\Shortcode\EventIconLegendController;
 use BIT\EMS\Controller\Shortcode\EventListController;
+use BIT\EMS\Controller\Shortcode\EventRegistrationFormController;
 use BIT\EMS\Controller\Shortcode\EventRegistrationLinkController;
 use BIT\EMS\Controller\Shortcode\EventStatisticController;
 use BIT\EMS\Controller\Shortcode\ParticipantListController;
+use BIT\EMS\Controller\Shortcode\UserEventRegistrationListController;
 use BIT\EMS\Migration\Migration;
 use BIT\EMS\Model\AbstractPost;
 use BIT\EMS\Schedule\CleanTempFilesSchedule;
@@ -72,6 +74,8 @@ class Initialisation
         (new EventHeaderController())->register();
         (new EventRegistrationLinkController())->register();
         (new EventIconLegendController())->register();
+        (new UserEventRegistrationListController())->register();
+        (new EventRegistrationFormController())->register();
     }
 
     /**

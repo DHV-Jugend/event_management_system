@@ -1,6 +1,7 @@
 <?php
 namespace BIT\EMS\View;
 
+use BIT\EMS\Settings\Tab\AdvancedTab;
 use BIT\EMS\Utility\ParticipantUtility;
 
 /**
@@ -17,10 +18,14 @@ class EventListView extends BaseView
         <div class="ems_event_wrapper">
             <?php
             foreach ($events as $event) {
+                // TODO: Move filter to Service(?)
                 if (is_object($event->get_end_date_time()) && $event->get_end_date_time()->getTimestamp() < time()) {
                     continue;
                 }
-                $dateFormat = "d.m.y";
+                $dateFormat = AdvancedTab::get(AdvancedTab::EVENT_LIST_DATE_FORMAT);
+                if (empty($dateFormat)) {
+                    $dateFormat = get_option('date_format');
+                }
                 $date_string = $event->getFormattedDateString($dateFormat);
 
                 $participantLevelIcons = ParticipantUtility::getParticipantLevelIcons($event);
