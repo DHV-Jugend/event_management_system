@@ -20,6 +20,7 @@ class EventStatisticController extends AbstractShortcodeController
             exit;
         }
 
-        echo "Couldn't create statistic, function is currently disabled";
+        // TODO Add some nice JS graphs: http://www.chartjs.org/, http://c3js.org/, https://plot.ly/javascript/
+        echo "Couldn't create statistic, function is currently disabled.";
     }
 }
