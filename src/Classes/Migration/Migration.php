@@ -2,6 +2,7 @@
 namespace BIT\EMS\Migration;
 
 use BIT\EMS\Migration\Version\Migration_0_2_0;
+use BIT\EMS\Migration\Version\Migration_0_2_1;
 
 /**
  * @author Christoph Bessei
@@ -12,6 +13,7 @@ class Migration
 
     protected static $migrations = [
         '0.2.0' => Migration_0_2_0::class,
+        '0.2.1' => Migration_0_2_1::class,
     ];
 
     public static function run()

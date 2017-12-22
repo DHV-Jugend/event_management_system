@@ -1,6 +1,7 @@
 <?php
 namespace BIT\EMS\Service\Event\Registration;
 
+use BIT\EMS\Domain\Model\Event\EventMetaBox;
 use BIT\EMS\Domain\Model\EventRegistration;
 use BIT\EMS\Exception\Event\SendRegistrationMailFailedException;
 use BIT\EMS\Settings\Settings;
@@ -119,19 +120,29 @@ class MailService
 
     protected function loadParticipantRegistrationSuccessfulMail($user, \Ems_Event $event)
     {
-        $subject = $this->loadMailPartFromSettingsAndReplaceMarker(
-            ParticipantMailTab::class,
-            ParticipantMailTab::EVENT_REGISTRATION_SUCCESSFUL_SUBJECT,
-            $user,
-            $event
-        );
+        // Load event specific mail
+        $useCustomParticipantMail = get_post_meta($event->ID, EventMetaBox::USE_CUSTOM_PARTICIPANT_MAIL, true);
+        $participantMailSubject = trim(get_post_meta($event->ID, EventMetaBox::PARTICIPANT_MAIL_SUBJECT, true));
+        $participantMailBody = trim(get_post_meta($event->ID, EventMetaBox::PARTICIPANT_MAIL_BODY, true));
 
-        $message = $this->loadMailPartFromSettingsAndReplaceMarker(
-            ParticipantMailTab::class,
-            ParticipantMailTab::EVENT_REGISTRATION_SUCCESSFUL_BODY,
-            $user,
-            $event
-        );
+        if (!empty($useCustomParticipantMail) && !empty($participantMailSubject) && !empty($participantMailBody)) {
+            $subject = $this->replaceMarkers($participantMailSubject, $user, $event);
+            $message = $this->replaceMarkers($participantMailBody, $user, $event);
+        } else {
+            $subject = $this->loadMailPartFromSettingsAndReplaceMarker(
+                ParticipantMailTab::class,
+                ParticipantMailTab::EVENT_REGISTRATION_SUCCESSFUL_SUBJECT,
+                $user,
+                $event
+            );
+
+            $message = $this->loadMailPartFromSettingsAndReplaceMarker(
+                ParticipantMailTab::class,
+                ParticipantMailTab::EVENT_REGISTRATION_SUCCESSFUL_BODY,
+                $user,
+                $event
+            );
+        }
 
         return [$subject, $message];
     }

@@ -14,6 +14,7 @@ use BIT\EMS\Controller\Shortcode\EventRegistrationLinkController;
 use BIT\EMS\Controller\Shortcode\EventStatisticController;
 use BIT\EMS\Controller\Shortcode\ParticipantListController;
 use BIT\EMS\Controller\Shortcode\UserEventRegistrationListController;
+use BIT\EMS\Domain\Model\Event\EventMetaBox;
 use BIT\EMS\Migration\Migration;
 use BIT\EMS\Model\AbstractPost;
 use BIT\EMS\Schedule\CleanTempFilesSchedule;
@@ -93,8 +94,9 @@ class Initialisation
         //Redirect 'event' url parameter to 'ems_event' because event seems to be reserved from wordpress
         add_action('parse_request', ['Ems_Redirect', 'redirect_event_parameter']);
 
-        add_action('add_meta_boxes', ['Ems_Dhv_Jugend', 'add_meta_box_to_event'], 10, 2);
-        add_action('add_meta_boxes', ['Ems_Dhv_Jugend', 'add_meta_box_to_event_report'], 10, 2);
+        $eventMetaBox = new EventMetaBox();
+        add_action('add_meta_boxes', [$eventMetaBox, 'registerLegacyMetaBox'], 10, 2);
+        add_action( 'cmb2_admin_init', [$eventMetaBox,'register'] );
 
         add_action('save_post', [static::class, 'save_post']);
 

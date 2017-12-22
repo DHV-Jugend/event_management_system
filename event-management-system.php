@@ -11,6 +11,11 @@
  * License: GPLv2
  */
 
+if (is_admin()) {
+    // Include CMB2 in dashboard
+    require_once(__DIR__ . '/vendor/webdevstudios/cmb2/init.php');
+}
+
 // Include composer autoload
 require_once(__DIR__ . '/vendor/autoload.php');
 

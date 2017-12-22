@@ -36,8 +36,8 @@ class Ems_Activation
             $admin_role->add_cap($cap);
         }
 
-        remove_role('eventleiter');
-        add_role('eventleiter', 'Eventleiter', $caps);
+        remove_role(Ems_Conf::EVENT_MANAGER_ROLE);
+        add_role(Ems_Conf::EVENT_MANAGER_ROLE, 'Eventleiter', $caps);
     }
 
 } 
