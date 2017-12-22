@@ -3,6 +3,7 @@ namespace BIT\EMS\Service\Event\Registration;
 
 use BIT\EMS\Domain\Model\Event\EventMetaBox;
 use BIT\EMS\Domain\Model\EventRegistration;
+use BIT\EMS\Domain\Repository\EventRepository;
 use BIT\EMS\Exception\Event\SendRegistrationMailFailedException;
 use BIT\EMS\Settings\Settings;
 use BIT\EMS\Settings\Tab\EventManagerMailTab;
@@ -16,6 +17,16 @@ class MailService
 {
     const MAIL_TYPE_REGISTRATION = 1;
     const MAIL_TYPE_CANCEL_REGISTRATION = 2;
+
+    /**
+     * @var \BIT\EMS\Domain\Repository\EventRepository
+     */
+    protected $eventRepository;
+
+    public function __construct()
+    {
+        $this->eventRepository = new EventRepository();
+    }
 
     /**
      * Notify leader and participant about a registration
@@ -50,16 +61,13 @@ class MailService
         $event = \Ems_Event::get_event($eventId);
         $user = get_userdata($registration->getUserId());
 
-        $leader_id = get_post_meta($registration->getEventId(), 'ems_event_leader', true);
-        $leader = get_userdata($leader_id);
+        $leader_email = $this->eventRepository->findEventManagerMail($eventId);
 
-        if (false === $leader) {
-            $leader_email = get_post_meta($registration->getEventId(), 'ems_event_leader_mail', true);
-        } else {
-            $leader_email = $leader->user_email;
-        }
-
-        $send_leader_email = 1 == get_post_meta($registration->getEventId(), 'ems_inform_via_mail', true);
+        $send_leader_email = 1 == get_post_meta(
+                $registration->getEventId(),
+                EventMetaBox::INFORM_EVENT_MANAGER_ABOUT_NEW_PARTICIPANTS,
+                true
+            );
 
         switch ($mail_type) {
             case static::MAIL_TYPE_REGISTRATION:

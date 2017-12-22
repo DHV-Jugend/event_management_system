@@ -13,36 +13,29 @@ use BIT\EMS\Settings\Tab\BasicTab;
  */
 class Ems_Event extends \BIT\EMS\Model\AbstractPost
 {
-
     protected static $post_type = 'ems_event';
     protected static $capability_type = ['ems_event', 'ems_events'];
     protected static $object = null;
 
-    protected static $start_date_meta_key = 'ems_start_date';
-    protected static $end_date_meta_key = 'ems_end_date';
-    protected static $leader_meta_key = 'ems_event_leader';
-    protected static $show_event_meta_key = 'ems_show_event';
-
-
+    /**
+     * @var \DateTime|null
+     */
     protected $start_date_time;
-    protected $end_date_time;
-    /** @var  Ems_Participant_Level[] */
-    protected $participantLevels;
-    /** @var Ems_Participant_Type[] */
-    protected $participantTypes;
-    /**
-     * If $show_event is true, the event will be shown even if the start and end date do not fit the requirements.
-     *
-     * @var bool
-     */
-    protected $show_event;
-    /**
-     * place of event
-     * @var ???
-     */
-    protected $location;
 
-    protected $leader;
+    /**
+     * @var \DateTime|null
+     */
+    protected $end_date_time;
+
+    /**
+     * @var  Ems_Participant_Level[]
+     */
+    protected $participantLevels;
+
+    /**
+     * @var Ems_Participant_Type[]
+     */
+    protected $participantTypes;
 
     public function __construct($post)
     {
@@ -53,24 +46,14 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
         $this->post = $post;
         $postID = $post->ID;
 
-        $this->start_date_time = get_post_meta($postID, self::$start_date_meta_key, true);
-        $this->start_date_time = \BIT\EMS\Utility\DateTimeUtility::toDateTime($this->start_date_time);
+        $eventRepository = new \BIT\EMS\Domain\Repository\EventRepository();
 
-        $this->end_date_time = get_post_meta($postID, self::$end_date_meta_key, true);
-        $this->end_date_time = \BIT\EMS\Utility\DateTimeUtility::toDateTime($this->end_date_time);
-
-        $this->leader = get_userdata(get_post_meta($postID, self::$leader_meta_key, true));
-        if (false === $this->leader) {
-            $this->leader = get_post_meta($postID, self::$leader_meta_key, true);
-        }
+        $this->start_date_time = $eventRepository->findEventStartDate($postID);
+        $this->end_date_time = $eventRepository->findEventEndDate($postID);
 
         //Participant levels
         $this->participantLevels = get_post_meta($postID, 'ems_participant_level', true);
         $this->participantTypes = get_post_meta($postID, 'ems_participant_type', true);
-
-
-        $this->show_event = get_post_meta($post->ID, self::$show_event_meta_key, true);
-
     }
 
 
@@ -231,54 +214,6 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
     public function get_start_date_time()
     {
         return $this->start_date_time;
-    }
-
-    /**
-     * @param bool|WP_User $leader
-     */
-    public function set_leader($leader)
-    {
-        $this->leader = $leader;
-    }
-
-    /**
-     * @return bool|WP_User
-     */
-    public function get_leader()
-    {
-        return $this->leader;
-    }
-
-    /**
-     * @param mixed $location
-     */
-    public function set_location($location)
-    {
-        $this->location = $location;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function get_location()
-    {
-        return $this->location;
-    }
-
-    /**
-     * @param boolean $show_event
-     */
-    public function set_show_event($show_event)
-    {
-        $this->show_event = $show_event;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function get_show_event()
-    {
-        return $this->show_event;
     }
 
     /**

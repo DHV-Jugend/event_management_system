@@ -2,7 +2,9 @@
 
 namespace BIT\EMS\Domain\Repository;
 
+use BIT\EMS\Domain\Model\Event\EventMetaBox;
 use BIT\EMS\Model\Event;
+use BIT\EMS\Utility\DateTimeUtility;
 
 /**
  * @author Christoph Bessei
@@ -11,9 +13,43 @@ use BIT\EMS\Model\Event;
 class EventRepository extends AbstractRepository
 {
 
+    public function findEventManagerMail($event): ?string
+    {
+        if (is_object($event)) {
+            $event = $event->ID;
+        }
+
+        $leader = get_userdata(get_post_meta($event, EventMetaBox::EVENT_MANAGER, true));
+
+        if ($leader instanceof \WP_User) {
+            $leader_email = $leader->user_email;
+        } else {
+            $leader_email = get_post_meta($event, EventMetaBox::EVENT_MANAGER_CUSTOM_MAIL, true);
+        }
+
+        return $leader_email;
+    }
+
+    public function findEventStartDate($event): ?\DateTime
+    {
+        if (is_object($event)) {
+            $event = $event->ID;
+        }
+        $startDate = get_post_meta($event, EventMetaBox::EVENT_START_DATE, true);
+        return DateTimeUtility::toDateTime($startDate);
+    }
+
+    public function findEventEndDate($event): ?\DateTime
+    {
+        if (is_object($event)) {
+            $event = $event->ID;
+        }
+        $endDate = get_post_meta($event, EventMetaBox::EVENT_END_DATE, true);
+        return DateTimeUtility::toDateTime($endDate);
+    }
+
     public function findEventsInPeriod(?\Ems_Date_Period $startDatePeriod, ?\Ems_Date_Period $endDatePeriod): array
     {
-
         $startDateConstraint = null;
         if (!is_null($startDatePeriod)) {
             $startDateConstraint = [
