@@ -158,10 +158,6 @@ class Initialisation
         $class = Ems_Name_Conversion::convert_post_type_to_class_name(get_post_type());
         if (is_subclass_of($class, AbstractPost::class)) {
             $custom_columns = $class::get_custom_columns();
-            if (count($custom_columns) > 0) {
-                //TODO Make column sortable
-                //add_filter( 'manage_edit-post_sortable_columns', array( $class, ) );
-            }
             $columns = array_merge($columns, $custom_columns);
         }
 
@@ -171,6 +167,5 @@ class Initialisation
     public static function register_custom_post_types()
     {
         Ems_Event::register_post_type();
-        Ems_Event_Daily_News::register_post_type();
     }
 }
