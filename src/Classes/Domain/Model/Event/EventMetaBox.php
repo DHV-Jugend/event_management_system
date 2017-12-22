@@ -84,19 +84,19 @@ class EventMetaBox
 
         $cmb->add_field(
             [
-                'name' => __('Startdatum', 'event-management-system'),
+                'name' => __('Startdatum (d.m.y)', 'event-management-system'),
                 'id' => static::EVENT_START_DATE,
                 'type' => 'text_date_timestamp',
-                'date_format' => get_option('date_format'),
+                'date_format' => 'd.m.y',
             ]
         );
 
         $cmb->add_field(
             [
-                'name' => __('Enddatum', 'event-management-system'),
+                'name' => __('Enddatum (d.m.y)', 'event-management-system'),
                 'id' => static::EVENT_END_DATE,
                 'type' => 'text_date_timestamp',
-                'date_format' => get_option('date_format'),
+                'date_format' => 'd.m.y',
             ]
         );
     }
