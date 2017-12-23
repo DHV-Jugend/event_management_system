@@ -39,6 +39,6 @@ class EventListController extends AbstractShortcodeController
      */
     public function printContent($atts = [], $content = null)
     {
-        (new EventListView(["events" => $this->eventService->determineCurrentListViewEvents()]))->printContent();
+        (new EventListView(["events" => $this->eventService->determineListViewEvents()]))->printContent();
     }
 }

@@ -3,6 +3,7 @@ namespace BIT\EMS\Controller\Shortcode;
 
 use BIT\EMS\Domain\Repository\EventRegistrationRepository;
 use BIT\EMS\Domain\Repository\EventRepository;
+use BIT\EMS\Service\Event\EventService;
 use BIT\EMS\Service\Event\Registration\RegistrationService;
 use BIT\EMS\Settings\Tab\PagesTab;
 use Ems_Event;
@@ -27,12 +28,21 @@ class EventRegistrationFormController extends AbstractShortcodeController
      */
     protected $eventRepository;
 
+    /**
+     * @var \BIT\EMS\Domain\Repository\EventRegistrationRepository
+     */
     protected $eventRegistrationRepository;
+
+    /**
+     * @var \BIT\EMS\Service\Event\EventService
+     */
+    protected $eventService;
 
     public function __construct()
     {
         $this->eventRepository = new EventRepository();
         $this->eventRegistrationRepository = new EventRegistrationRepository();
+        $this->eventService = new EventService();
     }
 
     public function printContent($atts = [], $content = null)
@@ -129,7 +139,7 @@ class EventRegistrationFormController extends AbstractShortcodeController
             $form->set_action(add_query_arg([self::get_event_request_parameter() => $event_field->get_value()]));
         }
 
-        $posts = Ems_Event::get_active_events(true);
+        $posts = $this->eventService->determineActiveRegistrationEvents();
         $events = [];
         foreach ($posts as $post) {
             $event_field = $form->get_input_field(Fum_Conf::$fum_input_field_select_event);

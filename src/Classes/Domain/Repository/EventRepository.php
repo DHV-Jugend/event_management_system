@@ -50,7 +50,7 @@ class EventRepository extends AbstractRepository
 
     public function findEventsInPeriod(?\Ems_Date_Period $startDatePeriod, ?\Ems_Date_Period $endDatePeriod): array
     {
-        $startDateConstraint = null;
+        $startDateConstraint = [];
         if (!is_null($startDatePeriod)) {
             $startDateConstraint = [
                 'key' => 'ems_start_date',
@@ -63,15 +63,14 @@ class EventRepository extends AbstractRepository
             ];
         }
 
-        $endDateConstraint = null;
+        $endDateConstraint = [];
         if (!is_null($endDatePeriod)) {
             $endDateConstraint = [
-                'key' => 'ems_start_end',
+                'key' => 'ems_end_date',
                 'value' => [
                     $endDatePeriod->get_start_date()->getTimestamp(),
                     $endDatePeriod->get_end_date()->getTimestamp(),
                 ],
-                'type' => 'numeric',
                 'compare' => 'BETWEEN',
             ];
         }
@@ -79,33 +78,31 @@ class EventRepository extends AbstractRepository
         $args = [
             'post_type' => \Ems_Event::get_post_type(),
             'posts_per_page' => -1,
-
-            'meta_key' => 'ems_start_date',
-            'meta_value' => [
-                $startDatePeriod->get_start_date()->getTimestamp() . '',
-                $startDatePeriod->get_end_date()->getTimestamp() . '',
-            ],
-            'meta_compare' => 'BETWEEN',
             'orderby' => [
                 'ems_start_date' => 'ASC',
-                'ems_start_end' => 'ASC',
+                'ems_end_date' => 'ASC',
             ],
         ];
 
-        //        if (!is_null($startDateConstraint) && !is_null($endDateConstraint)) {
-        //            $args['meta_query'] = [
-        //                'relation' => 'AND',
-        //                $startDateConstraint,
-        //                $endDateConstraint,
-        //            ];
-        //        } elseif (!is_null($startDateConstraint)) {
-        //            $args['meta_query'] = [$startDateConstraint];
-        //        } elseif (!is_null($endDateConstraint)) {
-        //            $args['meta_query'] = [$endDateConstraint];
-        //        }
+        $constraints = [];
+
+        if (!empty($startDateConstraint) && !empty($endDateConstraint)) {
+            $constraints['meta_query'] = [
+                'relation' => 'AND',
+                $startDateConstraint,
+                $endDateConstraint,
+            ];
+        } elseif (!empty($startDateConstraint)) {
+            $constraints['meta_query'] = [$startDateConstraint];
+        } elseif (!empty($endDateConstraint)) {
+            $constraints['meta_query'] = [$endDateConstraint];
+        }
+
+        $args = array_merge($args, $constraints);
 
         $query = new \WP_Query($args);
-        $posts = $query->get_posts();
+        $posts = $query->posts;
+
         if (!is_array($posts)) {
             $posts = [];
         }
@@ -113,6 +110,7 @@ class EventRepository extends AbstractRepository
         foreach ($posts as $key => $post) {
             $posts[$key] = new Event($post);
         }
+
         return $posts;
     }
 

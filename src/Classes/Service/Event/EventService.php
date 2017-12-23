@@ -8,7 +8,6 @@ use BIT\EMS\Settings\Tab\BasicTab;
 use BIT\EMS\Utility\DateTimeUtility;
 use Carbon\Carbon;
 use Ems_Date_Period;
-use Ems_Event;
 
 /**
  * @author Christoph Bessei
@@ -77,10 +76,39 @@ class EventService
         return $this->eventRepository->findEventsInPeriod($allowedStartDatePeriod, $allowedEndDatePeriod);
     }
 
+    public function determineActiveRegistrationEvents(): array
+    {
+        $allowRegistrationUntil = BasicTab::get(BasicTab::EVENT_ALLOW_REGISTRATION_UNTIL);
+        switch ($allowRegistrationUntil) {
+            case 'always':
+                return $this->eventRepository->findAll();
+            case 'event_start':
+                return $this->eventRepository->findEventsInPeriod(
+                    new Ems_Date_Period(
+                        Carbon::create(),
+                        Carbon::create(9999)
+                    ),
+                    null
+                );
+            case 'event_end':
+                return $this->eventRepository->findEventsInPeriod(
+                    null,
+                    new Ems_Date_Period(
+                        Carbon::create(),
+                        Carbon::create(9999)
+                    )
+                );
+            case 'never':
+            default:
+                // Registration disabled (default)
+                return [];
+        }
+    }
+
     /**
      * @return array
      */
-    public function determineCurrentListViewEvents(): array
+    public function determineListViewEvents(): array
     {
         $events = [];
         try {
@@ -104,12 +132,7 @@ class EventService
                     );
                 }
 
-                $events = Ems_Event::get_events(
-                    -1,
-                    true,
-                    false,
-                    null,
-                    [],
+                return $this->eventRepository->findEventsInPeriod(
                     $allowed_event_start_date_period,
                     $allowed_event_end_date_period
                 );
