@@ -7,13 +7,21 @@
 namespace BIT\EMS\Controller\Shortcode;
 
 
-use BIT\EMS\Settings\Tab\BasicTab;
-use BIT\EMS\Utility\DateTimeUtility;
+use BIT\EMS\Service\Event\EventService;
 use BIT\EMS\View\EventListView;
-use Ems_Event;
 
 class EventListController extends AbstractShortcodeController
 {
+    /**
+     * @var \BIT\EMS\Service\Event\EventService
+     */
+    protected $eventService;
+
+    public function __construct()
+    {
+        $this->eventService = new EventService();
+    }
+
     protected function addCss()
     {
         wp_enqueue_style('ems-general', $this->getCssUrl("ems_general"));
@@ -31,14 +39,6 @@ class EventListController extends AbstractShortcodeController
      */
     public function printContent($atts = [], $content = null)
     {
-
-        $startDatePeriod = BasicTab::get(BasicTab::EVENT_START_DATE);
-        $endDatePeriod = BasicTab::get(BasicTab::EVENT_END_DATE);
-
-        $allowed_event_time_period = DateTimeUtility::toDateTimePeriod($startDatePeriod, $endDatePeriod);
-
-        $events = Ems_Event::get_events(-1, true, false, null, [], $allowed_event_time_period);
-
-        (new EventListView(["events" => $events]))->printContent();
+        (new EventListView(["events" => $this->eventService->determineCurrentListViewEvents()]))->printContent();
     }
 }

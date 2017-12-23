@@ -66,7 +66,7 @@ class EventRegistrationFormController extends AbstractShortcodeController
 
         $event_field = $form->get_input_field(Fum_Conf::$fum_input_field_select_event);
 
-        if (isset($_REQUEST[$this->get_event_request_parameter()])) {
+        if (isset($_REQUEST[static::get_event_request_parameter()])) {
             $event_field->set_value($_REQUEST[$this->get_event_request_parameter()]);
             $event_field->set_readonly(true);
             //Check if event is an valid event
@@ -168,10 +168,6 @@ class EventRegistrationFormController extends AbstractShortcodeController
 
         $form->get_input_field(Fum_Conf::$fum_input_field_select_event)->set_possible_values($events);
 
-        if ($form->get_input_field(Fum_Conf::$fum_input_field_select_event)->get_readonly()) {
-            echo '<p><a href="' . get_permalink() . '">Für ein anderes Event anmelden</a></p>';
-        }
-
         Fum_Form_View::output($form);
 
         if (!$form->get_input_field(Fum_Conf::$fum_input_field_select_event)->get_readonly()) {
@@ -221,7 +217,7 @@ class EventRegistrationFormController extends AbstractShortcodeController
         return new WP_Error($input_field->get_unique_name(), 'Das ausgewählte Event existiert nicht');
     }
 
-    protected function get_event_request_parameter()
+    public static function get_event_request_parameter()
     {
         return 'select_' . Ems_Event::get_post_type();
     }

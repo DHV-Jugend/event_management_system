@@ -508,24 +508,20 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
             $event = new Ems_Event($post);
 
             $start_date_time = $event->get_start_date_time();
-            if (!$start_date_time instanceof \DateTimeInterface) {
-                continue;
-            }
-
             //Check if start period is set and if the event start fits in
-            if (null !== $start_period && !$start_period->contains($event->get_start_date_time())) {
-                //Skip event if start isn't in start period
+            // Skip event if start isn't in start period
+            if (is_null($start_date_time) ||
+                is_null($start_period) ||
+                !$start_period->contains($event->get_start_date_time())) {
                 continue;
             }
 
             $end_date_time = $event->get_end_date_time();
-            if (!$end_date_time instanceof \DateTimeInterface) {
-                continue;
-            }
-
-            //Check if end period is set and if the event end fits in
-            if (null !== $end_period && !$end_period->contains($event->get_end_date_time())) {
-                //Skip event if end isn't in end period
+            // Check if end period is set and if the event end fits in
+            // Skip event if end isn't in end period
+            if (is_null($end_date_time) ||
+                is_null($end_period) ||
+                !$end_period->contains($event->get_end_date_time())) {
                 continue;
             }
 

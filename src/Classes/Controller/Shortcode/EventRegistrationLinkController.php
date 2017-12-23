@@ -13,7 +13,7 @@ class EventRegistrationLinkController extends AbstractShortcodeController
     public function printContent($atts = [], $content = null)
     {
         $eventID = (isset($atts["ID"]) && !empty($atts["ID"])) ? intval($atts["ID"]) : get_the_ID();
-        $params = ['event' => "ID_" . $eventID];
+        $params = [EventRegistrationFormController::get_event_request_parameter() => "ID_" . $eventID];
 
         $eventRegistrationID = PagesTab::get(PagesTab::EVENT_REGISTRATION_FORM);
         $url = get_permalink($eventRegistrationID);
