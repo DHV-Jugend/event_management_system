@@ -188,20 +188,7 @@ class ParticipantListController extends AbstractShortcodeController
                                                 </strong>
                                             </div>
                                             <div class="col">
-                                                <?php
-                                                if (1 === strlen(trim($field))) {
-                                                    if (0 == $field) {
-                                                        echo "Nein";
-                                                    } else {
-                                                        if (1 == $field) {
-                                                            echo "Ja";
-                                                        }
-                                                    }
-                                                } else {
-                                                    echo $field;
-                                                }
-
-                                                ?></div>
+                                                <?php echo $field; ?></div>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
