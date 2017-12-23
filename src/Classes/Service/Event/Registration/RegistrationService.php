@@ -75,12 +75,6 @@ class RegistrationService
         }
     }
 
-    public function update(EventRegistration $eventRegistration)
-    {
-        // TODO: Implement
-    }
-
-
     public function isRegistered(int $eventId, int $participantId)
     {
         try {
