@@ -86,8 +86,8 @@ class EventRegistrationRepository extends AbstractDatabaseRepository
         // Check if exists with deleted = true
         $dbEntry = $this->findByIdentifier(array_merge($identifier, ['deleted' => true]));
         if (!empty($dbEntry)) {
-            // Set deleted to false
-            $this->update(['deleted' => false], $identifier);
+            // Set deleted to false and update data
+            $this->update(['deleted' => false, 'data' => $entry['data']], $identifier);
         } else {
             $this->insert($entry);
         }

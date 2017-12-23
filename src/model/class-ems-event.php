@@ -554,6 +554,21 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
         $data = [];
 
         $used_input_fields = Fum_Activation::get_event_input_fields();
+
+        $used_input_fields = apply_filters(
+            'ems_registration_allowed_fields',
+            $used_input_fields,
+            $event_post_id,
+            $user_id
+        );
+
+        $used_input_fields = apply_filters(
+            'ems_registration_allowed_fields_' . $event_post_id,
+            $used_input_fields,
+            $event_post_id,
+            $user_id
+        );
+
         if (null !== $form) {
             foreach ($form->get_input_fields() as $input_field) {
                 //Skip select_event field (contains ID) because we already have $event_post_id

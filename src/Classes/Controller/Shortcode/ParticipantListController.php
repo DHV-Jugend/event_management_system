@@ -58,6 +58,14 @@ class ParticipantListController extends AbstractShortcodeController
         $this->eventRegistrationService = new RegistrationService();
     }
 
+    /**
+     * @param array $atts
+     * @param null $content
+     * @throws \Exception
+     * @throws \PHPExcel_Exception
+     * @throws \PHPExcel_Writer_Exception
+     * @TODO: Allow custom fields in list (missing pretty label) and participant list export (field missing)
+     */
     public function printContent($atts = [], $content = null)
     {
         if (!current_user_can(Ems_Event::get_edit_capability())) {
@@ -132,13 +140,15 @@ class ParticipantListController extends AbstractShortcodeController
             //Create array with all relevant data
             $participant_list = [];
 
+            $uniqueNamesOfInputFields = Fum_Html_Form::get_form(
+                Fum_Conf::$fum_event_register_form_unique_name
+            )->get_unique_names_of_input_fields();
+
             foreach ($registrations as $registration) {
                 $user_data = array_intersect_key(
                     Fum_User::get_user_data($registration->getUserId()),
                     array_merge(
-                        Fum_Html_Form::get_form(
-                            Fum_Conf::$fum_event_register_form_unique_name
-                        )->get_unique_names_of_input_fields(),
+                        $uniqueNamesOfInputFields,
                         ["fum_premium_participant" => "fum_premium_participant"]
                     )
                 );
@@ -180,8 +190,14 @@ class ParticipantListController extends AbstractShortcodeController
                                         <div class="row">
                                             <div class="col">
                                                 <strong>
-                                                    <?php echo Fum_Html_Input_Field::get_input_field($key)->get_title(
-                                                    ); ?>
+                                                    <?php
+                                                    $inputField = Fum_Html_Input_Field::get_input_field($key);
+                                                    if (!empty($inputField)) {
+                                                        echo $inputField->get_title();
+                                                    } else {
+                                                        echo $key;
+                                                    }
+                                                    ?>
                                                 </strong>
                                             </div>
                                             <div class="col">

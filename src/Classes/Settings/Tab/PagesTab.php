@@ -10,6 +10,9 @@ class PagesTab extends AbstractTab
 {
     const EVENT_LIST = \Ems_Conf::PREFIX . 'event_list';
     const EVENT_REGISTRATION_FORM = \Ems_Conf::PREFIX . 'event_registration_form';
+    const EVENT_REGISTRATION_SUCCESSFUL = \Ems_Conf::PREFIX . 'event_registration_successful';
+    const EVENT_REGISTRATION_ALREADY_REGISTERED = \Ems_Conf::PREFIX . 'event_registration_already_registered';
+
 
     const EVENT_PARTICIPANTS_LIST = \Ems_Conf::PREFIX . 'event_participants_list';
     const EVENT_STATISTICS = \Ems_Conf::PREFIX . 'event_statistics';
@@ -38,6 +41,18 @@ class PagesTab extends AbstractTab
             [
                 'name' => static::EVENT_REGISTRATION_FORM,
                 'label' => __('Event registration form', 'ems_text_domain'),
+                'type' => 'pages',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+            [
+                'name' => static::EVENT_REGISTRATION_SUCCESSFUL,
+                'label' => __('Event registration successful', 'ems_text_domain'),
+                'type' => 'pages',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+            [
+                'name' => static::EVENT_REGISTRATION_ALREADY_REGISTERED,
+                'label' => __('Event registration does already exist', 'ems_text_domain'),
                 'type' => 'pages',
                 'sanitize_callback' => 'sanitize_text_field',
             ],
