@@ -20,7 +20,7 @@ use WP_Post;
  */
 class EventRegistrationFormController extends AbstractShortcodeController
 {
-    const REGISTRATOM_FORM_FIELDS_FILTER = \Ems_Conf::PREFIX . 'registration_form_fields_filter';
+    const REGISTRATION_FORM_FIELDS_FILTER = \Ems_Conf::PREFIX . 'registration_form_fields_filter';
 
     /**
      * @var \BIT\EMS\Domain\Repository\EventRepository
@@ -104,7 +104,7 @@ class EventRegistrationFormController extends AbstractShortcodeController
             $fields = $form->get_input_fields();
             // Generic field filter
             $fields = apply_filters(
-                static::REGISTRATOM_FORM_FIELDS_FILTER,
+                static::REGISTRATION_FORM_FIELDS_FILTER,
                 $fields,
                 $form,
                 $eventID
@@ -112,7 +112,7 @@ class EventRegistrationFormController extends AbstractShortcodeController
 
             // Event specific filter
             $fields = apply_filters(
-                static::REGISTRATOM_FORM_FIELDS_FILTER . '_' . $eventID,
+                static::REGISTRATION_FORM_FIELDS_FILTER . '_' . $eventID,
                 $fields,
                 $form,
                 $eventID

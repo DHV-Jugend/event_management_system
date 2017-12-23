@@ -186,32 +186,36 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
 
     /**
      * @param DateTime $end_date_time
+     * @return \Ems_Event
      */
     public function set_end_date_time($end_date_time)
     {
         $this->end_date_time = $end_date_time;
+        return $this;
     }
 
     /**
      * @return DateTime
      */
-    public function get_end_date_time()
+    public function get_end_date_time(): ?\DateTime
     {
         return $this->end_date_time;
     }
 
     /**
      * @param DateTime $start_date_time
+     * @return \Ems_Event
      */
     public function set_start_date_time($start_date_time)
     {
         $this->start_date_time = $start_date_time;
+        return $this;
     }
 
     /**
-     * @return DateTime
+     * @return \DateTime
      */
-    public function get_start_date_time()
+    public function get_start_date_time(): ?\DateTime
     {
         return $this->start_date_time;
     }
@@ -226,10 +230,12 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
 
     /**
      * @param Ems_Participant_Level[] $participantLevels
+     * @return \Ems_Event
      */
     public function setParticipantLevels($participantLevels)
     {
         $this->participantLevels = $participantLevels;
+        return $this;
     }
 
     /**
@@ -242,10 +248,12 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
 
     /**
      * @param Ems_Participant_Type[] $participantTypes
+     * @return \Ems_Event
      */
     public function setParticipantTypes($participantTypes)
     {
         $this->participantTypes = $participantTypes;
+        return $this;
     }
 
     /**
@@ -612,7 +620,7 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
                 'capability_type' => self::get_capability_type(),
                 'has_archive' => false,
                 'hierarchical' => true,
-                'supports' => ['title', 'editor', 'custom_fields','page-attributes'],
+                'supports' => ['title', 'editor', 'custom_fields', 'page-attributes'],
             ]
         );
     }

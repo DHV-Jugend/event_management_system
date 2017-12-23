@@ -99,21 +99,8 @@ class ParticipantListController extends AbstractShortcodeController
         );
 
         foreach ($events as $event) {
-            $date_time = $event->get_start_date_time();
-            $year = '';
-            if (null !== $date_time) {
-                if ($date_time instanceof \DateTime) {
-                    $timestamp = $date_time->getTimestamp();
-                } else {
-                    $timestamp = $date_time;
-                }
-
-                $year = date('Y', $timestamp);
-            }
-
-            $title = $event->post_title . ' ' . $year . ' (' . count(
-                    $this->eventRegistrationRepository->findByEvent($event)
-                ) . ')';
+            $participantCount = count($this->eventRegistrationRepository->findByEvent($event));
+            $title = $event->post_title . ' (' . $participantCount . ')';
             $value = 'ID_' . $event->ID;
             $possible_values = $form->get_input_field('select_event')->get_possible_values();
             $possible_values[] = ['title' => $title, 'value' => $value, 'ID' => $event->ID];
