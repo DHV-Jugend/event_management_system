@@ -6,6 +6,7 @@ use BIT\EMS\Migration\Version\Migration_0_2_1;
 
 /**
  * @author Christoph Bessei
+ * @TODO: Add migration for event registration log table
  */
 class Migration
 {
@@ -18,7 +19,6 @@ class Migration
 
     public static function run()
     {
-
         try {
             $migrations = [];
 
