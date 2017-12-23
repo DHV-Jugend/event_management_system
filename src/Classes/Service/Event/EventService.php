@@ -40,6 +40,7 @@ class EventService
 
     /**
      * @return \Ems_Event[]
+     * @TODO Check contsraints
      */
     public function findActiveEvents(): array
     {

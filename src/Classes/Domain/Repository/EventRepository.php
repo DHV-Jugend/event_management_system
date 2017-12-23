@@ -120,8 +120,12 @@ class EventRepository extends AbstractRepository
      */
     public function findEventById(int $id)
     {
-        $wpPost = get_post($id);
-        return new Event($wpPost);
+        $post = get_post($id);
+        if (empty($post)) {
+            // TODO: Throw Exception?
+            return null;
+        }
+        return new Event($post);
     }
 
     /**
