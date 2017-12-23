@@ -153,11 +153,11 @@ class AbstractDatabaseRepository extends AbstractRepository
         }
 
         if (is_int($value)) {
-            return $qb->createNamedParameter($value, \PDO::PARAM_INT);
+            return $qb->createNamedParameter($value, Type::INTEGER);
         }
 
         if (is_bool($value)) {
-            $qb->createNamedParameter($value, \PDO::PARAM_BOOL);
+            return $qb->createNamedParameter($value, Type::BOOLEAN);
         }
 
         return $qb->createNamedParameter($value);
