@@ -39,8 +39,6 @@ class UserEventRegistrationListController extends AbstractShortcodeController
 
     public function printContent($atts = [], $content = null)
     {
-
-
         if (isset($_REQUEST[Fum_Conf::$fum_unique_name_field_name])) {
             // Handle registration delete
             $user_id = get_current_user_id();
