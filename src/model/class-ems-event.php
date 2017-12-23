@@ -596,11 +596,6 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
         return get_post($id);
     }
 
-    private static function delete_user_from_event(Fum_Html_Form $form)
-    {
-
-    }
-
     public static function register_post_type()
     {
         register_post_type(
