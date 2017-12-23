@@ -1,6 +1,7 @@
 <?php
 namespace BIT\EMS\Log;
 
+use BIT\FUM\Utility\StringUtility;
 use ReflectionClass;
 
 /**
@@ -61,12 +62,25 @@ abstract class AbstractLog
     }
 
     /**
+     * Determine name of log table from class name
+     *
      * @return string
      */
     protected function determineTableName(): string
     {
         $reflect = new ReflectionClass($this);
-        return $this->wpdb->prefix . 'log_' . \Ems_Conf::PREFIX . strtolower($reflect->getShortName());
+        $table = $this->wpdb->prefix . 'log_' . \Ems_Conf::PREFIX . strtolower($reflect->getShortName());
+
+        try {
+            // Remove postfix log
+            if (StringUtility::endsWith($table, 'log')) {
+                $table = substr($table, 0, strlen($table) - 3);
+            }
+        } catch (\InvalidArgumentException $e) {
+
+        }
+
+        return $table;
     }
 
     /**
