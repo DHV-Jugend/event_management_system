@@ -616,8 +616,8 @@ class Ems_Event extends \BIT\EMS\Model\AbstractPost
                 'rewrite' => true,
                 'capability_type' => self::get_capability_type(),
                 'has_archive' => false,
-                'hierarchical' => false,
-                'supports' => ['title', 'editor', 'custom_fields','hierarchical'],
+                'hierarchical' => true,
+                'supports' => ['title', 'editor', 'custom_fields','page-attributes'],
             ]
         );
     }
