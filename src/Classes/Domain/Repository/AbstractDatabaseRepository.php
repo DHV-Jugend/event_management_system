@@ -156,6 +156,10 @@ class AbstractDatabaseRepository extends AbstractRepository
             return $qb->createNamedParameter($value, \PDO::PARAM_INT);
         }
 
+        if (is_bool($value)) {
+            $qb->createNamedParameter($value, \PDO::PARAM_BOOL);
+        }
+
         return $qb->createNamedParameter($value);
     }
 
