@@ -126,7 +126,7 @@ class MailService
 
     protected function loadMailPartFromSettingsAndReplaceMarker($section, $option, $user, $event, $useWpautop = false)
     {
-        $part = $this->loadMailFromSettings($section, $option);
+        $part = $this->loadMailFromSettings($section, $option, $useWpautop);
         return $this->replaceMarkers($part, $user, $event);
     }
 
