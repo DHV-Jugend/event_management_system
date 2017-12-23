@@ -113,14 +113,18 @@ class MailService
         }
     }
 
-    protected function loadMailFromSettings($section, $option): string
+    protected function loadMailFromSettings($section, $option, $useWpautop = false): string
     {
         $subject = Settings::get($option, $section);
-        $subject = wpautop($subject);
+
+        if ($useWpautop) {
+            $subject = wpautop($subject);
+        }
+
         return $subject;
     }
 
-    protected function loadMailPartFromSettingsAndReplaceMarker($section, $option, $user, $event)
+    protected function loadMailPartFromSettingsAndReplaceMarker($section, $option, $user, $event, $useWpautop = false)
     {
         $part = $this->loadMailFromSettings($section, $option);
         return $this->replaceMarkers($part, $user, $event);
@@ -131,7 +135,7 @@ class MailService
         // Load event specific mail
         $useCustomParticipantMail = get_post_meta($event->ID, EventMetaBox::USE_CUSTOM_PARTICIPANT_MAIL, true);
         $participantMailSubject = trim(get_post_meta($event->ID, EventMetaBox::PARTICIPANT_MAIL_SUBJECT, true));
-        $participantMailBody = trim(get_post_meta($event->ID, EventMetaBox::PARTICIPANT_MAIL_BODY, true));
+        $participantMailBody = wpautop(trim(get_post_meta($event->ID, EventMetaBox::PARTICIPANT_MAIL_BODY, true)));
 
         if (!empty($useCustomParticipantMail) && !empty($participantMailSubject) && !empty($participantMailBody)) {
             $subject = $this->replaceMarkers($participantMailSubject, $user, $event);
@@ -141,14 +145,16 @@ class MailService
                 ParticipantMailTab::class,
                 ParticipantMailTab::EVENT_REGISTRATION_SUCCESSFUL_SUBJECT,
                 $user,
-                $event
+                $event,
+                false
             );
 
             $message = $this->loadMailPartFromSettingsAndReplaceMarker(
                 ParticipantMailTab::class,
                 ParticipantMailTab::EVENT_REGISTRATION_SUCCESSFUL_BODY,
                 $user,
-                $event
+                $event,
+                true
             );
         }
 
@@ -161,14 +167,16 @@ class MailService
             ParticipantMailTab::class,
             ParticipantMailTab::EVENT_CANCEL_REGISTRATION_SUBJECT,
             $user,
-            $event
+            $event,
+            false
         );
 
         $message = $this->loadMailPartFromSettingsAndReplaceMarker(
             ParticipantMailTab::class,
             ParticipantMailTab::EVENT_CANCEL_REGISTRATION_BODY,
             $user,
-            $event
+            $event,
+            true
         );
 
         return [$subject, $message];
@@ -180,14 +188,16 @@ class MailService
             EventManagerMailTab::class,
             EventManagerMailTab::EVENT_REGISTRATION_SUCCESSFUL_SUBJECT,
             $user,
-            $event
+            $event,
+            false
         );
 
         $message = $this->loadMailPartFromSettingsAndReplaceMarker(
             EventManagerMailTab::class,
             EventManagerMailTab::EVENT_REGISTRATION_SUCCESSFUL_BODY,
             $user,
-            $event
+            $event,
+            true
         );
 
         return [$subject, $message];
@@ -199,14 +209,16 @@ class MailService
             EventManagerMailTab::class,
             EventManagerMailTab::EVENT_CANCEL_REGISTRATION_SUBJECT,
             $user,
-            $event
+            $event,
+            false
         );
 
         $message = $this->loadMailPartFromSettingsAndReplaceMarker(
             EventManagerMailTab::class,
             EventManagerMailTab::EVENT_CANCEL_REGISTRATION_BODY,
             $user,
-            $event
+            $event,
+            true
         );
 
         return [$subject, $message];
