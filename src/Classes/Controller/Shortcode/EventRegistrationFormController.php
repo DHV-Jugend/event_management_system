@@ -109,7 +109,6 @@ class EventRegistrationFormController extends AbstractShortcodeController
             );
         }
 
-        // TODO Add validation filter?
         if (!empty($eventID)) {
             $fields = $form->get_input_fields();
             // Generic field filter
@@ -130,7 +129,6 @@ class EventRegistrationFormController extends AbstractShortcodeController
 
             $form->set_input_fields($fields);
         }
-
 
         $form = Fum_User::fill_form($form);
         $url = $form->get_action();
