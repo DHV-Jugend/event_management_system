@@ -7,6 +7,7 @@ use BIT\EMS\Domain\Repository\EventRepository;
 use BIT\EMS\Exception\Event\SendRegistrationMailFailedException;
 use BIT\EMS\Settings\Settings;
 use BIT\EMS\Settings\Tab\EventManagerMailTab;
+use BIT\EMS\Settings\Tab\PagesTab;
 use BIT\EMS\Settings\Tab\ParticipantMailTab;
 use Fum_Mail;
 
@@ -63,11 +64,11 @@ class MailService
 
         $leader_email = $this->eventRepository->findEventManagerMail($eventId);
 
-        $send_leader_email = 1 == get_post_meta(
-                $registration->getEventId(),
-                EventMetaBox::INFORM_EVENT_MANAGER_ABOUT_NEW_PARTICIPANTS,
-                true
-            );
+        $send_leader_email = get_post_meta(
+            $registration->getEventId(),
+            EventMetaBox::INFORM_EVENT_MANAGER_ABOUT_NEW_PARTICIPANTS,
+            true
+        );
 
         switch ($mail_type) {
             case static::MAIL_TYPE_REGISTRATION:
@@ -230,6 +231,9 @@ class MailService
         $eventTitle = htmlspecialchars_decode($event->get_post()->post_title);
         $eventId = $event->getID();
 
+        $participantListLink = get_permalink(
+                PagesTab::get(PagesTab::EVENT_PARTICIPANTS_LIST)
+            ) . '?select_event=ID_' . $eventId;
         return str_ireplace(
             [
                 '###user_firstname###',
@@ -241,7 +245,7 @@ class MailService
                 $user->user_firstname,
                 $user->user_lastname,
                 $eventTitle,
-                get_permalink(get_option('ems_partcipant_list_page')) . '?select_event=ID_' . $eventId,
+                '<a href="' . $participantListLink . '">' . $participantListLink . '</a>',
             ],
             $text
         );
