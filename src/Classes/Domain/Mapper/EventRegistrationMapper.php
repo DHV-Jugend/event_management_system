@@ -33,7 +33,19 @@ class EventRegistrationMapper implements MapperInterface
             ->setUserId((int)$entry['user_id']);
 
         if (!empty($entry['data'])) {
-            $eventRegistration->setData(json_decode($entry['data'], JSON_OBJECT_AS_ARRAY));
+            // Fix json_
+            $data = json_decode(utf8_encode($entry['data']), JSON_OBJECT_AS_ARRAY);
+            if (!is_array($data)) {
+                error_log(
+                    "Registration data isn't an array: " . var_export(
+                        $data,
+                        true
+                    ) . ' Event: ' . $eventRegistration->getEventId() . ' User:' . $eventRegistration->getUserId()
+                );
+                error_log('JSON error: ' . json_last_error() . ' ' . json_last_error_msg());
+                $data = [];
+            }
+            $eventRegistration->setData($data);
         }
 
         return $eventRegistration;
