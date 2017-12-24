@@ -148,12 +148,18 @@ class EventRegistrationFormController extends AbstractShortcodeController
             $events[] = ['title' => $title, 'value' => 'ID_' . $post->ID, 'ID' => $post->ID];
         }
 
-        // Set AGB as required field
         foreach ($form->get_input_fields() as $input_field) {
-            if ($input_field->get_type() === Html_Input_Type_Enum::CHECKBOX ||
-                $input_field->get_unique_name() === Fum_Conf::$fum_input_field_accept_agb) {
-                $input_field->set_required(true);
+            if ($input_field->get_type() == Html_Input_Type_Enum::CHECKBOX &&
+                $input_field->get_unique_name() != Fum_Conf::$fum_input_field_accept_agb) {
+                continue;
             }
+
+            if ($input_field->get_unique_name() === Fum_Conf::$fum_input_field_dhv_member_number ||
+                $input_field->get_unique_name() === Fum_Conf::$fum_input_field_license_number) {
+                continue;
+            }
+
+            $input_field->set_required(true);
         }
 
         if (isset($_REQUEST[Fum_Conf::$fum_unique_name_field_name]) && $_REQUEST[Fum_Conf::$fum_unique_name_field_name] == Fum_Conf::$fum_event_register_form_unique_name) {
