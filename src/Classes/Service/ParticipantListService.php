@@ -222,11 +222,12 @@ class ParticipantListService
         //Generate entry rows
         foreach ($participant_list as $index => $participant) {
             foreach ($fieldOrder as $title => $unused) {
-
+                // TODO Remove static conversion
                 $value = (0 === $participant[$title] ? 'Nein' : ('1' === $participant[$title] ? 'Ja' : $participant[$title]));
                 if ($title === 'fum_premium_participant') {
                     $value = (empty($participant[$title]) ? 'Nein' : 'Ja');
                 }
+                // TODO Add output filter (e.g to allow plugins convert from 0 to "No" / 1 to  Yes etc.
                 $field = Fum_Html_Input_Field::get_input_field($title);
                 if ($this->isAllowedField($field, $fields)) {
                     $data[$index + 1][] = $value;
