@@ -12,7 +12,6 @@ use BIT\EMS\Utility\DateTimeUtility;
  */
 class EventRepository extends AbstractRepository
 {
-
     public function findEventManagerMail($event): ?string
     {
         if (is_object($event)) {
