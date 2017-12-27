@@ -2,6 +2,7 @@
 
 namespace BIT\EMS\Controller;
 
+use BIT\EMS\Service\PermissionService;
 use Event_Management_System;
 
 /**
@@ -11,13 +12,22 @@ use Event_Management_System;
 abstract class AbstractBaseController
 {
     /**
+     * @var \BIT\EMS\Service\PermissionService
+     */
+    protected $permissionService;
+
+    public function __construct()
+    {
+        $this->permissionService = new PermissionService();
+    }
+
+    /**
      * Add wp_enqueue_scripts a
      */
     public function enqueueAssets()
     {
         $this->addCss();
         $this->addJs();
-
     }
 
     /**

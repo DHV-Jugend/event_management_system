@@ -47,18 +47,7 @@ class EventRegistrationFormController extends AbstractShortcodeController
 
     public function printContent($atts = [], $content = null)
     {
-        // Check if user is logged in and show register/login link if not
-        if (!is_user_logged_in()) {
-            ?>
-            Du musst dich einloggen, bevor du dich für ein Event anmelden kannst:<br/>
-            <?php
-            wp_loginout(get_permalink());
-            ?>
-            <br/>Du hast noch keinen Account? Registriere dich:<br/>
-            <?php
-            wp_register('', '');
-            return;
-        }
+        $this->permissionService->requireLogin();
         $this->printForm();
     }
 

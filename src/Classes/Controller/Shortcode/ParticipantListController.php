@@ -24,6 +24,7 @@ use Html_Input_Type_Enum;
  */
 class ParticipantListController extends AbstractShortcodeController
 {
+
     /**
      * Register shortcode alias for backward compatibility
      * @var array
@@ -52,6 +53,7 @@ class ParticipantListController extends AbstractShortcodeController
 
     public function __construct()
     {
+        parent::__construct();
         $this->participantListService = new ParticipantListService();
         $this->eventRepository = new EventRepository();
         $this->eventRegistrationRepository = new EventRegistrationRepository();
@@ -68,20 +70,8 @@ class ParticipantListController extends AbstractShortcodeController
      */
     public function printContent($atts = [], $content = null)
     {
-        if (!current_user_can(Ems_Event::get_edit_capability())) {
-            global $wp;
-            ?>
-            <p><strong>Du hast keinen Zugriff auf diese Seite.</strong></p>
-            <?php
-            if (!is_user_logged_in()) {
-                $redirect_url = add_query_arg(['select_event' => $_REQUEST['select_event']], get_permalink());
-                ?>
-                <p>
-                    <a href="<?php echo wp_login_url($redirect_url); ?>">Anmelden</a>
-                </p>
-                <?php
-            }
-
+        if(!$this->permissionService->checkCapability(Ems_Event::get_edit_capability())) {
+            // User has no access (permission service already print's an error)
             return;
         }
 
@@ -89,11 +79,11 @@ class ParticipantListController extends AbstractShortcodeController
         $form = new Fum_Html_Form('fum_parctipant_list_form', 'fum_participant_list_form', '#');
         $form->add_input_field(
             new Fum_Html_Input_Field(
-                'select_event',
-                'select_event',
+                Fum_Conf::$fum_input_field_select_event,
+                Fum_Conf::$fum_input_field_select_event,
                 new Html_Input_Type_Enum(Html_Input_Type_Enum::SELECT),
                 'Eventauswahl',
-                'select_event',
+                Fum_Conf::$fum_input_field_select_event,
                 false
             )
         );
@@ -102,9 +92,9 @@ class ParticipantListController extends AbstractShortcodeController
             $participantCount = count($this->eventRegistrationRepository->findByEvent($event));
             $title = $event->post_title . ' (' . $participantCount . ')';
             $value = 'ID_' . $event->ID;
-            $possible_values = $form->get_input_field('select_event')->get_possible_values();
+            $possible_values = $form->get_input_field(Fum_Conf::$fum_input_field_select_event)->get_possible_values();
             $possible_values[] = ['title' => $title, 'value' => $value, 'ID' => $event->ID];
-            $form->get_input_field('select_event')->set_possible_values($possible_values);
+            $form->get_input_field(Fum_Conf::$fum_input_field_select_event)->set_possible_values($possible_values);
         }
         if (isset($_REQUEST[Fum_Conf::$fum_input_field_select_event])) {
             $form->get_input_field(Fum_Conf::$fum_input_field_select_event)->set_value(
@@ -112,6 +102,7 @@ class ParticipantListController extends AbstractShortcodeController
             );
         }
         $form->add_input_field(Fum_Html_Input_Field::get_input_field(Fum_Conf::$fum_input_field_submit));
+        $form->set_method(new \Html_Method_Type_Enum(\Html_Method_Type_Enum::GET));
         Fum_Form_View::output($form);
 
         //print particpant list if event selected

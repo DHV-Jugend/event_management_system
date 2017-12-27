@@ -14,10 +14,9 @@ class EventStatisticController extends AbstractShortcodeController
 
     public function printContent($atts = [], $content = null)
     {
-        //If user has no access, redirect to home
-        if (!current_user_can(Ems_Event::get_edit_capability())) {
-            wp_redirect(home_url());
-            exit;
+        if(!$this->permissionService->checkCapability(Ems_Event::get_edit_capability())) {
+            // User has no access (permission service already print's an error)
+            return;
         }
 
         // TODO Add some nice JS graphs: http://www.chartjs.org/, http://c3js.org/, https://plot.ly/javascript/

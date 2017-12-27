@@ -32,6 +32,7 @@ class UserEventRegistrationListController extends AbstractShortcodeController
 
     public function __construct()
     {
+        parent::__construct();
         $this->eventRegistrationRepository = new EventRegistrationRepository();
         $this->eventRegistrationService = new RegistrationService();
         $this->eventRepository = new EventRepository();
@@ -39,6 +40,8 @@ class UserEventRegistrationListController extends AbstractShortcodeController
 
     public function printContent($atts = [], $content = null)
     {
+        $this->permissionService->requireLogin();
+
         if (isset($_REQUEST[Fum_Conf::$fum_unique_name_field_name])) {
             // Handle registration delete
             $user_id = get_current_user_id();
