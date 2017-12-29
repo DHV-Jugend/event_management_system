@@ -70,7 +70,7 @@ class ParticipantListController extends AbstractShortcodeController
      */
     public function printContent($atts = [], $content = null)
     {
-        if(!$this->permissionService->checkCapability(Ems_Event::get_edit_capability())) {
+        if (!$this->permissionService->checkCapability(Ems_Event::get_edit_capability())) {
             // User has no access (permission service already print's an error)
             return;
         }
@@ -108,7 +108,7 @@ class ParticipantListController extends AbstractShortcodeController
         //print particpant list if event selected
         if (isset($_REQUEST[Fum_Conf::$fum_input_field_select_event])) {
             $id = preg_replace("/[^0-9]/", "", $_REQUEST[Fum_Conf::$fum_input_field_select_event]);
-            $registrations = $this->eventRegistrationRepository->findByEvent(new Event($id));
+            $registrations = $this->eventRegistrationRepository->findByEvent(new Event($id), ['create_date' => 'ASC']);
 
             if (empty($registrations)) {
                 echo '<p><strong>Bisher gibt es keine Anmeldungen für dieses Event</strong></p>';

@@ -84,11 +84,17 @@ class AbstractDatabaseRepository extends AbstractRepository
         $qb->where($this->createMultipleEquals($qb, $identifier))->execute();
     }
 
-    public function findByIdentifier(array $identifier, array $fields = ['*'])
+    public function findByIdentifier(array $identifier, array $fields = ['*'], array $orderBy = [])
     {
         $qb = $this->createQb();
         $condition = $this->createMultipleEquals($qb, $identifier);
-        return $qb->select($fields)->from($this->table)->where($condition)->execute()->fetchAll();
+        $query = $qb->select($fields)->from($this->table)->where($condition);
+        if (!empty($orderBy)) {
+            foreach ($orderBy as $column => $direction) {
+                $query->addOrderBy($column, $direction);
+            }
+        }
+        return $query->execute()->fetchAll();
     }
 
     public function findAll(array $fields = ['*'])

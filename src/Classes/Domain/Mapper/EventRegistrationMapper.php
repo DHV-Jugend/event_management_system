@@ -2,6 +2,7 @@
 namespace BIT\EMS\Domain\Mapper;
 
 use BIT\EMS\Domain\Model\EventRegistration;
+use Carbon\Carbon;
 
 /**
  * @author Christoph Bessei
@@ -29,8 +30,12 @@ class EventRegistrationMapper implements MapperInterface
     {
         $eventRegistration = new EventRegistration();
         $eventRegistration
+            ->setId((int)$entry['ID'])
             ->setEventId((int)$entry['event_id'])
-            ->setUserId((int)$entry['user_id']);
+            ->setUserId((int)$entry['user_id'])
+            ->setCreateDate($entry['create_date'] ? Carbon::parse($entry['create_date']) : null)
+            ->setModifyDate($entry['modify_date'] ? Carbon::parse($entry['modify_date']) : null)
+            ->setDeleteDate($entry['delete_date'] ? Carbon::parse($entry['delete_date']) : null);
 
         if (!empty($entry['data'])) {
             // Fix json_
@@ -73,6 +78,9 @@ class EventRegistrationMapper implements MapperInterface
         return [
             'user_id' => $object->getUserId(),
             'event_id' => $object->getEventId(),
+            'create_date' => $object->getCreateDate(),
+            'modify_date' => $object->getModifyDate(),
+            'delete_date' => $object->getDeleteDate(),
             'data' => json_encode($object->getData()),
         ];
     }

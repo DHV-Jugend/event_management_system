@@ -44,21 +44,23 @@ class EventRegistrationRepository extends AbstractDatabaseRepository
 
     /**
      * @param \Ems_Event $event
+     * @param array $orderBy
      * @return EventRegistration[]
      */
-    public function findByEvent(\Ems_Event $event): array
+    public function findByEvent(\Ems_Event $event, array $orderBy = []): array
     {
-        $entries = $this->findByIdentifier(['event_id' => $event->getID(), 'deleted' => false]);
+        $entries = $this->findByIdentifier(['event_id' => $event->getID(), 'deleted' => false], ['*'], $orderBy);
         return $this->eventRegistrationMapper->toObject($entries);
     }
 
     /**
      * @param int $user_id
+     * @param array $orderBy
      * @return EventRegistration[]
      */
-    public function findByParticipant(int $user_id): array
+    public function findByParticipant(int $user_id, array $orderBy = []): array
     {
-        $entries = $this->findByIdentifier(['user_id' => $user_id, 'deleted' => false]);
+        $entries = $this->findByIdentifier(['user_id' => $user_id, 'deleted' => false], ['*'], $orderBy);
         return $this->eventRegistrationMapper->toObject($entries);
     }
 
@@ -74,11 +76,12 @@ class EventRegistrationRepository extends AbstractDatabaseRepository
 
     /**
      * @param \BIT\EMS\Domain\Model\EventRegistration $eventRegistration
-     * @throws \Doctrine\DBAL\Exception\UniqueConstraintViolationException
      */
     public function add(EventRegistration $eventRegistration)
     {
         $entry = $this->eventRegistrationMapper->toSingleArray($eventRegistration);
+        $entry['create_date'] = new \DateTime();
+        $entry['modify_date'] = new \DateTime();
 
         $identifier = $entry;
         unset($identifier['data']);
@@ -87,7 +90,15 @@ class EventRegistrationRepository extends AbstractDatabaseRepository
         $dbEntry = $this->findByIdentifier(array_merge($identifier, ['deleted' => true]));
         if (!empty($dbEntry)) {
             // Set deleted to false and update data
-            $this->update(['deleted' => false, 'data' => $entry['data']], $identifier);
+            $this->update(
+                [
+                    'deleted' => false,
+                    'data' => $entry['data'],
+                    'create_date' => $entry['create_date'],
+                    'modify_date' => $entry['modify_date'],
+                ],
+                $identifier
+            );
         } else {
             $this->insert($entry);
         }
@@ -105,6 +116,9 @@ class EventRegistrationRepository extends AbstractDatabaseRepository
 
     public function delete(array $identifier)
     {
-        $this->update(['deleted' => true], $identifier);
+        $this->update(
+            ['deleted' => true, 'delete_date' => new \DateTime(), 'modify_date' => new \DateTime()],
+            $identifier
+        );
     }
 }
