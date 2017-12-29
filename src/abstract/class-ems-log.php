@@ -2,7 +2,7 @@
 
 /**
  * @author Christoph Bessei
- * @version
+ * @deprecated
  */
 abstract class Ems_Log
 {
