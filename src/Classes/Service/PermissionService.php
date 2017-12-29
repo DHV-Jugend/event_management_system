@@ -18,7 +18,7 @@ class PermissionService
      */
     public function checkCapability(string $capability, string $redirectAfterLogin = null)
     {
-        $this->requireLogin();
+        $this->requireLogin($redirectAfterLogin);
 
         if (!current_user_can($capability)) {
             header('HTTP/1.0 403 Forbidden');
