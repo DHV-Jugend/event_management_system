@@ -30,7 +30,7 @@ class PermissionService
         return true;
     }
 
-    public function requireLogin()
+    public function requireLogin(string $redirectAfterLogin = null)
     {
         if (!is_user_logged_in()) {
             if (empty($redirectAfterLogin)) {
