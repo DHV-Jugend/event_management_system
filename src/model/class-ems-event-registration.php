@@ -7,7 +7,7 @@
  * This class is only kept for backward compatibility (there are serialized Ems_Event_Registration objects in option "ems_event_registration")
  *
  */
-class Ems_Event_Registration extends Ems_Log
+class Ems_Event_Registration
 {
     protected static $option_name = 'ems_event_registration';
 
