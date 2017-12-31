@@ -80,11 +80,12 @@ class EventRegistrationRepository extends AbstractDatabaseRepository
     public function add(EventRegistration $eventRegistration)
     {
         $entry = $this->eventRegistrationMapper->toSingleArray($eventRegistration);
+
+        $identifier['user_id'] = $eventRegistration->getUserId();
+        $identifier['event_id'] = $eventRegistration->getEventId();
+
         $entry['create_date'] = new \DateTime();
         $entry['modify_date'] = new \DateTime();
-
-        $identifier = $entry;
-        unset($identifier['data']);
 
         // Check if exists with deleted = true
         $dbEntry = $this->findByIdentifier(array_merge($identifier, ['deleted' => true]));

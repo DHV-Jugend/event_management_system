@@ -40,6 +40,7 @@ class EventRegistrationFormController extends AbstractShortcodeController
 
     public function __construct()
     {
+        parent::__construct();
         $this->eventRepository = new EventRepository();
         $this->eventRegistrationRepository = new EventRegistrationRepository();
         $this->eventService = new EventService();
